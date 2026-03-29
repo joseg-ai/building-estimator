@@ -1,0 +1,75 @@
+Sheet: Main Framing
+Dimensions: 98 rows x 22 cols
+Non-empty cells: 521
+Data rows (non-blank): 69
+================================================================================
+
+Row 1: [14]=Standard Quotation 
+Row 3: [14]=Pre-Engineered Metal Building
+Row 5: [18]=Date
+Row 6: [1]=MAIN FRAMING
+Row 8: [2]=Building Structure | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [12]=Group | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 9: [2]=Main Frames | [5]=10 | [6]=20 | [7]=200 | [9]=NA | [11]=6 | [12]=BEAMS | [13]=Ninguno | [15]=1 | [16]=NA | [17]=0.85 | [18]=6000 | [19]=6 | [20]=30600
+Row 10: [2]=End frame columns | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 3 1/2 x 14 Red Ox
+Row 11: [2]=Main frame rafters | [5]=5 | [6]=50 | [7]=250 | [9]=NA | [11]=0 | [12]=BEAMS | [13]=W x 18 x 65 | [15]=50 | [16]=Pound/ft | [17]=0.85 | [18]=0 | [19]=0 | [20]=0
+Row 12: [2]=End frame rafters | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 3 1/2 x 14 Red Ox
+Row 13: [2]=Wind Columns | [5]=4 | [6]=20 | [7]=80 | [9]=NA | [11]=4 | [12]=BEAMS | [13]=W x 8 x 35 | [15]=20 | [16]=Pound/ft | [17]=0.85 | [18]=2800 | [19]=80 | [20]=2380
+Row 14: [2]=Central poles | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=PIPES | [13]=Pipe 5" Diam 40S std
+Row 15: [18]=8800 | [20]=32980 | [21]=82000 | [22]=41000
+Row 17: [2]=Canopy | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [12]=Group | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 18: [2]=Parapet Cold Form Channels | [5]=0 | [6]=100 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 12 Red Ox
+Row 19: [2]=Canopy 1 Column | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 20: [2]=Canopy 1 Rafter | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 21: [2]=Canopy 2 Column | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 22: [2]=Canopy 2 Rafter | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 23: [2]=Canopy 3 Column | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 24: [2]=Canopy 3 Rafter | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 25: [2]=Canopy 4 Column | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 26: [2]=Canopy 4 Rafter | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 27: [2]=HSS Canopy 1 | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=HSS | [13]=HSS 2-1/2 X 2-1/2 X 1/4GA
+Row 28: [2]=HSS Canopy 2 | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=HSS | [13]=HSS 2-1/2 X 2-1/2 X 1/4GA
+Row 29: [2]=HSS Canopy 3 | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=HSS | [13]=HSS 2 X 2 X 12GA
+Row 30: [2]=HSS Canopy 4 | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=HSS | [13]=HSS 2 X 2 X 12GA
+Row 31: [18]=0 | [20]=0
+Row 33: [2]=Overhangs | Rafters | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 34: [2]=Right | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 35: [2]=Left | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 36: [2]=Front | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 37: [2]=Back | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 38: [18]=0 | [20]=0
+Row 40: [2]=Lean to Right | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 41: [2]=Main frame columns | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=Ninguno
+Row 42: [2]=Main frame rafters | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 43: [18]=0 | [20]=0
+Row 45: [2]=Lean to Left | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 46: [2]=Main frame columns | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 47: [2]=Main frame rafters | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 48: [18]=0 | [20]=0
+Row 50: [2]=Lean to Front | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 51: [2]=Main frame columns | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=Ninguno
+Row 52: [2]=Main frame rafters | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 53: [18]=0 | [20]=0
+Row 55: [2]=Lean to Back | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 56: [2]=Main frame columns | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 57: [2]=Main frame rafters | [5]=0 | [6]=0 | [7]=0 | [9]=False | [12]=BEAMS | [13]=W x 8 x 10
+Row 58: [18]=0 | [20]=0
+Row 60: [2]=Plates | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 61: [2]=Base Plates | [5]=38 | [6]=1.5208333333333333 | [7]=57.791666666666664 | [9]=NA | [11]=3 | [12]=FLAT BARS | [13]=Flat Bar 1/2 x 8 | [15]=20 | [16]=Pound/ft | [17]=0.8245 | [18]=816 | [19]=60 | [20]=672.792
+Row 62: [2]=Purling plates | [5]=50 | [6]=0.6875 | [7]=35 | [9]=NA | [11]=2 | [12]=FLAT BARS | [13]=Flat Bar 3/16 x 6 | [15]=20 | [16]=Pound/ft | [17]=0.8245 | [18]=153 | [19]=40 | [20]=126.1485
+Row 63: [2]=Side Girt Plates | [5]=80 | [6]=0.75 | [7]=60 | [9]=False | [11]=3 | [12]=FLAT BARS | [13]=Flat Bar 3/16 x 6 | [15]=20 | [16]=Pound/ft | [17]=0.8245 | [18]=229.5 | [19]=60 | [20]=189.22275
+Row 64: [2]=End Girt Plates | [5]=32 | [6]=0.75 | [7]=24 | [9]=False | [11]=2 | [12]=FLAT BARS | [13]=Flat Bar 3/16 x 6 | [15]=20 | [16]=Pound/ft | [17]=0.8245 | [18]=153 | [19]=40 | [20]=126.1485
+Row 65: [18]=1351.5 | [20]=1114.31175
+Row 67: [2]=Frames | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Pound | [18]=Weight | [19]=LnF | [20]=Direct Cost
+Row 68: [2]=Frame Openings 3070 | [5]=0 | [6]=17 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 69: [2]=Frame Openings 4070 | [5]=0 | [6]=18 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 70: [2]=Frame Openings 6070 | [5]=0 | [6]=18 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 71: [2]=Frame Openings Roll Up Door | [5]=0 | [6]=#DIV/0! | [7]=0 | [9]=NA | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 72: [2]=Frame Openings 1 | [5]=0 | [6]=0 | [7]=0 | [9]=NA | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 73: [2]=Frame Openings 2 | [5]=0 | [6]=0 | [7]=0 | [9]=NA | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 74: [2]=Frame Openings 3 | [5]=0 | [6]=0 | [7]=0 | [9]=NA | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 75: [2]=Frame Openings 4 | [5]=0 | [6]=0 | [7]=0 | [9]=NA | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 76: [2]=Frame Openings 3030 | [5]=0 | [6]=12 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 77: [2]=Frame Openings 4030 | [5]=0 | [6]=14 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 78: [2]=Frame Openings 6030 | [5]=0 | [6]=18 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 79: [2]=Frame Openings 6040 | [5]=0 | [6]=20 | [7]=0 | [9]=False | [12]=COLD FORM | [13]=Cee 8 x 2 1/2 x 14 Red Ox
+Row 80: [18]=0 | [20]=0

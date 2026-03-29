@@ -1,0 +1,104 @@
+{
+  "Take off": {
+    "max_row": 185,
+    "max_col": 18,
+    "non_empty_cells": 358,
+    "data_rows": 48
+  },
+  "MAE": {
+    "max_row": 17,
+    "max_col": 6,
+    "non_empty_cells": 40,
+    "data_rows": 16
+  },
+  "Beams specs": {
+    "max_row": 149,
+    "max_col": 14,
+    "non_empty_cells": 1489,
+    "data_rows": 138
+  },
+  "Beams": {
+    "max_row": 3009,
+    "max_col": 8,
+    "non_empty_cells": 1403,
+    "data_rows": 200
+  },
+  "Central Prices": {
+    "max_row": 135,
+    "max_col": 10,
+    "non_empty_cells": 971,
+    "data_rows": 135
+  },
+  "Central States": {
+    "max_row": 106074,
+    "max_col": 19,
+    "non_empty_cells": 2789,
+    "data_rows": 199
+  },
+  "M": {
+    "max_row": 625,
+    "max_col": 154,
+    "non_empty_cells": 7370,
+    "data_rows": 200
+  },
+  "Menu": {
+    "max_row": 21,
+    "max_col": 14,
+    "non_empty_cells": 17,
+    "data_rows": 8
+  },
+  "Design": {
+    "max_row": 124,
+    "max_col": 16384,
+    "non_empty_cells": 304,
+    "data_rows": 89
+  },
+  "Summary": {
+    "max_row": 88,
+    "max_col": 21,
+    "non_empty_cells": 322,
+    "data_rows": 79
+  },
+  "Quotation": {
+    "max_row": 115,
+    "max_col": 15,
+    "non_empty_cells": 128,
+    "data_rows": 70
+  },
+  "Main Framing": {
+    "max_row": 98,
+    "max_col": 22,
+    "non_empty_cells": 521,
+    "data_rows": 69
+  },
+  "Components": {
+    "max_row": 99,
+    "max_col": 20,
+    "non_empty_cells": 896,
+    "data_rows": 90
+  },
+  "Fasteners and Bolts": {
+    "max_row": 82,
+    "max_col": 20,
+    "non_empty_cells": 208,
+    "data_rows": 22
+  },
+  "Insulation": {
+    "max_row": 82,
+    "max_col": 21,
+    "non_empty_cells": 62,
+    "data_rows": 9
+  },
+  "Stairs": {
+    "max_row": 48,
+    "max_col": 24,
+    "non_empty_cells": 73,
+    "data_rows": 33
+  },
+  "Structural": {
+    "max_row": 65,
+    "max_col": 22,
+    "non_empty_cells": 472,
+    "data_rows": 58
+  }
+}

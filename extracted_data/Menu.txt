@@ -1,0 +1,14 @@
+Sheet: Menu
+Dimensions: 21 rows x 14 cols
+Non-empty cells: 17
+Data rows (non-blank): 8
+================================================================================
+
+Row 3: [2]=PROPOSAL SUBMITTED TO: | [8]=PHONE: | [11]=DATE:
+Row 4: [2]=SHAWN ROACH | [8]=832-266-6087 | [11]=2026-03-24 00:00:00
+Row 5: [2]=STREET: | [8]=JOB NAME:
+Row 6: [8]=Four Seasons Buisness Park
+Row 7: [2]=CITY, STATE AND ZIP CODE: | [8]=JOB LOCATION:
+Row 8: [8]=2130 Tomball Pkwy, Tomball, TX 77375
+Row 9: [2]=ARCHITECT/ENGINEER: | [6]=DATE OF PLANS: | [8]=FAX: | [10]=EMAIL:
+Row 10: [10]=gabrielv@vsteelbldg.com

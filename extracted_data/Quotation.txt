@@ -1,0 +1,76 @@
+Sheet: Quotation
+Dimensions: 115 rows x 15 cols
+Non-empty cells: 128
+Data rows (non-blank): 70
+================================================================================
+
+Row 2: [7]=VSTEEL GROUP, INC.
+Row 3: [7]=DBA: VMBC METAL BUILDINGS
+Row 4: [7]=3233 FRICK RD. HOUSTON, TX. 77086
+Row 5: [7]=OFFICE: 281-999-8810 FAX: 281-999-8811
+Row 7: [2]=PROPOSAL SUBMITTED TO: | [8]=PHONE: | [11]=DATE:
+Row 8: [2]=SHAWN ROACH | [8]=832-266-6087 | [11]=2026-03-24 00:00:00
+Row 9: [2]=STREET: | [8]=JOB NAME:
+Row 10: [8]=Four Seasons Buisness Park
+Row 11: [2]=CITY, STATE AND ZIP CODE: | [8]=JOB LOCATION:
+Row 12: [8]=2130 Tomball Pkwy, Tomball, TX 77375
+Row 13: [2]=ARCHITECT/ENGINEER: | [6]=DATE OF PLANS: | [8]=FAX: | [10]=EMAIL:
+Row 14: [10]=gabrielv@vsteelbldg.com
+Row 35: [3]=We hereby submit specifications for estimates for:
+Row 36: [3]=One Metal Building 50W X 100L X 20H 1:12, Roof Pitch, Gable slope
+Row 37: [3]=Aditional Structures: | [12]=Included
+Row 38: [3]=0 Overhangs as shown on plans | [12]=NO
+Row 39: [3]=0 Lean to as shown on plans | [12]=NO
+Row 40: [3]=0 Parapet as shown on plans | [12]=NO
+Row 41: [3]=0 Canopies as shown on plans | [12]=NO
+Row 42: [3]=0 HSS Canopies as shown on plans | [12]=NO
+Row 44: [3]=Components | [12]=Included
+Row 45: [3]=Roof Panel (Panel PBR 26Ga Lifetime Galvalume 36" x 1 1/4") | [12]=YES
+Row 46: [3]=Side Wall System (Panel PBR 26Ga Lifetime Color 36" x 1 1/4") | [12]=YES
+Row 47: [3]=End Wall System (Panel PBR 26Ga Lifetime Color 36" x 1 1/4") | [12]=YES
+Row 48: [3]=Side Wall Liner System (Panel PBU 26Ga Color 36" x 3/4") | [12]=NO
+Row 49: [3]=End Wall Liner System (Panel PBU 26Ga Color 36" x 3/4") | [12]=NO
+Row 50: [3]=All Trim Standard FL Style, Down Spouts & Gutters Gauge: 26 | [12]=YES
+Row 51: [3]=All Structural Machine Bolts & Component Fasteners | [12]=YES
+Row 52: [3]=Roof Insulation (R10 3") | [12]=NO
+Row 53: [3]=Side Wall Insulation (R10 3") | [12]=NO
+Row 54: [3]=End Wall Insulation(R10 3") | [12]=NO
+Row 58: [7]=VSTEEL GROUP, INC.
+Row 59: [7]=DBA: VMBC METAL BUILDINGS
+Row 60: [7]=3233 FRICK RD. HOUSTON, TX. 77086
+Row 61: [7]=OFFICE: 281-999-8810 FAX: 281-999-8811
+Row 65: [3]=Accessories | [12]=Included
+Row 66: [3]=0 Doors 3070 M w/STD Frame 8 1/4 | [12]=NO
+Row 67: [3]=0 Doors 4070 M w/STD Frame 8 1/4 | [12]=NO
+Row 68: [3]=0 Door 6070 M w/STD Frame 8 1/4 | [12]=NO
+Row 69: [3]=0 Dead Bolt | [12]=NO
+Row 70: [3]=0 Panic Hardware | [12]=NO
+Row 71: [3]=0 Roll up Door (0 X 0) | [12]=NO
+Row 72: [3]=0 Frame Opening 1 (0 X 0) | [12]=NO
+Row 73: [3]=0 Frame Opening 2 (0 X 0) | [12]=NO
+Row 74: [3]=0 Frame Opening 3 (0 X 0) | [12]=NO
+Row 75: [3]=0 Frame Opening 4 (0 X 0) | [12]=NO
+Row 76: [3]=0 Window 3030  Self Flashing | [12]=NO
+Row 77: [3]=0 Window 4030 Self Flashing | [12]=NO
+Row 78: [3]=0 Window 6030 Self Flashing | [12]=NO
+Row 79: [3]=0 Window 6040 Self Flashing | [12]=NO
+Row 80: [3]=Non Standard Doors or Windows | [12]=NO
+Row 83: [3]=Building Engineering
+Row 84: [3]=Sealed Engineer and COH Approved Fabricator Stamped Drawings | [12]=YES
+Row 85: [3]=Anchor Bolt, Approval & Erection Drawings | [12]=YES
+Row 86: [3]=Wind Load Design 140 MPH | [12]=YES
+Row 87: [3]=Engineering Design 140 MPH  | [12]=YES
+Row 88: [3]=Building Erection | [12]=NO
+Row 89: [3]=Heavy Equipment by VMBC  | [12]=NO
+Row 92: [3]=Itemized Pricing  
+Row 93: [3]=Building Price  | [11]=108235.17583063105
+Row 94: [2]=        | [3]=Building Erection | [11]=0
+Row 95: [3]=Foundation | [11]=0
+Row 96: [3]=Permits | [11]=0
+Row 97: [3]=Total | [11]=108235.17583063105
+Row 100: [2]=       Observations: | [4]=Building Design as Per Customer Specifications 
+Row 101: [4]=Sales Tax Not Included
+Row 105: [2]=       Colors: | [4]=Roof: Galvalume 
+Row 106: [2]=                      | [4]=Walls: Color by Customer
+Row 107: [2]=                      | [4]=Trim: Color by Customer
+Row 113: [2]=All prices are subject to change due to fluctuation in material or component price

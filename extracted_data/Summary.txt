@@ -1,0 +1,85 @@
+Sheet: Summary
+Dimensions: 88 rows x 21 cols
+Non-empty cells: 322
+Data rows (non-blank): 79
+================================================================================
+
+Row 1: [9]=Standard Quotation 
+Row 3: [9]=Pre-Engineered Metal Building
+Row 5: [13]=Date
+Row 6: [1]=Only for internal purposes
+Row 8: [1]=Customer Name: | [3]=Watasha 
+Row 9: [1]=Job Location: | [3]=Tomball, Tx
+Row 10: [1]=Phone: | [8]=Email
+Row 12: [2]=Building specs | [7]=Overhangs | [10]=Lean-to Right | [13]=Lean-to Left
+Row 13: [2]=Width | [4]=50 | [7]=Right | [9]=0 | [10]=Length | [12]=0 | [13]=Length | [15]=0
+Row 14: [2]=Length | [4]=100 | [7]=Left | [9]=0 | [10]=Width | [12]=0 | [13]=Width | [15]=0
+Row 15: [2]=Height | [4]=20 | [7]=Front | [9]=0 | [10]=Pitch | [12]=0 | [13]=Pitch | [15]=0
+Row 16: [2]=Pitch | [4]=1 | [5]=@ 12 | [7]=Back | [9]=0 | [10]=Drop | [12]=0 | [13]=Drop | [15]=0
+Row 17: [2]=Bay Spacing @ | [4]=4 | [5]=@ 25 | [10]=High side | [12]=0 | [13]=High side | [15]=0
+Row 18: [2]=Rafter length | [4]=25.09 | [7]=Roof Length slope | [9]=25.09 | [10]=Low side | [12]=0 | [13]=Low side | [15]=0
+Row 19: [2]=Total Height | [4]=22.09 | [7]=Roof Area | [9]=5018 | [10]=Rafter length | [12]=0 | [13]=Rafter length | [15]=0
+Row 20: [2]=Floor Area | [4]=5000 | [7]=Roof Width | [9]=50.18 | [10]=Purlings | [12]=0 | [13]=Purlings | [15]=0
+Row 21: [2]=Girts | [4]=4 | [5]=5 bays | [7]=Roof Length | [9]=100 | [10]=Lean-to Front | [13]=Lean-to Back
+Row 22: [2]=Purlings | [4]=10 | [5]=9 bays @ 5.58 | [10]=Length | [12]=0 | [13]=Length | [15]=0
+Row 23: [2]=Single slope | [4]=NOT | [10]=Width | [12]=0 | [13]=Width | [15]=0
+Row 24: [2]=Economic End Frame | [4]=NOT | [10]=Pitch | [12]=0 | [13]=Pitch | [15]=0
+Row 25: [2]=Central Poles | [4]=NOT | [10]=Drop | [12]=0 | [13]=Drop | [15]=0
+Row 26: [2]=Bypass girts | [4]=NOT | [10]=High side | [12]=0 | [13]=High side | [15]=0
+Row 27: [2]=Parapet | [4]=NOT | [10]=Low side | [12]=0 | [13]=Low side | [15]=0
+Row 28: [10]=Rafter length | [12]=0 | [13]=Rafter length | [15]=0
+Row 29: [10]=Purlings | [12]=0 | [13]=Purlings | [15]=0
+Row 30: [2]=Sheetings | [7]=Windows | [10]=Doors and frame openings
+Row 31: [2]=Side Wall | [4]=YES | [7]=Window 3030  | [9]=0 | [10]=Doors 3070 | [12]=0
+Row 32: [2]=SW Liner P. | [4]=NOT | [5]=Height | [6]=0 | [7]=Window 4030 | [9]=0 | [10]=Doors 4070 | [12]=0
+Row 33: [2]=End Wall | [4]=YES | [7]=Window 6030 | [9]=0 | [10]=Panic Hardware | [12]=0
+Row 34: [2]=EW Liner P. | [4]=NOT | [5]=Height | [6]=0 | [7]=Window 6040 | [9]=0 | [10]=Dead Bolt | [12]=0
+Row 35: [2]=Roof | [4]=YES | [10]=Door 6070 Package | [12]=0 | [13]=Width | [14]=Height
+Row 36: [2]=Ridge cap | [4]=YES | [10]=Roll up Door | [12]=0 | [13]=0 | [14]=0
+Row 37: [10]=Frame Opening 1 | [12]=0 | [13]=0 | [14]=0
+Row 38: [10]=Frame Opening 2 | [12]=0 | [13]=0 | [14]=0
+Row 40: [2]=Cost and Weight Summary
+Row 41: [2]=Structural Steel | [12]=Weight | [14]=Cost
+Row 42: [2]=BEAMS | [12]=8800 | [14]=32980
+Row 43: [2]=CANOPIES & PARAPETS | [13]=0 | [14]=0
+Row 44: [2]=OVERHANG | [12]=0 | [14]=0
+Row 45: [2]=LEAN TO | [12]=0 | [14]=0
+Row 46: [2]=PLATES | [12]=1351.5 | [14]=1114.31175
+Row 47: [2]=FRAMES | [12]=0 | [14]=0
+Row 48: [2]=TOTAL | [12]=10151.5 | [14]=34094.31175
+Row 50: [2]=COMPONENTS | [12]=Weight | [14]=Cost
+Row 51: [2]=PURLINGS AND GIRTS | [12]=9524.7736 | [14]=10560.972636588001
+Row 52: [2]=ANGLES | [12]=601.6895999999999 | [14]=607.26187188
+Row 53: [2]=ROOF & WALL SHEETING | [12]=10134.1872 | [14]=14119.132287513003
+Row 54: [2]=WALL AND ROOF TRIM | [12]=632.4100000000001 | [14]=5618.217927980242
+Row 55: [2]=DOORS AND WINDOWS | [12]=0 | [14]=0
+Row 56: [2]=STANDARD HARDWARE | [12]=0 | [14]=4313.051197644481
+Row 57: [2]=TOTAL | [12]=20893.0604 | [14]=35218.63592160573
+Row 59: [2]=INSULACION | [12]=Weight | [14]=Cost
+Row 60: [2]=ROOF INSULATION | [12]=0 | [14]=0
+Row 61: [2]=SIDE WALL INSULATION | [12]=0 | [14]=0
+Row 62: [2]=END WALL INSULATION | [12]=0 | [14]=0
+Row 63: [2]=TOTAL | [12]=0 | [14]=0
+Row 65: [2]=FASTENERS AND BOLTS | [12]=Weight | [14]=Cost
+Row 66: [2]=ANCHOR BOLTS | [14]=672
+Row 67: [2]=BOLTS | [12]=0 | [14]=1347.1260000000002
+Row 68: [2]=CABLE BRACING | [12]=0 | [14]=2428.10172
+Row 69: [2]=FASTENERS | [12]=0 | [14]=1296.7185
+Row 70: [2]=TOTAL | [12]=0 | [14]=5743.946220000001
+Row 72: [12]=Direct Materials | [14]=75056.89389160574
+Row 73: [11]=0.75 | [12]=Labor | [14]=7613.625
+Row 74: [3]=Cost by pound | [5]=3.486445755264457 | [12]=Total | [14]=82670.51889160574
+Row 75: [12]=Detailing | [14]=5000
+Row 76: [3]=Cost by SqFt BDG | [5]=21.64703516612621 | [12]=Engineering | [14]=1500
+Row 77: [12]=Loading and Hauling | [14]=0
+Row 78: [3]=Cost by SqFt ROOF | [5]=21.569385378762664 | [9]=KM | [10]=200 | [11]=0 | [12]=Freight | [14]=0
+Row 79: [11]=0.02 | [12]=Overhead Cost | [14]=1783.4103778321148
+Row 80: [11]=0 | [12]=Erection | [14]=0
+Row 81: [3]=Building | [5]=108235.17583063105 | [6]=21.64703516612621 | [12]=Rollup Doors
+Row 82: [12]=Other | [14]=0
+Row 83: [3]=Erection | [5]=0 | [6]=0 | [12]=Sub Total | [14]=90953.92926943785
+Row 84: [7]=0 | [11]=0.15 | [12]=Profit | [14]=13643.089390415678
+Row 85: [3]=Rollup Doors | [5]=0 | [6]=0 | [11]=0.04 | [12]=Sales Commission | [14]=3638.1571707775142
+Row 86: [7]=0 | [12]=Total | [14]=108235.17583063105
+Row 87: [3]=Other | [5]=0 | [6]=0 | [12]=Discount
+Row 88: [12]=Grand Total | [14]=108235.17583063105

@@ -1,0 +1,95 @@
+Sheet: Design
+Dimensions: 124 rows x 16384 cols
+Non-empty cells: 304
+Data rows (non-blank): 89
+================================================================================
+
+Row 2: [2]=Building Size
+Row 3: [2]=Width | [4]=50 | [5]=Economic End Frame | [7]=False
+Row 4: [2]=Length | [4]=100 | [5]=Central Poles | [7]=False
+Row 5: [2]=Height | [4]=20
+Row 6: [2]=Pitch | [4]=1 | [5]=@ 12 | [6]=Add /Remove
+Row 7: [2]=Single slope | [5]=False | [6]=Frames+/- | [7]=Wind C+/-
+Row 8: [2]=Bay Spacing @ | [4]=4 | [5]=@ 25 | [6]=0 | [7]=0
+Row 9: [2]=Bypass girts | [4]=False | [5]=Width | [6]=Height
+Row 10: [2]=Parapet | [4]=False | [5]=0 | [6]=0
+Row 11: [2]=Rafter length | [4]=25.09
+Row 12: [2]=Total Height | [4]=22.09 | [6]=31.48
+Row 13: [2]=Floor Area | [4]=5000 | [6]=31.48
+Row 14: [2]=Girts | [4]=4 | [5]=5 | [6]=bays
+Row 15: [2]=Purlings | [4]=10 | [5]=9 | [6]=bays @ 5.58
+Row 17: [2]=Overhangs
+Row 18: [2]=Right | [4]=0
+Row 19: [2]=Left | [4]=0
+Row 20: [2]=Front | [4]=0
+Row 21: [2]=Back | [4]=0
+Row 23: [2]=Roof Length slope | [4]=25.09
+Row 24: [2]=Roof Area | [4]=5018
+Row 25: [2]=Roof Width | [4]=50.18
+Row 26: [2]=Roof Length | [4]=100
+Row 28: [2]=Lean-to Right | [4]=False | [5]=Lean-to Left | [7]=False | [8]=False
+Row 29: [2]=Length | [3]=0 | [4]=0 | [5]=Length | [6]=0 | [7]=0
+Row 30: [2]=Width | [3]=0 | [5]=Width | [6]=0
+Row 31: [2]=Pitch | [3]=0 | [5]=Pitch | [6]=0
+Row 32: [2]=Drop | [3]=0 | [5]=Drop | [6]=0
+Row 33: [2]=High side | [3]=0 | [5]=High side | [6]=0
+Row 34: [2]=Low side | [3]=0 | [5]=Low side | [6]=0
+Row 35: [2]=Rafter length | [3]=0 | [5]=Rafter length | [6]=0
+Row 36: [2]=Purlings | [3]=0 | [5]=Purlings | [6]=0
+Row 39: [2]=Lean-to Front | [4]=False | [5]=Lean-to Back | [7]=False
+Row 40: [2]=Length | [3]=0 | [4]=0 | [5]=Length | [6]=0 | [7]=0
+Row 41: [2]=Width | [3]=0 | [5]=Width | [6]=0
+Row 42: [2]=Pitch | [3]=0 | [5]=Pitch | [6]=0
+Row 43: [2]=Drop | [3]=0 | [5]=Drop | [6]=0
+Row 44: [2]=High side | [3]=0 | [5]=High side | [6]=0
+Row 45: [2]=Low side | [3]=0 | [5]=Low side | [6]=0
+Row 46: [2]=Rafter length | [3]=0 | [5]=Rafter length | [6]=0
+Row 47: [2]=Purlings | [3]=0 | [5]=Purlings | [6]=0
+Row 49: [2]=Sheetings
+Row 51: [2]=Side Wall | [4]=True | [7]=4000
+Row 52: [2]=SW Liner P. | [4]=False | [5]=Height | [6]=0 | [7]=0
+Row 53: [2]=End Wall | [4]=True | [7]=2209
+Row 54: [2]=EW Liner P. | [4]=False | [5]=Height | [6]=0 | [7]=0
+Row 55: [2]=Roof | [4]=True | [7]=5018
+Row 56: [4]=True
+Row 57: [2]=Soffit | [4]=False
+Row 59: [2]=SW Skirt | [4]=False | [6]=0
+Row 60: [2]=EW Skirt | [4]=False | [6]=0
+Row 63: [2]=Doors and Windows
+Row 64: [5]=Include Extra door Frame
+Row 65: [2]=Doors 3070 | [4]=0 | [5]=False
+Row 66: [2]=Doors 4070 | [4]=0 | [5]=False
+Row 67: [2]=Panic Hardware | [4]=0
+Row 68: [2]=Dead Bolt | [4]=0
+Row 69: [2]=Door 6070 | [4]=0 | [5]=False | [6]=Width | [7]=Height
+Row 70: [2]=Roll up Door | [4]=0 | [6]=0 | [7]=0
+Row 71: [2]=Roll up Door | [4]=0 | [6]=0 | [7]=0
+Row 72: [2]=Roll up Door | [4]=0 | [6]=0 | [7]=0
+Row 73: [2]=Roll up Door | [4]=0 | [6]=0 | [7]=0
+Row 74: [2]=Frame Opening 1 | [4]=0 | [6]=0 | [7]=0
+Row 75: [2]=Frame Opening 2 | [4]=0 | [6]=0 | [7]=0
+Row 76: [2]=Frame Opening 3 | [4]=0 | [5]=False | [6]=0 | [7]=0
+Row 77: [2]=Frame Opening 4 | [4]=0 | [5]=False | [6]=0 | [7]=0
+Row 78: [5]=False
+Row 79: [2]=Window 3030  | [4]=0 | [5]=False
+Row 80: [2]=Window 4030 | [4]=0 | [5]=False
+Row 81: [2]=Window 6030 | [4]=0 | [5]=False
+Row 82: [2]=Window 6040 | [4]=0 | [5]=False
+Row 84: [2]=Accessories
+Row 86: [5]=Depth | [6]=Width | [7]=Height
+Row 87: [2]=Canopy 1 | [4]=0 | [5]=0 | [6]=0 | [7]=0 | [10]=Canopy 1 | [13]=Canopy 2 | [17]=HSS Canopy 1 | [21]=HSS Canopy 2
+Row 88: [2]=Canopy 2 | [4]=0 | [5]=0 | [6]=0 | [7]=0
+Row 89: [2]=Canopy 3 | [4]=0 | [5]=0 | [6]=0 | [7]=0
+Row 90: [2]=Canopy 4 | [4]=0 | [5]=0 | [6]=0 | [7]=0
+Row 91: [5]=Depth | [6]=Length | [7]=Height
+Row 92: [2]=HSS Canopy 1 | [4]=0 | [5]=0 | [6]=0 | [7]=0
+Row 93: [2]=HSS Canopy 2 | [4]=0 | [5]=0 | [6]=0 | [7]=0
+Row 94: [2]=HSS Canopy 3 | [4]=0 | [5]=0 | [6]=0 | [7]=0 | [10]=Canopy 3 | [13]=Canopy 4 | [17]=HSS Canopy 3 | [21]=HSS Canopy 4
+Row 95: [2]=HSS Canopy 4 | [4]=0 | [5]=0 | [6]=0 | [7]=0
+Row 97: [2]=Masonry  | [4]=0 | [5]=lnFt
+Row 98: [2]=Ridge Vents 9" x 10' With Bird Screen, Dampers & PBR  Skirt | [4]=0
+Row 99: [2]=Skylights 3" x 10' - 8" 8oz High Strenght | [4]=0
+Row 101: [2]=Insulation
+Row 102: [2]=Roof Insulation | [4]=False
+Row 103: [2]=Side Wall Insulation | [4]=False
+Row 104: [2]=End Wall Insulation | [4]=False

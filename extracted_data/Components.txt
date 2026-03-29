@@ -1,0 +1,96 @@
+Sheet: Components
+Dimensions: 99 rows x 20 cols
+Non-empty cells: 896
+Data rows (non-blank): 90
+================================================================================
+
+Row 1: [14]=Standard Quotation 
+Row 3: [14]=Pre-Engineered Metal Building
+Row 5: [18]=Date
+Row 6: [1]=COMPONENTS
+Row 8: [2]=PURLINGS AND GIRTS | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [12]=Group | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 9: [2]=Side Wall Girts | [5]=8 | [6]=100 | [7]=800 | [9]=True | [11]=34 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 14 Red Ox | [15]=24 | [16]=Ln Ft | [17]=3.6295292426250003 | [18]=2667.8304 | [19]=816 | [20]=2961.695861982
+Row 10: [2]=End Wall Girts | [5]=8 | [6]=50 | [7]=400 | [9]=True | [11]=17 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 14 Red Ox | [15]=24 | [16]=Ln Ft | [17]=3.6295292426250003 | [18]=1333.9152 | [19]=408 | [20]=1480.847930991
+Row 11: [2]=End Wall Skirt Girts | [5]=0 | [6]=100 | [7]=0 | [9]=False | [11]=0 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 12 Red Ox | [15]=24
+Row 12: [2]=End Wall Skirt Girts | [5]=0 | [6]=50 | [7]=0 | [9]=False | [11]=0 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 12 Red Ox | [15]=24
+Row 13: [2]=Roof Purlings | [5]=10 | [6]=130 | [7]=1300 | [9]=True | [11]=55 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 14 Red Ox | [15]=24 | [16]=Ln Ft | [17]=3.6295292426250003 | [18]=4315.608 | [19]=1320 | [20]=4790.978600265001
+Row 14: [2]=Overhang Purlings | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=COLD FORM | [13]=Zee 12 x 3 1/2 x 14 Red Ox | [15]=24
+Row 15: [2]=Overhang Eave Straut | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=COLD FORM | [13]=Zee 12 x 3 1/2 x 14 Red Ox | [15]=24
+Row 16: [2]=Canopy Purlings | [5]=4 | [6]=0 | [7]=0 | [9]=True | [11]=0 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 16 Red Ox | [15]=24
+Row 17: [2]=Lean to Purlings | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=COLD FORM | [13]=Zee 8 x 2 1/2 x 16 Red Ox | [15]=24
+Row 18: [2]=Lean to Eave Strut | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=EAVE STRUT | [13]=8 x 5 x 5 14GA Red Ox | [15]=24
+Row 19: [2]=Eave Strut | [5]=2 | [6]=100 | [7]=200 | [9]=False | [11]=10 | [12]=EAVE STRUT | [13]=8 x 5 x 2 3/4 12GA Red Ox | [15]=20 | [16]=Ln ft | [17]=6.637251216750001 | [18]=1207.4199999999998 | [19]=200 | [20]=1327.4502433500002
+Row 20: [18]=9524.7736 | [20]=10560.972636588001
+Row 21: [6]=0
+Row 22: [2]=RAKE / BASE ANGLES | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 23: [2]=Base Angle | [5]=1 | [6]=300 | [7]=300 | [9]=NA | [11]=13 | [12]=ANGLES | [13]=Base/Rake angle 2 x 4 14GA Red Ox | [15]=24 | [16]=Ln ft | [17]=1.4056987775 | [18]=434.55359999999996 | [19]=312 | [20]=438.57801858
+Row 24: [2]=Rake Angle | [5]=2 | [6]=50.18 | [7]=100.36 | [9]=NA | [11]=5 | [12]=ANGLES | [13]=Base/Rake angle 2 x 4 14GA Red Ox | [15]=24 | [16]=Ln ft | [17]=1.4056987775 | [18]=167.136 | [19]=120 | [20]=168.6838533
+Row 25: [18]=601.6895999999999 | [20]=607.26187188
+Row 27: [2]=ROOF & WALL SHEETING | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 28: [2]=RIDGE CAPS | [5]=33.333333333333336 | [6]=3 | [7]=100 | [9]=False | [11]=5 | [12]=SHEETING | [13]=Ridge Cap (Peek Sheets) With Accessories | [15]=24 | [16]=Ln Ft | [17]=4.257000000000001 | [18]=136.8 | [19]=120 | [20]=510.8400000000001
+Row 29: [2]=ROOF | [5]=33.333333333333336 | [6]=50.18 | [7]=1672.6666666666667 | [9]=True | [11]=70 | [12]=SHEETING | [13]=Panel PBR 26Ga Lifetime Galvalume 36" x 1 1/4" | [15]=24 | [16]=Ln Ft | [17]=3.207128243687501 | [18]=4408.487999999999 | [19]=1680 | [20]=5387.975449395001
+Row 30: [2]=SIDE WALLS | [5]=66.66666666666667 | [6]=20 | [7]=1333.3333333333335 | [8]=2592 | [9]=True | [11]=56 | [12]=SHEETING | [13]=Panel PBR 26Ga Lifetime Color 36" x 1 1/4" | [15]=24 | [16]=Ln Ft | [17]=3.9827116463750003 | [18]=3639.2832 | [19]=1344 | [20]=5352.764452728001
+Row 31: [2]=SIDE LINER PANEL | [5]=66.66666666666667 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=SHEETING | [13]=Panel PBU 26Ga Color 36" x 3/4" | [15]=24
+Row 32: [2]=SIDE SKIRT | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=SHEETING | [13]=Panel PBU 26Ga Color 26Ga 36' x 3/4' | [15]=24
+Row 33: [2]=END WALLS | [5]=33.333333333333336 | [6]=21.045 | [7]=701.5000000000001 | [9]=True | [11]=30 | [12]=SHEETING | [13]=Panel PBR 26Ga Lifetime Color 36" x 1 1/4" | [15]=24 | [16]=Ln Ft | [17]=3.9827116463750003 | [18]=1949.616 | [19]=720 | [20]=2867.5523853900004
+Row 34: [2]=END LINER PANEL | [5]=33.333333333333336 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=SHEETING | [13]=Panel PBU 26Ga Color 36" x 3/4" | [15]=24
+Row 35: [2]=END SKIRT | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=SHEETING | [13]=Panel PBU 26Ga Color 26Ga 36' x 3/4' | [15]=24
+Row 36: [2]=LEAN-TO ROOF | [5]=0 | [6]=0 | [7]=0 | [9]=NA | [11]=0 | [12]=SHEETING | [13]=Panel PBR 26Ga Lifetime Color 36' x 1 1/4' | [15]=24
+Row 37: [2]=CANOPY ROOF | [5]=0 | [6]=0 | [7]=0 | [9]=NA | [11]=0 | [12]=SHEETING | [13]=Panel PBR 26Ga Lifetime Color 36' x 1 1/4' | [15]=24
+Row 38: [2]=LEAN-TO SOFFIT | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=SHEETING | [13]=Soffit 24Ga Color 12' x 1' | [15]=24
+Row 39: [2]=CANOPY SOFFIT | [5]=0 | [6]=0 | [7]=0 | [9]=0 | [11]=0 | [12]=SHEETING | [13]=Soffit 24Ga Color 12' x 1' | [15]=24
+Row 40: [18]=10134.1872 | [20]=14119.132287513003
+Row 42: [2]=ROOF TRIM | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 43: [2]=PEAK BOX | [5]=2 | [6]=NA | [7]=NA | [9]=False | [11]=2 | [12]=ROOF TRIM | [13]=Peak Box | [15]=0 | [16]=pc | [17]=30.139606706000006 | [18]=0 | [19]=0 | [20]=60.27921341200001
+Row 44: [2]=RAKE TRIM | [5]=4 | [6]=25.09 | [7]=100.36 | [9]=False | [11]=11 | [12]=ROOF TRIM | [13]=Sculptured rake Trim | [15]=10 | [16]=Ln Ft | [17]=4.136101084500001 | [18]=127.05000000000001 | [19]=110 | [20]=454.9711192950001
+Row 45: [2]=RAKE END CAP | [5]=8 | [6]=NA | [7]=NA | [9]=False | [11]=8 | [12]=ROOF TRIM | [13]=Rake End cap | [15]=0 | [16]=pc | [17]=5.866308166812501 | [18]=0 | [19]=0 | [20]=46.930465334500006
+Row 46: [2]=RAKE SLIDE | [5]=0 | [6]=25.09 | [7]=0 | [9]=False | [11]=0 | [12]=ROOF TRIM | [13]=Sculptured rake Slide | [15]=0
+Row 47: [2]=PARAPAET RAKE FLASH | [5]=0 | [6]=25.09 | [7]=0 | [9]=False | [11]=0 | [12]=ROOF TRIM | [13]=Parapet rake Flash | [15]=0
+Row 48: [2]=PARAPET RAKE CLEAT | [5]=0 | [6]=25.09 | [7]=0 | [9]=False | [11]=0 | [12]=ROOF TRIM | [13]=Parapet rake Cleat | [15]=0
+Row 49: [2]=EAVE GUTTER | [5]=2 | [6]=100 | [7]=200 | [9]=False | [11]=20 | [12]=ROOF TRIM | [13]=Eave gutter | [15]=10 | [16]=Ln Ft | [17]=4.643188521125 | [18]=266.26 | [19]=200 | [20]=928.6377042250001
+Row 50: [2]=GUTTER END CAP | [5]=4 | [6]=NA | [7]=NA | [9]=False | [11]=4 | [12]=ROOF TRIM | [13]=Gutter Endcap | [15]=0 | [16]=pc | [17]=6.034005359250001 | [18]=0 | [19]=0 | [20]=24.136021437000004
+Row 51: [2]=GUTTER STRAP | [5]=50 | [6]=1 | [7]=50 | [9]=NA | [11]=50 | [12]=ROOF TRIM | [13]=Gutter strap | [15]=0 | [16]=pc | [17]=10.583871230625002 | [18]=0 | [19]=0 | [20]=529.1935615312501
+Row 52: [2]=BOX PANEL CAP TRIM | [5]=2 | [6]=100 | [7]=200 | [9]=False | [11]=20 | [12]=ROOF TRIM | [13]=Box panel cap trim | [15]=0 | [16]=pc | [17]=18.5677270356875 | [18]=0 | [19]=0 | [20]=371.35454071375
+Row 53: [2]=PARAPET HIGH SIDE EAVE | [5]=0 | [6]=100 | [7]=0 | [9]=False | [11]=0 | [12]=ROOF TRIM | [13]=Parapet High side eave | [15]=0
+Row 54: [18]=393.31 | [20]=2415.5026259485003
+Row 56: [2]=WALL TRIM | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 57: [2]=OUTSIDE CORNER TRIM | [5]=4 | [6]=20 | [7]=80 | [9]=False | [11]=4 | [12]=WALL TRIM | [13]=Outside Corner Trim | [15]=10 | [16]=Ln Ft | [17]=3.457012084512296 | [18]=38.400000000000006 | [19]=40 | [20]=138.28048338049183
+Row 58: [2]=JAMB TRIM | [5]=0 | [6]=#DIV/0! | [7]=0 | [9]=NA | [11]=0 | [12]=WALL TRIM | [13]=Jamb Trim | [15]=10
+Row 59: [2]=HEAD TRIM | [5]=0 | [6]=#DIV/0! | [7]=0 | [9]=NA | [11]=0 | [12]=WALL TRIM | [13]=Head Trim | [15]=10
+Row 60: [2]=DRIP TRIM | [5]=0 | [6]=#DIV/0! | [7]=200 | [9]=NA | [11]=10 | [12]=WALL TRIM | [13]=Drip Trim | [15]=20 | [16]=Ln Ft | [17]=1.6435871643125 | [18]=91.5 | [19]=200 | [20]=328.7174328625
+Row 61: [2]=MASONRY TRIM | [5]=0 | [6]=#DIV/0! | [7]=0 | [9]=NA | [11]=0 | [12]=WALL TRIM | [13]=Masonry Trim | [15]=20
+Row 62: [2]=DOWNSPOUT STRAIGHT | [5]=10 | [6]=20 | [7]=200 | [9]=False | [11]=20 | [12]=WALL TRIM | [13]=Downspout Straight | [15]=10 | [16]=Ln Ft | [17]=8.816928022375 | [18]=74.39999999999999 | [19]=200 | [20]=1763.385604475
+Row 63: [2]=DOWNSPOUT ELBOW | [5]=20 | [6]=NA | [7]=NA | [9]=False | [11]=20 | [12]=WALL TRIM | [13]=Downspout Elbow | [15]=0 | [16]=pc | [17]=3.1939805775625003 | [18]=0 | [19]=0 | [20]=63.87961155125001
+Row 64: [2]=DOWNSPOUT STRAP | [5]=40 | [6]=NA | [7]=NA | [9]=False | [11]=40 | [12]=WALL TRIM | [13]=Downspout Strap | [15]=0 | [16]=pc | [17]=19.5857688695625 | [18]=0 | [19]=0 | [20]=783.4307547825
+Row 65: [2]=INSIDE CORNER TRIM | LINER | [5]=4 | [6]=0 | [7]=0 | [9]=False | [11]=4 | [12]=WALL TRIM | [13]=Inside Corner trim | Liner | [15]=10 | [16]=Ln Ft | [17]=3.1255353745 | [18]=34.8 | [19]=40 | [20]=125.02141498
+Row 66: [2]=JAMB TRIM | LINER | [5]=0 | [6]=#DIV/0! | [7]=0 | [9]=False | [11]=0 | [12]=WALL TRIM | [13]=Jamb Trim | Liner | [15]=10
+Row 67: [2]=HEAD TRIM | LINER | [5]=0 | [6]=10 | [7]=0 | [9]=False | [11]=0 | [12]=WALL TRIM | [13]=Head Trim | Liner | [15]=10
+Row 68: [18]=239.10000000000002 | [20]=3202.715302031742
+Row 71: [2]=DOORS AND WINDOWS | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 72: [2]=Doors 3070 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Doors 3070 | [15]=10
+Row 73: [2]=Doors 4070 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Doors 4070 | [15]=10
+Row 74: [2]=Door 6070 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Door 6070 | [15]=10
+Row 75: [2]=Panic Hardware | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Panic Hardware | [15]=10
+Row 76: [2]=Roll up Door 0 x 0 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Roll up Door 0 x 0 | [15]=10 | [20]=0
+Row 77: [2]=Roll up Door 0 x 0 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Roll up Door 0 x 0 | [15]=10
+Row 78: [2]=Roll up Door 0 x 0 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Roll up Door 0 x 0 | [15]=10
+Row 79: [2]=Roll up Door 0 x 0 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Roll up Door 0 x 0 | [15]=10
+Row 80: [2]=Dead Bolt | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Dead Bolt | [15]=10
+Row 81: [2]=Window 3030  | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Window 3030  | [15]=10
+Row 82: [2]=Window 4030 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Window 4030 | [15]=10
+Row 83: [2]=Window 6030 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Window 6030 | [15]=10
+Row 84: [2]=Window 6040 | [5]=0 | [6]=NA | [7]=NA | [9]=NA | [11]=0 | [12]=DOOR AND WINDOWS | [13]=Window 6040 | [15]=10
+Row 85: [18]=0 | [20]=0
+Row 87: [2]=STANDARD HARDWARE | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 88: [2]=TRI BEAD TAP SEALANT | [5]=4 | [6]=145.09 | [7]=580.36 | [9]=NA | [11]=4 | [12]=HARDWARE | [13]=Tri Bead Tap Sealant | [16]=pc | [17]=82.11115 | [18]=0 | [19]=0 | [20]=328.4446
+Row 89: [2]=POLYURETHANE TUBE SEALANT | [5]=3.7593984962406015 | [6]=NA | [7]=NA | [9]=NA | [11]=3.7593984962406015 | [12]=HARDWARE | [13]=Polyurethane Tube Sealant | [16]=pc | [17]=16.4929435 | [18]=0 | [19]=0 | [20]=62.0035469924812
+Row 90: [2]=OUTSIDE CLOSURE FOR R/U PANEL | [5]=129 | [6]=NA | [7]=NA | [9]=NA | [11]=129 | [12]=HARDWARE | [13]=Outside Closure For R/U Panel | [16]=pc | [17]=1.303203 | [18]=0 | [19]=0 | [20]=168.11318699999998
+Row 91: [2]=OUTSIDE CLOSURE FOR ULTRA-DECK | [5]=0 | [6]=NA | [7]=NA | [9]=False | [11]=0 | [12]=HARDWARE | [13]=Outside Closure For Ultra-Deck
+Row 92: [2]=INSIDE CLOSURE FOR R/U PANEL | [5]=129 | [6]=NA | [7]=NA | [9]=NA | [11]=129 | [12]=HARDWARE | [13]=Inside Closure For R/U Panel | [16]=pc | [17]=1.303203 | [18]=0 | [19]=0 | [20]=168.11318699999998
+Row 93: [2]=INSIDE CLOSURE FOR ULTRA-DECK | [5]=0 | [6]=NA | [7]=NA | [9]=False | [11]=0 | [12]=HARDWARE | [13]=Inside Closure For Ultra-Deck
+Row 94: [2]=LOW FLOATING EAVE PLATE | [5]=25 | [6]=NA | [7]=NA | [9]=True | [11]=25 | [12]=HARDWARE | [13]=Low Floating Eave Plate | [16]=pc | [17]=25.640411500000003 | [18]=0 | [19]=0 | [20]=641.0102875000001
+Row 95: [2]=LOW FLOATING RAKE SUPPORT | [5]=5.018 | [6]=NA | [7]=NA | [9]=True | [11]=5.018 | [12]=HARDWARE | [13]=Low Floating Rake Support | [16]=pc | [17]=72.026064 | [18]=0 | [19]=0 | [20]=361.426789152
+Row 96: [2]=BACKUP PLATE | [5]=100 | [6]=NA | [7]=NA | [9]=True | [11]=100 | [12]=HARDWARE | [13]=Backup Plate | [16]=pc | [17]=14.484756 | [18]=0 | [19]=0 | [20]=1448.4756
+Row 97: [2]=SLIDING CLIP | [5]=0 | [6]=NA | [7]=NA | [9]=False | [11]=0 | [12]=HARDWARE | [13]=Sliding Clip
+Row 98: [2]=SHEETING ANGLE | [5]=300 | [6]=NA | [7]=NA | [9]=True | [11]=300 | [12]=HARDWARE | [13]=Sheeting Angle | [16]=pc | [17]=3.7848800000000002 | [18]=0 | [19]=0 | [20]=1135.4640000000002
+Row 99: [18]=0 | [20]=4313.051197644481

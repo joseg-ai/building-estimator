@@ -1,0 +1,15 @@
+Sheet: Insulation
+Dimensions: 82 rows x 21 cols
+Non-empty cells: 62
+Data rows (non-blank): 9
+================================================================================
+
+Row 1: [14]=Standard Quotation 
+Row 3: [14]=Pre-Engineered Metal Building
+Row 5: [18]=Date
+Row 6: [1]=INSULATION
+Row 8: [2]=Insulation | [5]=Qty | [6]=Length | [7]=Ln feet to Fab | [9]=Mark | [11]=Qty | [12]=Group | [13]=Material | [15]=Comm Length | [16]=Measure | [17]=Material Cost by Ln Ft | [18]=Weight | [19]=LnF | [20]=Total
+Row 9: [2]=Roof Insulation | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=INSULATION | [13]=R10 3" | [15]=20 | [16]=LnFt | [17]=3.49564326261468 | [18]=0 | [19]=0 | [20]=0 | [21]=0
+Row 10: [2]=SIde Wall Insulation | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=INSULATION | [13]=R10 3" | [15]=20 | [16]=LnFt | [17]=3.49564326261468 | [18]=0 | [19]=0 | [20]=0
+Row 11: [2]=End Wall Insulation | [5]=0 | [6]=0 | [7]=0 | [9]=False | [11]=0 | [12]=INSULATION | [13]=R10 3" | [15]=20 | [16]=LnFt | [17]=3.49564326261468 | [18]=0 | [19]=0 | [20]=0
+Row 12: [20]=0

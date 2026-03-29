@@ -1,0 +1,22 @@
+Sheet: MAE
+Dimensions: 17 rows x 6 cols
+Non-empty cells: 40
+Data rows (non-blank): 16
+================================================================================
+
+Row 2: [2]=Description | [5]=Description
+Row 3: [2]=BEAMS | [3]=1 | [5]=BEAMS | [6]=1
+Row 4: [2]=CHANNELS | [3]=2 | [5]=COLD FORM | [6]=2
+Row 5: [2]=COLD FORM | [3]=3 | [5]=PIPES | [6]=3
+Row 6: [2]=FLAT BARS | [3]=4 | [5]=HSS | [6]=4
+Row 7: [2]=ANGLES | [3]=5
+Row 8: [2]=EAVE STRUT | [3]=6
+Row 9: [2]=DOOR AND WINDOWS | [3]=7
+Row 10: [2]=SHEETING | [3]=8
+Row 11: [2]=ROOF TRIM | [3]=9
+Row 12: [2]=WALL TRIM | [3]=10
+Row 13: [2]=HARDWARE | [3]=11
+Row 14: [2]=INSULATION | [3]=12
+Row 15: [2]=BOLTS AND FASTENERS | [3]=13
+Row 16: [2]=PIPES | [3]=14
+Row 17: [2]=HSS | [3]=15

@@ -1,0 +1,39 @@
+Sheet: Stairs
+Dimensions: 48 rows x 24 cols
+Non-empty cells: 73
+Data rows (non-blank): 33
+================================================================================
+
+Row 2: [2]=Stairs
+Row 3: [2]=Levels | [4]=3
+Row 4: [2]=Width | [4]=5 | [7]=False
+Row 5: [2]=Length | [4]=9.166666666666666 | [7]=True
+Row 6: [2]=Floor Height | [4]=12.5
+Row 7: [2]=Landing | [4]=1
+Row 8: [2]=Height to landing | [4]=6.25
+Row 9: [2]=Treads 1st Floor | [4]=10 | [5]=@ In | [6]=11
+Row 10: [2]=Treads 2nd Floor | [4]=9 | [5]=@ In | [6]=11
+Row 11: [2]=Treads 3rd Floor | [4]=9 | [5]=@ In | [6]=11
+Row 12: [2]=Treads 4th Floor | [5]=@ In
+Row 13: [2]=Treads 5th Floor | [5]=@ In
+Row 14: [2]=Right Guard Rail | [4]=1 | [5]=Height | [6]=3.5
+Row 15: [2]=Left Guard Rail | [4]=0
+Row 16: [2]=Right Hand Rail | [4]=1
+Row 17: [2]=Left Hand Rail | [4]=1
+Row 19: [2]=Picket | [4]=0
+Row 29: [2]=Middle Landing | [11]=a | [17]=a
+Row 30: [2]=Width | [4]=10.5
+Row 31: [2]=Length | [4]=4.666666666666667
+Row 32: [2]=Guard Rail A | [4]=1
+Row 33: [2]=Guard Rail B | [4]=1
+Row 34: [2]=Guard Rail C | [4]=1
+Row 37: [9]=b
+Row 38: [19]=b
+Row 40: [2]=Floor Landing
+Row 41: [2]=Width | [4]=10.5
+Row 42: [2]=Length | [4]=6
+Row 43: [2]=Guard Rail | [4]=1
+Row 44: [2]=Guard Rail A | [4]=1
+Row 45: [2]=Guard Rail B | [4]=1
+Row 46: [2]=Guard Rail C | [4]=1
+Row 47: [11]=c | [17]=c

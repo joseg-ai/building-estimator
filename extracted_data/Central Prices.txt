@@ -1,0 +1,141 @@
+Sheet: Central Prices
+Dimensions: 135 rows x 10 cols
+Non-empty cells: 971
+Data rows (non-blank): 135
+================================================================================
+
+Row 1: [7]=21-211
+Row 2: [2]=Ln | [3]=Item | [4]=Description | [5]=Qty | [6]=UM | [7]=Unit Price | [8]=Ext Price
+Row 3: [2]=1 | [3]=PU2012R | [4]=PU2012R, 12x5x2+/- | [5]=27.9583 | [6]=LF | [7]=8.9086 | [8]=249.07
+Row 4: [2]=2 | [3]=PU2012R | [4]=PU2012R, 12x5x2+/- | [5]=83.875 | [6]=LF | [7]=8.9086 | [8]=747.21
+Row 5: [2]=3 | [3]=PU2012R | [4]=PU2012R, 12x5x2+/- | [5]=27.9583 | [6]=LF | [7]=8.9086 | [8]=249.07
+Row 6: [2]=4 | [3]=Z123514R | [4]=Purlin,Prime,R,Zee,12,3.5,14 | [5]=1205 | [6]=LF | [7]=5.8828 | [8]=7088.77
+Row 7: [2]=5 | [3]=Z123514R | [4]=Purlin,Prime,R,Zee,12,3.5,14 | [5]=1937.5 | [6]=LF | [7]=5.8828 | [8]=11397.93
+Row 8: [2]=6 | [3]=Z102512R | [4]=Purlin,Prime,R,Zee,10,2.5,12 | [5]=82.875 | [6]=LF | [7]=7.1213 | [8]=590.18
+Row 9: [2]=7 | [3]=Z102512R | [4]=Purlin,Prime,R,Zee,10,2.5,12 | [5]=82.875 | [6]=LF | [7]=7.1213 | [8]=590.18
+Row 10: [2]=8 | [3]=Z102512R | [4]=Purlin,Prime,R,Zee,10,2.5,12 | [5]=107.8333 | [6]=LF | [7]=7.1213 | [8]=767.91
+Row 11: [2]=9 | [3]=Z102512R | [4]=Purlin,Prime,R,Zee,10,2.5,12 | [5]=242.625 | [6]=LF | [7]=7.1213 | [8]=1727.81
+Row 12: [2]=10 | [3]=Z103514R | [4]=Purlin,Prime,R,Zee,10,3.5,14 | [5]=327.5 | [6]=LF | [7]=5.2927 | [8]=1733.36 | [10]=4.2598
+Row 13: [2]=11 | [3]=Z103514R | [4]=Purlin,Prime,R,Zee,10,3.5,14 | [5]=26.9583 | [6]=LF | [7]=5.2927 | [8]=142.68 | [10]=4.2598
+Row 14: [2]=12 | [3]=Z102514R | [4]=Purlin,Prime,R,Zee,10,2.5,14 | [5]=19.3542 | [6]=LF | [7]=4.7025 | [8]=91.01 | [10]=4.2598
+Row 15: [2]=13 | [3]=Z102514R | [4]=Purlin,Prime,R,Zee,10,2.5,14 | [5]=4.8125 | [6]=LF | [7]=4.7025 | [8]=22.63 | [10]=4.2598
+Row 16: [2]=14 | [3]=Z102514R | [4]=Purlin,Prime,R,Zee,10,2.5,14 | [5]=7.5833 | [6]=LF | [7]=4.7025 | [8]=35.66 | [10]=4.2598
+Row 17: [2]=15 | [3]=Z102514R | [4]=Purlin,Prime,R,Zee,10,2.5,14 | [5]=72.375 | [6]=LF | [7]=4.7025 | [8]=340.34 | [10]=4.2598
+Row 18: [2]=16 | [3]=Z102514R | [4]=Purlin,Prime,R,Zee,10,2.5,14 | [5]=73.875 | [6]=LF | [7]=4.7025 | [8]=347.4 | [10]=4.2598
+Row 19: [2]=17 | [3]=Z102514R | [4]=Purlin,Prime,R,Zee,10,2.5,14 | [5]=46.9167 | [6]=LF | [7]=4.7025 | [8]=220.63 | [10]=4.2598
+Row 20: [2]=18 | [3]=Z82512R | [4]=Purlin,Prime,R,Zee,8,2.5,12 | [5]=72.375 | [6]=LF | [7]=6.2277 | [8]=450.73 | [10]=6.227
+Row 21: [2]=19 | [3]=Z82512R | [4]=Purlin,Prime,R,Zee,8,2.5,12 | [5]=49.9167 | [6]=LF | [7]=6.2277 | [8]=310.87 | [10]=6.227
+Row 22: [2]=20 | [3]=Z82512R | [4]=Purlin,Prime,R,Zee,8,2.5,12 | [5]=4.75 | [6]=LF | [7]=6.2277 | [8]=29.58 | [10]=6.227
+Row 23: [2]=21 | [3]=Z82512R | [4]=Purlin,Prime,R,Zee,8,2.5,12 | [5]=147.75 | [6]=LF | [7]=6.2277 | [8]=920.14 | [10]=6.227
+Row 24: [2]=22 | [3]=Z83512R | [4]=Purlin,Prime,R,Zee,8,3.5,12 | [5]=117.2917 | [6]=LF | [7]=7.1213 | [8]=835.27
+Row 25: [2]=23 | [3]=C102512R | [4]=Purlin,Prime,R,Cee,10,2.5,12 | [5]=28.625 | [6]=LF | [7]=7.1213 | [8]=203.85
+Row 26: [2]=24 | [3]=C102512R | [4]=Purlin,Prime,R,Cee,10,2.5,12 | [5]=83.875 | [6]=LF | [7]=7.1213 | [8]=597.3
+Row 27: [2]=25 | [3]=C102514R | [4]=Purlin,Prime,R,Cee,10,2.5,14 | [5]=27.9583 | [6]=LF | [7]=4.7025 | [8]=131.47
+Row 28: [2]=26 | [3]=C82516R | [4]=Purlin,Prime,R,Cee,8,2.5,16 | [5]=50.5833 | [6]=LF | [7]=3.6785 | [8]=186.07
+Row 29: [2]=27 | [3]=C82516R | [4]=Purlin,Prime,R,Cee,8,2.5,16 | [5]=50.5833 | [6]=LF | [7]=3.6785 | [8]=186.07
+Row 30: [2]=28 | [3]=C82516R | [4]=Purlin,Prime,R,Cee,8,2.5,16 | [5]=24.4583 | [6]=LF | [7]=3.6785 | [8]=89.97
+Row 31: [2]=29 | [3]=C82516R | [4]=Purlin,Prime,R,Cee,8,2.5,16 | [5]=25.2917 | [6]=LF | [7]=3.6785 | [8]=93.04
+Row 32: [2]=30 | [3]=B4216R | [4]=Purlin,Prime,R,BaseAngle,4,2,16 | [5]=160 | [6]=LF | [7]=1.567 | [8]=250.72
+Row 33: [2]=31 | [3]=B4214Z | [4]=Purlin,Prime,Galv,Base Angle,4,2,14 | [5]=760 | [6]=LF | [7]=2.0771 | [8]=1578.6
+Row 34: [2]=32 | [3]=BANDSW | [4]=Strapping Band,24 GA,One Roll, 2", White ( | [5]=6 | [6]=Rol | [7]=330.1617 | [8]=1980.97
+Row 35: [2]=33 | [3]=CL244GL | [4]=Panel,Galvalume,24,Central Loc,NonPunch | [5]=2673.125 | [6]=LF | [7]=3.2783 | [8]=8763.31 | [10]=3.0082
+Row 36: [2]=34 | [3]=CL244GL | [4]=Panel,Galvalume,24,Central Loc,NonPunch | [5]=2613.3333 | [6]=LF | [7]=3.2783 | [8]=8567.29 | [10]=3.0082
+Row 37: [2]=35 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=32 | [6]=LF | [7]=4.0843 | [8]=130.7 | [10]=4.0267
+Row 38: [2]=36 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=833.75 | [6]=LF | [7]=4.0843 | [8]=3405.29 | [10]=4.0267
+Row 39: [2]=37 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=9.8333 | [6]=LF | [7]=4.0843 | [8]=40.16 | [10]=4.0267
+Row 40: [2]=38 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=658 | [6]=LF | [7]=4.0843 | [8]=2687.47 | [10]=4.0267
+Row 41: [2]=39 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=32.75 | [6]=LF | [7]=4.0843 | [8]=133.76 | [10]=4.0267
+Row 42: [2]=40 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=32.4167 | [6]=LF | [7]=4.0843 | [8]=132.4 | [10]=4.0267
+Row 43: [2]=41 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=32 | [6]=LF | [7]=4.0843 | [8]=130.7 | [10]=4.0267
+Row 44: [2]=42 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=31.6667 | [6]=LF | [7]=4.0843 | [8]=129.34 | [10]=4.0267
+Row 45: [2]=43 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=31.25 | [6]=LF | [7]=4.0843 | [8]=127.63 | [10]=4.0267
+Row 46: [2]=44 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=30.9167 | [6]=LF | [7]=4.0843 | [8]=126.27 | [10]=4.0267
+Row 47: [2]=45 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=30.5 | [6]=LF | [7]=4.0843 | [8]=124.57 | [10]=4.0267
+Row 48: [2]=46 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=30.1667 | [6]=LF | [7]=4.0843 | [8]=123.21 | [10]=4.0267
+Row 49: [2]=47 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=29.75 | [6]=LF | [7]=4.0843 | [8]=121.51 | [10]=4.0267
+Row 50: [2]=48 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=29.4167 | [6]=LF | [7]=4.0843 | [8]=120.15 | [10]=4.0267
+Row 51: [2]=49 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=29 | [6]=LF | [7]=4.0843 | [8]=118.44 | [10]=4.0267
+Row 52: [2]=50 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=28.6667 | [6]=LF | [7]=4.0843 | [8]=117.08 | [10]=4.0267
+Row 53: [2]=51 | [3]=RL6LS | [4]=Panel,Lt. Stone,26,Rloc,Prime Lifetime,Leg | [5]=28.25 | [6]=LF | [7]=4.0843 | [8]=115.38 | [10]=4.0267
+Row 54: [2]=52 | [3]=RL6BSREV | [4]=Panel,B. Slate,26,RLoc,Prime Lifetime,Leg, | [5]=208 | [6]=LF | [7]=4.0843 | [8]=849.53 | [10]=4.0267
+Row 55: [2]=53 | [3]=ML6GLSTREV | [4]=Panel,Galvalume,26,Mloc,Standard,Leg,RE | [5]=181.5 | [6]=LF | [7]=3.0082 | [8]=545.99
+Row 56: [2]=54 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=62.6667 | [6]=LF | [7]=3.0082 | [8]=188.51
+Row 57: [2]=55 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=3.9167 | [6]=LF | [7]=3.0082 | [8]=11.78
+Row 58: [2]=56 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=7.5 | [6]=LF | [7]=3.0082 | [8]=22.56
+Row 59: [2]=57 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=7.0833 | [6]=LF | [7]=3.0082 | [8]=21.31
+Row 60: [2]=58 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=6.75 | [6]=LF | [7]=3.0082 | [8]=20.31
+Row 61: [2]=59 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=6.3333 | [6]=LF | [7]=3.0082 | [8]=19.05
+Row 62: [2]=60 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=6 | [6]=LF | [7]=3.0082 | [8]=18.05
+Row 63: [2]=61 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=5.5833 | [6]=LF | [7]=3.0082 | [8]=16.8
+Row 64: [2]=62 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=5.25 | [6]=LF | [7]=3.0082 | [8]=15.79
+Row 65: [2]=63 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=4.8333 | [6]=LF | [7]=3.0082 | [8]=14.54
+Row 66: [2]=64 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=4.5 | [6]=LF | [7]=3.0082 | [8]=13.54
+Row 67: [2]=65 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=4.0833 | [6]=LF | [7]=3.0082 | [8]=12.28
+Row 68: [2]=66 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=3.75 | [6]=LF | [7]=3.0082 | [8]=11.28
+Row 69: [2]=67 | [3]=RL6GLST | [4]=Panel,Galvalume,26,Rloc,Standard,Leg | [5]=3.3333 | [6]=LF | [7]=3.0082 | [8]=10.03
+Row 70: [2]=68 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=617.5 | [6]=LF | [7]=4.0843 | [8]=2522.06
+Row 71: [2]=69 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=24 | [6]=LF | [7]=4.0843 | [8]=98.02
+Row 72: [2]=70 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=481 | [6]=LF | [7]=4.0843 | [8]=1964.55
+Row 73: [2]=71 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=40 | [6]=LF | [7]=4.0843 | [8]=163.37
+Row 74: [2]=72 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=200 | [6]=LF | [7]=4.0843 | [8]=816.86
+Row 75: [2]=73 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=18.25 | [6]=LF | [7]=4.0843 | [8]=74.54
+Row 76: [2]=74 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=11.8333 | [6]=LF | [7]=4.0843 | [8]=48.33
+Row 77: [2]=75 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=11.4167 | [6]=LF | [7]=4.0843 | [8]=46.63
+Row 78: [2]=76 | [3]=ML6PW | [4]=Panel,Polar,26,Mloc,Prime Lifetime,Leg | [5]=16.625 | [6]=LF | [7]=4.0843 | [8]=67.9
+Row 79: [2]=77 | [3]=SSRA6LS | [4]=Lt. Stone,26,SS110/1,Sculptured Rake,CTL | [5]=60.5 | [6]=LF | [7]=5.4699 | [8]=330.93
+Row 80: [2]=78 | [3]=SSRA6LS | [4]=Lt. Stone,26,SS110/1,Sculptured Rake,CTL | [5]=17 | [6]=LF | [7]=5.4699 | [8]=92.99
+Row 81: [2]=79 | [3]=SSRS6LS102 | [4]=Lt. Stone,26,SS115,Rake Slide,10'2" | [5]=8 | [6]=Ea | [7]=6.6769 | [8]=53.42
+Row 82: [2]=80 | [3]=SSSF56GL102 | [4]=Glume,26,SS286,Prp RakeFlash Flt,10'2" | [5]=8 | [6]=Ea | [7]=17.8406 | [8]=142.72
+Row 83: [2]=81 | [3]=SSPRC6GL102 | [4]=Glume,26,SS290,Prp RakeCleat,10'2" | [5]=8 | [6]=Ea | [7]=4.0142 | [8]=32.11
+Row 84: [2]=82 | [3]=SSGU-46LS | [4]=Lt. Stone,26,SS240A,Gutter,CTL | [5]=22 | [6]=LF | [7]=6.7663 | [8]=148.86
+Row 85: [2]=83 | [3]=SSGU-46LS | [4]=Lt. Stone,26,SS240A,Gutter,CTL | [5]=121 | [6]=LF | [7]=6.7663 | [8]=818.72
+Row 86: [2]=84 | [3]=SSGEN6LS | [4]=Lt. Stone,26,SS245,End Cap for SS240A/B | [5]=2 | [6]=Ea | [7]=9.1497 | [8]=18.3
+Row 87: [2]=85 | [3]=CL246LS | [4]=CL246,GutterStrap,Lt. Stone | [5]=35 | [6]=Ea | [7]=10.101 | [8]=353.54
+Row 88: [2]=86 | [3]=SSPC6LS102 | [4]=Lt.Stone,26,SS272,BoxPanelCap,10'2" | [5]=14 | [6]=Ea | [7]=18.9177 | [8]=264.85
+Row 89: [2]=87 | [3]=SSEF36GL102 | [4]=Glume,26,SS275,Prp HighSideEve Flash Fl | [5]=14 | [6]=Ea | [7]=22.3007 | [8]=312.21
+Row 90: [2]=88 | [3]=OU6LS | [4]=26,Lt. Stone,Outside Corner,CTL | [5]=14 | [6]=LF | [7]=2.9143 | [8]=40.8
+Row 91: [2]=89 | [3]=OU6LS | [4]=26,Lt. Stone,Outside Corner,CTL | [5]=16.3333 | [6]=LF | [7]=2.9143 | [8]=47.6
+Row 92: [2]=90 | [3]=IN6GL | [4]=26,Galvalume,Inside Corner COM,CTL | [5]=2 | [6]=LF | [7]=2.9107 | [8]=5.82
+Row 93: [2]=91 | [3]=JA6LS | [4]=26,Lt. Stone,Jamb Trim,CTL | [5]=29 | [6]=LF | [7]=1.2647 | [8]=36.68
+Row 94: [2]=92 | [3]=JA6LS102 | [4]=26,Lt. Stone,Jamb Trim,10'2" | [5]=2 | [6]=Ea | [7]=10.9267 | [8]=21.85
+Row 95: [2]=93 | [3]=MLJA6GL102 | [4]=G-lume,26,M-Jamb,10'2" | [5]=2 | [6]=Ea | [7]=8.6675 | [8]=17.34
+Row 96: [2]=94 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=8 | [6]=LF | [7]=1.0997 | [8]=8.8
+Row 97: [2]=95 | [3]=FRCHE6LS | [4]=26,Lt. Stone,FR Head Trim,CTL | [5]=3.6667 | [6]=LF | [7]=1.4296 | [8]=5.24
+Row 98: [2]=96 | [3]=FRCHE6LS | [4]=26,Lt. Stone,FR Head Trim,CTL | [5]=6.6667 | [6]=LF | [7]=1.4296 | [8]=9.53
+Row 99: [2]=97 | [3]=MLHE6PW | [4]=Polar,26,M-Head,CTL | [5]=45.3333 | [6]=LF | [7]=1.0997 | [8]=49.85
+Row 100: [2]=98 | [3]=TS6BS | [4]=B. Slate,SP6L: FL-871 Drip Trim | [5]=2 | [6]=Ea | [7]=19.45 | [8]=38.9
+Row 101: [2]=99 | [3]=TS6BS | [4]=B. Slate, FL-847 Masonry Trim | [5]=4 | [6]=Ea | [7]=34.6575 | [8]=138.63
+Row 102: [2]=100 | [3]=DS6LS | [4]=26,Lt. Stone,Downspout,CTL | [5]=84 | [6]=LF | [7]=3.5191 | [8]=295.6
+Row 103: [2]=101 | [3]=DSE456LS | [4]=Lt. Stone,26,Elbow,Downspout,45 | [5]=6 | [6]=Ea | [7]=15.2016 | [8]=91.21
+Row 104: [2]=102 | [3]=DSS6LS | [4]=Lt. Stone,26,Strap,Downspout | [5]=12 | [6]=Ea | [7]=4.114 | [8]=49.37
+Row 105: [2]=103 | [3]=IC16PW | [4]=26,Polar,Inside Corner,CTL | [5]=16 | [6]=LF | [7]=2.8593 | [8]=45.75
+Row 106: [2]=104 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=5 | [6]=LF | [7]=1.0997 | [8]=5.5
+Row 107: [2]=105 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=5.6667 | [6]=LF | [7]=1.0997 | [8]=6.23
+Row 108: [2]=106 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=6.1667 | [6]=LF | [7]=1.0997 | [8]=6.78
+Row 109: [2]=107 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=14.5 | [6]=LF | [7]=1.0997 | [8]=15.95
+Row 110: [2]=108 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=41.6667 | [6]=LF | [7]=1.0997 | [8]=45.82
+Row 111: [2]=109 | [3]=MLJA6PW | [4]=Polar,26, M-Jamb, CTL | [5]=13 | [6]=LF | [7]=1.0997 | [8]=14.3
+Row 112: [2]=110 | [3]=MLHE6PW | [4]=Polar,26,M-Head,CTL | [5]=3.5 | [6]=LF | [7]=1.0997 | [8]=3.27
+Row 113: [2]=111 | [3]=MLHE6PW102 | [4]=Polar,26,M-Head,10'2" | [5]=38 | [6]=Ea | [7]=9.5015 | [8]=361.06
+Row 114: [2]=112 | [3]=TS6BS | [4]=B. Slate, FT-01 Fascia Trim | [5]=4 | [6]=Ea | [7]=73.33 | [8]=293.32
+Row 115: [2]=113 | [3]=TS6BS | [4]=B. Slate, FT-02 Fascia Trim | [5]=1 | [6]=Ea | [7]=19.69 | [8]=19.69
+Row 116: [2]=114 | [3]=TS6LS | [4]=Lt. Stone, FT-03 Fascia Trim | [5]=7 | [6]=Ea | [7]=86.2314 | [8]=603.62
+Row 117: [2]=115 | [3]=TS6LS | [4]=Lt. Stone, FT-04 Fascia Trim | [5]=1 | [6]=Ea | [7]=11.36 | [8]=11.36
+Row 118: [2]=116 | [3]=TS6BS | [4]=B. Slate, CT-01 Corner | [5]=1 | [6]=Ea | [7]=9.85 | [8]=9.85
+Row 119: [2]=117 | [3]=TS6BS | [4]=B. Slate, CT-01 Corner | [5]=1 | [6]=Ea | [7]=19.3 | [8]=19.3
+Row 120: [2]=118 | [3]=TS6PW | [4]=Polar, PT-01 Partition | [5]=4 | [6]=Ea | [7]=54.49 | [8]=217.96
+Row 121: [2]=119 | [3]=TS6PW | [4]=Polar, PT-01 Partition | [5]=4 | [6]=Ea | [7]=68.1125 | [8]=272.45
+Row 122: [2]=120 | [3]=CL504A | [4]=CL504A, Tri BeadTapeSealer 7/8x3/16x25' | [5]=4 | [6]=Cse | [7]=64.9161 | [8]=259.66
+Row 123: [2]=121 | [3]=MRS10CLEAR | [4]=MRS10CLEAR,Sealant,Metal Roof,Clear (M | [5]=8 | [6]=Ea | [7]=13.0379 | [8]=104.3
+Row 124: [2]=122 | [3]=RLCLOUTGLUE | [4]=RLCLOUTGLUE,Closure,Outside,RLOC,w/ | [5]=193 | [6]=Ea | [7]=1.0302 | [8]=198.83
+Row 125: [2]=123 | [3]=CL430GL | [4]=CL430,Outside Closure 24" - 24 Ga. Galval | [5]=70 | [6]=Ea | [7]=3.4668 | [8]=242.68
+Row 126: [2]=124 | [3]=RLCLINGLUE | [4]=RLCLINGLUE,Closure,Inside,RLOC,w/Glue | [5]=125 | [6]=Ea | [7]=1.0302 | [8]=128.78
+Row 127: [2]=125 | [3]=CL426GL | [4]=CL426,Inside Closure, Metal - 18 Ga. Galva | [5]=70 | [6]=Ea | [7]=2.0938 | [8]=146.57
+Row 128: [2]=126 | [3]=CL7600 | [4]=CL7600,Eave Plate,Low,8',14ga. Red Oxide | [5]=18 | [6]=Ea | [7]=20.2691 | [8]=364.84
+Row 129: [2]=127 | [3]=CL7710 | [4]=CL7710,Rake Support,LowFloating,3-3/8, 2 | [5]=8 | [6]=Ea | [7]=56.9376 | [8]=455.5
+Row 130: [2]=128 | [3]=CL7760 | [4]=CL7760,Back-up Plate, Modified 24", 16 Ga | [5]=140 | [6]=Ea | [7]=11.4504 | [8]=1603.06
+Row 131: [2]=129 | [3]=CL2102 | [4]=CL2102,Clip-Low Sliding For Central-Loc,80 | [5]=1400 | [6]=Ea | [7]=2.305 | [8]=3227
+Row 132: [2]=130 | [3]=B7314R | [4]=Purlin,Prime,R,BaseAngle,7,3,14 | [5]=240 | [6]=LF | [7]=2.9321 | [8]=703.7
+Row 133: [2]=131 | [3]=3070DOOR | [4]=3070DOOR,Walk Door,Commercial,3070 | [5]=1 | [6]=Ea | [7]=188.8458 | [8]=188.85
+Row 134: [2]=132 | [3]=3070DOOR | [4]=3070DOOR,Walk Door,Commercial,3070 | [5]=2 | [6]=Ea | [7]=188.8458 | [8]=377.69
+Row 135: [2]=133 | [3]=CCC | [4]=Cut Charges,Commerical | [5]=61 | [6]=LF | [7]=1.1672 | [8]=71.2
