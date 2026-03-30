@@ -88,6 +88,9 @@ export const defaultPriceList: PriceListItem[] = [
   { itemCode: 'BT-3/4', description: 'Bolt 3/4 with nut 1 3/4"', unit: 'pc', unitPrice: 1.705, mapTo: ['Bolt 3/4 Bolt with nut 1 3/4"'] },
   { itemCode: 'CB-3/8', description: '3/8" Strand Cable', unit: 'LnFt', unitPrice: 0.9867, mapTo: ['3/8" Strand'] },
   { itemCode: 'BK-3/4', description: '3/4" Brace Kit', unit: 'pc', unitPrice: 84.3806, mapTo: ['3/4" Brace Kit'] },
+  { itemCode: 'FW-3/4', description: '3/4 Flat Washer', unit: 'pc', unitPrice: 0, mapTo: ['3/4 Flat Washer'] },
+  { itemCode: 'HW-3/4', description: '3/4 Hillside Washer', unit: 'pc', unitPrice: 0, mapTo: ['3/4 Hillside Washer'] },
+  { itemCode: 'FLG', description: 'Flo-loc Grip', unit: 'pc', unitPrice: 0, mapTo: ['Flo-loc Grip'] },
   { itemCode: 'FASTENERS', description: 'Fasteners (screws)', unit: 'pc', unitPrice: 0.165, mapTo: ['Fasteners'] },
 
   // Insulation

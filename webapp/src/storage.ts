@@ -24,16 +24,22 @@ export function loadConfig(): BuildingConfig {
         ...defaults,
         ...parsed,
         dimensions: { ...defaults.dimensions, ...parsed.dimensions },
+        options: { ...defaults.options, ...parsed.options },
+        overhangs: { ...defaults.overhangs, ...parsed.overhangs },
         leanTos: {
           right: { ...defaults.leanTos.right, ...parsed.leanTos?.right },
           left: { ...defaults.leanTos.left, ...parsed.leanTos?.left },
           front: { ...defaults.leanTos.front, ...parsed.leanTos?.front },
           back: { ...defaults.leanTos.back, ...parsed.leanTos?.back },
         },
+        sheeting: { ...defaults.sheeting, ...parsed.sheeting },
+        doorsWindows: { ...defaults.doorsWindows, ...parsed.doorsWindows },
+        accessories: { ...defaults.accessories, ...parsed.accessories },
         insulation: { ...defaults.insulation, ...parsed.insulation },
         components: parsed.components ?? defaults.components,
         customerName: parsed.customerName ?? defaults.customerName,
         jobLocation: parsed.jobLocation ?? defaults.jobLocation,
+        overheads: { ...defaults.overheads, ...parsed.overheads },
       };
     }
   } catch {

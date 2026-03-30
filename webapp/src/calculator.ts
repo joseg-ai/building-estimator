@@ -16,6 +16,13 @@ function simpleSum(config: BuildingConfig, categories: ComponentCategory[]): num
     .reduce((sum, c) => sum + c.qty * c.costPerUnit, 0);
 }
 
+/** Weight-based sum: weight * costPerUnit (for structural steel where cost is $/lb) */
+function weightCostSum(config: BuildingConfig, categories: ComponentCategory[]): number {
+  return config.components
+    .filter((c) => categories.includes(c.category))
+    .reduce((sum, c) => sum + c.weight * c.costPerUnit, 0);
+}
+
 /** Sum weight for components matching categories */
 function sumWeight(config: BuildingConfig, categories: ComponentCategory[]): number {
   return config.components
@@ -39,13 +46,13 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
   }
   const totalArea = mainBuildingArea + Object.values(leanToAreas).reduce((a, b) => a + b, 0);
 
-  // Structural Steel
-  const beamsCost = simpleSum(config, ['main-framing']);
-  const canopyCost = simpleSum(config, ['canopy']);
-  const overhangCost = simpleSum(config, ['overhangs']);
-  const leanToCost = simpleSum(config, ['leanto-right', 'leanto-left', 'leanto-front', 'leanto-back']);
-  const platesCost = simpleSum(config, ['plates']);
-  const framesCost = simpleSum(config, ['frame-openings']);
+  // Structural Steel (cost = weight * $/lb)
+  const beamsCost = weightCostSum(config, ['main-framing']);
+  const canopyCost = weightCostSum(config, ['canopy']);
+  const overhangCost = weightCostSum(config, ['overhangs']);
+  const leanToCost = weightCostSum(config, ['leanto-right', 'leanto-left', 'leanto-front', 'leanto-back']);
+  const platesCost = weightCostSum(config, ['plates']);
+  const framesCost = weightCostSum(config, ['frame-openings']);
   const structuralTotal = beamsCost + canopyCost + overhangCost + leanToCost + platesCost + framesCost;
   const structuralWeight = sumWeight(config, ['main-framing', 'canopy', 'overhangs', 'leanto-right', 'leanto-left', 'leanto-front', 'leanto-back', 'plates', 'frame-openings']);
 
@@ -74,21 +81,13 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
 
   // Grand totals (matching Summary sheet formulas)
   const directMaterials = structuralTotal + componentsTotal + insulationTotal + fastenersTotal + stairsCost;
-  const laborRate = 0.75;
+  const { laborRate, detailing, engineering, loadingHauling, freight, overheadRate, erection, foundation, permits, profitRate, commissionRate } = config.overheads;
   const labor = (structuralWeight + componentsWeight) * laborRate;
   const totalMaterialsLabor = directMaterials + labor;
-  const detailing = 5000;
-  const engineering = 1500;
-  const loadingHauling = 0;
-  const freight = 0;
-  const overheadRate = 0.02;
   const overheadCost = totalMaterialsLabor * overheadRate;
-  const erection = 0;
 
-  const subTotal = totalMaterialsLabor + detailing + engineering + loadingHauling + freight + overheadCost + erection;
-  const profitRate = 0.15;
+  const subTotal = totalMaterialsLabor + detailing + engineering + loadingHauling + freight + overheadCost + erection + foundation + permits;
   const profit = subTotal * profitRate;
-  const commissionRate = 0.04;
   const commission = subTotal * commissionRate;
   const grandTotal = subTotal + profit + commission;
 
@@ -104,7 +103,7 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
     insulationTotal,
     anchorBoltsCost, boltsCost, bracingCost, fastenersCost, fastenersTotal,
     directMaterials, labor, totalMaterialsLabor,
-    detailing, engineering, loadingHauling, freight, overheadCost, erection,
+    detailing, engineering, loadingHauling, freight, overheadCost, erection, foundation, permits,
     subTotal, profitRate, profit, commissionRate, commission, grandTotal,
   };
 }

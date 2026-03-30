@@ -17,10 +17,14 @@ function CostRow({ label, value, bold }: { label: string; value: number; bold?: 
 }
 
 export default function SummaryPage() {
-  const { config } = useBuildingConfig();
-  const { dimensions, leanTos } = config;
+  const { config, dispatch } = useBuildingConfig();
+  const { dimensions, leanTos, overheads } = config;
   const costs = calculateCosts(config);
   const activeLeanTos = (Object.keys(leanTos) as LeanToDirection[]).filter((d) => leanTos[d].enabled);
+
+  function setOverhead(key: string, value: number) {
+    dispatch({ type: 'SET_OVERHEADS', payload: { [key]: value } });
+  }
 
   return (
     <div className="max-w-3xl">
@@ -94,20 +98,59 @@ export default function SummaryPage() {
         </table>
       </section>
 
+      {/* Editable Overheads */}
+      <section className="bg-white border border-gray-200 rounded-lg p-5 mb-4">
+        <h2 className="font-semibold text-gray-800 mb-3">Overhead & Cost Parameters</h2>
+        <p className="text-xs text-gray-400 mb-3">Edit these values to adjust the final pricing. Changes update the totals below in real time.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3">
+          {([
+            { key: 'laborRate', label: 'Labor Rate ($/lb)', step: 0.01 },
+            { key: 'detailing', label: 'Detailing ($)', step: 100 },
+            { key: 'engineering', label: 'Engineering ($)', step: 100 },
+            { key: 'loadingHauling', label: 'Loading & Hauling ($)', step: 100 },
+            { key: 'freight', label: 'Freight ($)', step: 100 },
+            { key: 'erection', label: 'Building Erection ($)', step: 100 },
+            { key: 'foundation', label: 'Foundation ($)', step: 100 },
+            { key: 'permits', label: 'Permits ($)', step: 100 },
+            { key: 'overheadRate', label: 'Overhead Rate (%)', step: 0.01, isPercent: true },
+            { key: 'profitRate', label: 'Profit Rate (%)', step: 0.01, isPercent: true },
+            { key: 'commissionRate', label: 'Sales Commission (%)', step: 0.01, isPercent: true },
+          ] as { key: keyof typeof overheads; label: string; step: number; isPercent?: boolean }[]).map(({ key, label, step, isPercent }) => (
+            <div key={key}>
+              <label className="block text-xs text-gray-500 mb-1">{label}</label>
+              <input
+                type="number" min={0} step={step}
+                value={isPercent ? (overheads[key] * 100) : overheads[key]}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setOverhead(key, isPercent ? v / 100 : v);
+                }}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Grand Total section */}
       <section className="bg-white border border-gray-200 rounded-lg p-5">
         <h2 className="font-semibold text-gray-800 mb-2">Grand Total</h2>
         <table className="w-full text-sm">
           <tbody>
             <CostRow label="Direct Materials" value={costs.directMaterials} bold />
-            <CostRow label="Labor" value={costs.labor} />
+            <CostRow label={`Labor (${overheads.laborRate} $/lb)`} value={costs.labor} />
             <CostRow label="Total (Materials + Labor)" value={costs.totalMaterialsLabor} bold />
             <CostRow label="Detailing" value={costs.detailing} />
             <CostRow label="Engineering" value={costs.engineering} />
-            <CostRow label="Overhead" value={costs.overheadCost} />
+            <CostRow label="Loading & Hauling" value={costs.loadingHauling} />
+            <CostRow label="Freight" value={costs.freight} />
+            <CostRow label={`Overhead (${(overheads.overheadRate * 100).toFixed(1)}%)`} value={costs.overheadCost} />
+            <CostRow label="Building Erection" value={costs.erection} />
+            <CostRow label="Foundation" value={costs.foundation} />
+            <CostRow label="Permits" value={costs.permits} />
             <CostRow label="Sub Total" value={costs.subTotal} bold />
-            <CostRow label={`Profit (${(costs.profitRate * 100).toFixed(0)}%)`} value={costs.profit} />
-            <CostRow label={`Sales Commission (${(costs.commissionRate * 100).toFixed(0)}%)`} value={costs.commission} />
+            <CostRow label={`Profit (${(overheads.profitRate * 100).toFixed(0)}%)`} value={costs.profit} />
+            <CostRow label={`Sales Commission (${(overheads.commissionRate * 100).toFixed(0)}%)`} value={costs.commission} />
           </tbody>
         </table>
         <div className="mt-3 pt-3 border-t-2 border-gray-800 flex justify-between text-lg font-bold">

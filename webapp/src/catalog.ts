@@ -162,6 +162,9 @@ export const boltsCatalog: CatalogEntry[] = [
 export const cableBracingCatalog: CatalogEntry[] = [
   e('CB-01', 'cable-bracing', '3/8" Strand', 'BOLTS AND FASTENERS', '3/8" Strand', 0, 'LnFt', 0.9867),
   e('CB-02', 'cable-bracing', 'Eyebolt with Flat washer and nut', 'BOLTS AND FASTENERS', '3/4" Brace Kit', 0, 'pc', 84.3806),
+  e('CB-03', 'cable-bracing', '3/4 Flat Washer', 'BOLTS AND FASTENERS', '3/4 Flat Washer', 0, 'pc', 0),
+  e('CB-04', 'cable-bracing', '3/4 Hillside Washer', 'BOLTS AND FASTENERS', '3/4 Hillside Washer', 0, 'pc', 0),
+  e('CB-05', 'cable-bracing', 'Flo-loc Grip', 'BOLTS AND FASTENERS', 'Flo-loc Grip', 0, 'pc', 0),
 ];
 
 export const fastenerItemsCatalog: CatalogEntry[] = [

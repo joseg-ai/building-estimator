@@ -66,8 +66,8 @@ export default function QuotationPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Quotation / Proposal</h1>
         <button onClick={handlePrint}
-          className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-          Print / Save PDF
+          className="bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded hover:bg-gray-900 transition-colors">
+          Print / PDF
         </button>
       </div>
 
@@ -248,7 +248,7 @@ export default function QuotationPage() {
             </div>
             <div className="check-row flex justify-between border-b border-gray-100 py-0.5">
               <span>Building Erection</span>
-              <YesNo value={costs.erection > 0} />
+              <YesNo value={config.overheads.erection > 0} />
             </div>
           </div>
 
@@ -264,15 +264,15 @@ export default function QuotationPage() {
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-1.5 pl-4 text-gray-500">Building Erection</td>
-                <td className="py-1.5 text-right">{formatUSD(costs.erection)}</td>
+                <td className="py-1.5 text-right">{formatUSD(config.overheads.erection)}</td>
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-1.5 pl-4 text-gray-500">Foundation</td>
-                <td className="py-1.5 text-right">{formatUSD(0)}</td>
+                <td className="py-1.5 text-right">{formatUSD(config.overheads.foundation)}</td>
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-1.5 pl-4 text-gray-500">Permits</td>
-                <td className="py-1.5 text-right">{formatUSD(0)}</td>
+                <td className="py-1.5 text-right">{formatUSD(config.overheads.permits)}</td>
               </tr>
             </tbody>
           </table>
