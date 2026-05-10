@@ -16,7 +16,7 @@ export default function MenuPage() {
     dispatch({ type: 'RESET' });
     try {
       const freshConfig = createDefaultConfig();
-      const result = await apiCreateQuote(freshConfig, 0);
+      const result = await apiCreateQuote(freshConfig, 0, null, null);
       localStorage.setItem('active_quote_id', result.id);
       navigate('/design');
     } catch {
@@ -34,7 +34,7 @@ export default function MenuPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
         <button onClick={handleNewQuote}
           className="border border-gray-200 rounded-lg p-5 hover:border-blue-400 hover:shadow-md transition-all bg-white text-left">
           <div className="text-2xl mb-2">+</div>
@@ -46,6 +46,12 @@ export default function MenuPage() {
           <div className="text-2xl mb-2">📁</div>
           <h2 className="font-semibold text-gray-900">My Quotes</h2>
           <p className="text-sm text-gray-500 mt-1">View and manage saved quotes</p>
+        </Link>
+        <Link to="/customers"
+          className="block border border-gray-200 rounded-lg p-5 hover:border-blue-400 hover:shadow-md transition-all bg-white">
+          <div className="text-2xl mb-2">👥</div>
+          <h2 className="font-semibold text-gray-900">Customers</h2>
+          <p className="text-sm text-gray-500 mt-1">Manage customer master records</p>
         </Link>
         <Link to="/pricelist"
           className="block border border-gray-200 rounded-lg p-5 hover:border-blue-400 hover:shadow-md transition-all bg-white">

@@ -176,6 +176,8 @@ export interface ComponentItem {
 export interface BuildingConfig {
   projectName: string;
   customerName: string;
+  /** FK to customers.id — null/undefined for ad-hoc (no master record) */
+  customerId?: number | null;
   jobLocation: string;
   roofType: RoofType;
   dimensions: BuildingDimensions;

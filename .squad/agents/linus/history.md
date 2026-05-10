@@ -95,3 +95,36 @@
 - **DesignPage surgery:** Exact lines 71–73 need replacement (customerName text input → picker). Rest of page untouched. Minimum disruption.
 - **Backwards compat:** Quotes without customerId (legacy) remain supported; customerId is optional. Ad-hoc customer names still work as fallback.
 
+### 2026-05-10: Phase 2 Implementation — Customers CRUD + Quote Linking (SHIPPED)
+
+**Files shipped:**
+
+- `webapp/src/types.ts` — Added `customerId?: number | null` to `BuildingConfig`.
+- `webapp/src/api.ts` — Added `Customer`, `CustomerWritable`, `CustomerDeleteResult` types + 6 functions: `apiListCustomers`, `apiGetCustomer`, `apiCreateCustomer`, `apiUpdateCustomer`, `apiDeleteCustomer`, `apiListCustomerQuotes`. Extended `QuoteListItem`/`QuoteDetail` with `customerId?`. Extended `apiCreateQuote`/`apiUpdateQuote` signatures with optional `customerId` param.
+- `webapp/src/storage.ts` — Added `saveCachedCustomers<T>` / `loadCachedCustomers<T>` under key `cached-customers-list` (mirrors price-list pattern).
+- `webapp/src/context.tsx` — Added `CustomersState` interface, `SET_CUSTOMER_ID` reducer action (→ `config.customerId`), `customers` useState slice with cache seed on mount, `searchCustomers(query?)` callback (lazy, caches results). All exposed in `BuildingContextValue`.
+- `webapp/src/components/CustomerPicker.tsx` — NEW. Debounced (300ms) autocomplete combobox. Shows dropdown with search results + `quoteCount`; "+ New Customer" link to `/customers`; blue dot indicator when a master record is linked; closes on outside click.
+- `webapp/src/pages/CustomersPage.tsx` — NEW. Full CRUD: search box, table (name/company/email/phone/quoteCount), create/edit modal (all fields + 4 default overhead fields), force-delete confirm flow (checkbox gate when quoteCount > 0). Optimistic update with rollback, per-row spinner, error banner.
+- `webapp/src/pages/DesignPage.tsx` — Surgical: added `handleCustomerSelect` function + replaced customer text input with `<CustomerPicker>`. Prefills 4 overhead fields from customer defaults; warns before clobber if already customized. Overhead pct fields stored as rate (÷100 on apply).
+- `webapp/src/pages/QuotesPage.tsx` — `handleNew` and `handleSaveCurrent` now pass `customerId`.
+- `webapp/src/components/Layout.tsx` — `handleSave` passes `customerId`. Added "Customers" to `mainLinks`.
+- `webapp/src/pages/MenuPage.tsx` — `handleNewQuote` passes `customerId: null`. Added "Customers" tile to quick-actions grid (4-col layout).
+- `webapp/src/App.tsx` — Added `<Route path="customers" element={<CustomersPage />} />`.
+
+**Quality bar met:**
+- `npx tsc --noEmit`: 0 errors (Exit 0)
+- `npx eslint src`: 6 errors, all pre-existing (authContext setState-in-effect + fast-refresh, calculator.ts unused var, FramingTable unused var, Layout unused import, context.tsx fast-refresh). Zero new.
+- 11/11 calculator tests pass.
+
+**Deviations from wiring map:**
+- `apiGetCustomer` and `apiListCustomerQuotes` added to api.ts but not wired to UI (available for Phase 3 / Saul's tests).
+- CustomerPicker is a standalone component (`components/CustomerPicker.tsx`) rather than inlined in DesignPage — cleaner separation.
+- Layout.tsx passes `undefined` for `priceListVersionId` (not pulling from context) — same behaviour as pre-Phase-2 Layout. QuotesPage still correctly passes the active version ID on explicit saves.
+- Overhead pct fields: Rusty stores as raw percentage (e.g. 15 for 15%). Applied as rate (÷100) into `config.overheads` which uses decimal rates (0.15).
+
+**Handoffs for Saul:**
+- 6 new customer endpoints need test coverage (auth 401, owner-scoping 404, POST validation 400 for missing name / bad email / non-numeric defaults, GET list `?search=`, DELETE IN_USE 409, force=true 200 + quotes.customerId → null).
+- Quote integration: POST quote with foreign customerId → 400 INVALID_CUSTOMER; GET `/api/quotes?customerId=N` filter.
+- See Rusty's API contract for exact test shapes.
+
+

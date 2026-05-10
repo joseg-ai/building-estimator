@@ -1,13 +1,57 @@
 import { useBuildingConfig } from '../context';
 import type { LeanToDirection } from '../types';
+import { createDefaultConfig } from '../types';
 import LeanToCard from '../components/LeanToCard';
 import BuildingDiagram from '../components/BuildingDiagram';
+import CustomerPicker from '../components/CustomerPicker';
+import type { Customer } from '../api';
 
 const directions: LeanToDirection[] = ['right', 'left', 'front', 'back'];
+
+const DEFAULT_OVERHEADS = createDefaultConfig().overheads;
 
 export default function DesignPage() {
   const { config, dispatch } = useBuildingConfig();
   const { dimensions, options, insulation, sheeting, doorsWindows, accessories } = config;
+
+  function handleCustomerSelect(customer: Customer) {
+    dispatch({ type: 'SET_CUSTOMER_NAME', payload: customer.name });
+    dispatch({ type: 'SET_CUSTOMER_ID', payload: customer.id });
+
+    const hasDefaults =
+      customer.defaultLaborRate != null ||
+      customer.defaultOverheadPct != null ||
+      customer.defaultProfitPct != null ||
+      customer.defaultCommissionPct != null;
+
+    if (!hasDefaults) return;
+
+    const overheadsCustomized =
+      config.overheads.laborRate !== DEFAULT_OVERHEADS.laborRate ||
+      config.overheads.overheadRate !== DEFAULT_OVERHEADS.overheadRate ||
+      config.overheads.profitRate !== DEFAULT_OVERHEADS.profitRate ||
+      config.overheads.commissionRate !== DEFAULT_OVERHEADS.commissionRate;
+
+    const apply = () => {
+      dispatch({
+        type: 'SET_OVERHEADS',
+        payload: {
+          ...(customer.defaultLaborRate != null ? { laborRate: customer.defaultLaborRate } : {}),
+          ...(customer.defaultOverheadPct != null ? { overheadRate: customer.defaultOverheadPct / 100 } : {}),
+          ...(customer.defaultProfitPct != null ? { profitRate: customer.defaultProfitPct / 100 } : {}),
+          ...(customer.defaultCommissionPct != null ? { commissionRate: customer.defaultCommissionPct / 100 } : {}),
+        },
+      });
+    };
+
+    if (overheadsCustomized) {
+      if (confirm(`Apply ${customer.name}'s default overheads? This will replace your current overhead settings.`)) {
+        apply();
+      }
+    } else {
+      apply();
+    }
+  }
 
   const pitch = dimensions.roofPitch;
   const rafterLength = dimensions.width > 0 ? ((dimensions.width / 2) * Math.sqrt(1 + (pitch / 12) ** 2)) : 0;
@@ -68,9 +112,15 @@ export default function DesignPage() {
               onChange={(e) => dispatch({ type: 'SET_PROJECT_NAME', payload: e.target.value })}
               className="w-full border border-gray-300 rounded px-2 py-1 text-sm mb-1" />
             <div className="grid grid-cols-2 gap-1">
-              <input type="text" placeholder="Customer" value={config.customerName}
-                onChange={(e) => dispatch({ type: 'SET_CUSTOMER_NAME', payload: e.target.value })}
-                className="w-full border border-gray-300 rounded px-2 py-1 text-sm" />
+              <CustomerPicker
+                value={config.customerName}
+                customerId={config.customerId}
+                onChangeName={(name) => {
+                  dispatch({ type: 'SET_CUSTOMER_NAME', payload: name });
+                  dispatch({ type: 'SET_CUSTOMER_ID', payload: null });
+                }}
+                onSelect={handleCustomerSelect}
+              />
               <input type="text" placeholder="Location" value={config.jobLocation}
                 onChange={(e) => dispatch({ type: 'SET_JOB_LOCATION', payload: e.target.value })}
                 className="w-full border border-gray-300 rounded px-2 py-1 text-sm" />

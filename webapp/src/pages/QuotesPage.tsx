@@ -9,7 +9,7 @@ export default function QuotesPage() {
   const [quotes, setQuotes] = useState<QuoteListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { config, dispatch } = useBuildingConfig();
+  const { config, dispatch, priceList } = useBuildingConfig();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function QuotesPage() {
     dispatch({ type: 'RESET' });
     try {
       const freshConfig = createDefaultConfig();
-      const result = await apiCreateQuote(freshConfig, 0);
+      const result = await apiCreateQuote(freshConfig, 0, priceList.activeVersionId, null);
       // Store the quote ID so the app knows which quote is active
       localStorage.setItem('active_quote_id', result.id);
       navigate('/design');
@@ -70,12 +70,13 @@ export default function QuotesPage() {
   async function handleSaveCurrent() {
     const activeId = localStorage.getItem('active_quote_id');
     const costs = calculateCosts(config);
+    const customerId = config.customerId ?? null;
     try {
       if (activeId) {
         const { apiUpdateQuote } = await import('../api');
-        await apiUpdateQuote(activeId, config, costs.grandTotal);
+        await apiUpdateQuote(activeId, config, costs.grandTotal, undefined, priceList.activeVersionId, customerId);
       } else {
-        const result = await apiCreateQuote(config, costs.grandTotal);
+        const result = await apiCreateQuote(config, costs.grandTotal, priceList.activeVersionId, customerId);
         localStorage.setItem('active_quote_id', result.id);
       }
       await loadQuotes();

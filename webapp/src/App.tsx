@@ -13,6 +13,7 @@ import StructuralPage from './pages/StructuralPage'
 import PriceListPage from './pages/PriceListPage'
 import SummaryPage from './pages/SummaryPage'
 import QuotationPage from './pages/QuotationPage'
+import CustomersPage from './pages/CustomersPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -28,6 +29,7 @@ function App() {
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<MenuPage />} />
         <Route path="quotes" element={<QuotesPage />} />
+        <Route path="customers" element={<CustomersPage />} />
         <Route path="design" element={<DesignPage />} />
         <Route path="pricelist" element={<PriceListPage />} />
         <Route path="framing" element={<FramingPage />} />

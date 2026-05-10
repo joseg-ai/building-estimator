@@ -52,3 +52,74 @@ export function loadConfig(): BuildingConfig {
 export function clearConfig(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
+
+// ---- Cached active price-list / catalog versions (offline fallback) ----
+
+const PRICE_LIST_CACHE_KEY = 'cached-price-list-version';
+const CATALOG_CACHE_KEY = 'cached-catalog-version';
+
+export interface CachedVersion<T> {
+  cachedAt: string;
+  data: T;
+}
+
+export function saveCachedPriceList<T>(data: T): void {
+  try {
+    const payload: CachedVersion<T> = { cachedAt: new Date().toISOString(), data };
+    localStorage.setItem(PRICE_LIST_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadCachedPriceList<T>(): CachedVersion<T> | null {
+  try {
+    const raw = localStorage.getItem(PRICE_LIST_CACHE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as CachedVersion<T>;
+  } catch {
+    return null;
+  }
+}
+
+export function saveCachedCatalog<T>(data: T): void {
+  try {
+    const payload: CachedVersion<T> = { cachedAt: new Date().toISOString(), data };
+    localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadCachedCatalog<T>(): CachedVersion<T> | null {
+  try {
+    const raw = localStorage.getItem(CATALOG_CACHE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as CachedVersion<T>;
+  } catch {
+    return null;
+  }
+}
+
+// ---- Customers list cache (offline fallback for picker) ----
+
+const CUSTOMERS_CACHE_KEY = 'cached-customers-list';
+
+export function saveCachedCustomers<T>(data: T): void {
+  try {
+    const payload: CachedVersion<T> = { cachedAt: new Date().toISOString(), data };
+    localStorage.setItem(CUSTOMERS_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadCachedCustomers<T>(): CachedVersion<T> | null {
+  try {
+    const raw = localStorage.getItem(CUSTOMERS_CACHE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as CachedVersion<T>;
+  } catch {
+    return null;
+  }
+}

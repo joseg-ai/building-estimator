@@ -8,6 +8,7 @@ import { apiCreateQuote, apiUpdateQuote } from '../api';
 const mainLinks = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/quotes', label: 'My Quotes', end: false },
+  { to: '/customers', label: 'Customers', end: false },
   { to: '/pricelist', label: 'Price List', end: false },
 ];
 
@@ -43,10 +44,11 @@ export default function Layout() {
     try {
       const costs = calculateCosts(config);
       const activeId = localStorage.getItem('active_quote_id');
+      const customerId = config.customerId ?? null;
       if (activeId) {
-        await apiUpdateQuote(activeId, config, costs.grandTotal);
+        await apiUpdateQuote(activeId, config, costs.grandTotal, undefined, undefined, customerId);
       } else {
-        const result = await apiCreateQuote(config, costs.grandTotal);
+        const result = await apiCreateQuote(config, costs.grandTotal, null, customerId);
         localStorage.setItem('active_quote_id', result.id);
       }
       setSaveMsg('Saved');
