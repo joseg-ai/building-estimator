@@ -10,6 +10,8 @@
 
 📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
 
+📌 **2026-05-10 (Phase 2 CLOSED):** Customers live. Phase 2 CLOSED: customers live, 57 tests green (46 server + 11 webapp), quote↔customer linking working. Phase 3 (vendors/comparison) starting.
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 📌 **2026-05-10 (Round 1 — Phase 1 shipped):** Data contract finalized and merged to decisions.md. All 16+ catalog categories mapped (PERSIST vs. TRANSIENT fields). Versioning strategy: snapshot at quote save (price list, catalog, labor rates, overheads). ⚠️ CRITICAL BUG FLAGGED: Catalog `weight` field all zeros but calculator uses it for structural-steel labor cost. Mitigation: add `weight_per_unit` to schema; derive weight at calc time. 6 risks identified (material string lookup, zero-price items, immutability, sparse categories). Investigation pending on weight field.

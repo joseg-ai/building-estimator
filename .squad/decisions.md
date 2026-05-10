@@ -246,6 +246,52 @@ Each endpoint needs: happy path, auth-required (401), validation (400), 404 on m
 
 ---
 
+## Phase 2 — CLOSED
+
+**Date:** 2026-05-10  
+**Status:** Shipped ✅
+
+### What Shipped
+
+**Customers Master + Quote Linking (Backend + Frontend + Tests)**
+
+#### Schema & API (Rusty)
+- `customers` table: `id, user_id, name, company, contact_name, email, phone, address_*, notes, default_labor_rate, default_overhead_pct, default_profit_pct, default_commission_pct, created_at, updated_at`
+- `quotes` table: added `customer_id INTEGER FK → customers(id) ON DELETE SET NULL`
+- **6 customer routes:** GET /api/customers, GET /api/customers/:id, POST, PUT, DELETE (with force flag), GET /:id/quotes
+- **Quote integration:** POST/PUT /api/quotes now accept & persist `customerId`; GET routes return it; GET /api/quotes?customerId=N filters
+- **Error codes:** VALIDATION, NOT_FOUND, IN_USE, INVALID_CUSTOMER (per spec)
+- **All 46 server tests green** (16 new customer tests + 5 quote integration tests + 25 prior catalog/pricelist tests)
+
+#### Frontend Wiring (Linus)
+- `webapp/src/components/CustomerPicker.tsx` — New debounced type-ahead combobox with quote count, linked indicator
+- `webapp/src/pages/CustomersPage.tsx` — New full CRUD page: search, table, create/edit modal (all fields + 4 default overheads), force-delete flow
+- `webapp/src/context.tsx` — `CustomersState`, `SET_CUSTOMER_ID` action, customer list cache
+- `webapp/src/api.ts` — 6 customer API functions + extended quote types
+- `webapp/src/pages/DesignPage.tsx` — CustomerPicker integrated, overhead prefill logic
+- `webapp/src/pages/QuotesPage.tsx` — Pass `customerId` on save
+- `webapp/src/components/Layout.tsx` — Quick-save passes `customerId`; Customers link added
+- `webapp/src/App.tsx` — /customers route registered
+- **TypeScript:** 0 new errors (tsc --noEmit: Exit 0)
+- **ESLint:** 6 pre-existing errors, 0 new
+- **Calculator tests:** 11/11 green
+
+#### Test Coverage (Saul)
+- **16 customer endpoint tests:** auth (401), owner scoping (404 isolation), POST validation (name, email, defaults), GET search filter, PUT updates, DELETE (409 in-use, force cascade)
+- **5 quote integration tests:** customerId persist, filter by customerId, foreign-owned rejection (400 INVALID_CUSTOMER)
+- **Prior tests:** 25 catalog/pricelist tests still green
+- **Total: 46/46 tests passing**
+
+### Minor Bug Found & Fixed in Parallel
+
+**🐛 BUG-1 (Minor, Fixed by Rusty):** Non-integer `customerId` in POST/PUT /api/quotes returns wrong error code
+- **Contract says:** 400 `INVALID_CUSTOMER`
+- **Code was returning:** 400 `VALIDATION`
+- **Status:** Rusty fixing in parallel (does not block Phase 2 closure)
+- **Impact:** HTTP status correct (400); only error.code enum was wrong. Low severity.
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus

@@ -7,6 +7,8 @@
 
 ## Team Updates
 
+📌 **2026-05-10 (Phase 2 CLOSED):** Customers live, 57 tests green. Phase 2 CLOSED: customers live, 57 tests green (46 server + 11 webapp), quote↔customer linking working. Phase 3 (vendors/comparison) starting.
+
 📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
 
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
@@ -15,9 +17,7 @@
 
 ## Learnings
 
-<!-- Append new learnings below. Each entry is something lasting about the project. -->
-
-📌 **2026-05-10 — Phase 1 catalog & price list persistence shipped.**
+<!-- Append new learnings below. Each entry is something lasting about the project. -->📌 **2026-05-10 — Phase 1 catalog & price list persistence shipped.**
 
 - **New tables (all `IF NOT EXISTS`, idempotent on every server start):**
   - `price_list_versions` — `id INTEGER PK AUTOINCREMENT`, `name TEXT NOT NULL`, `supplier TEXT DEFAULT 'Central States'`, `is_active INTEGER DEFAULT 0`, `created_at TEXT`, `created_by TEXT FK→users(id)`, `notes TEXT`. Index: `idx_price_list_versions_active(is_active)`.
@@ -48,3 +48,31 @@
 - **Delete protection in routes-pricelist.js DELETE handler:** already implemented (lines 160–163). Blocks deletion of `price_list_versions` row if any quote references it via `price_list_version_id`, returns 409 with `{ error: { code: 'CONFLICT', message: 'version {id} is referenced by {n} quote(s)' } }`.
 - **Tests:** all 25 tests in `server/test/` pass without modification. Quote routes now persist and read priceListVersionId transparently.
 - **Idempotency:** Column already exists in db.js schema (idempotent migration), so fresh and existing databases both work.
+
+📌 **2026-05-10 — Phase 2 customers master shipped.**
+
+- **New table `customers`** (idempotent `IF NOT EXISTS`):
+  - PK `id INTEGER AUTOINCREMENT`, owner `user_id TEXT FK→users(id)` (TEXT because users.id is uuid, NOT integer — matches existing convention).
+  - Identity: `name NOT NULL`, plus optional `company`, `contact_name`, `email`, `phone`.
+  - Address: `address_line1`, `address_line2`, `city`, `state`, `postal_code`, `country DEFAULT 'USA'`.
+  - Free text: `notes`.
+  - Per-customer overrides: `default_labor_rate`, `default_overhead_pct`, `default_profit_pct`, `default_commission_pct` — all REAL nullable so the calc engine can fall back to the global ProjectOverheads when null.
+  - Timestamps: `created_at INTEGER`, `updated_at INTEGER` (epoch ms — Phase 2 uses numeric timestamps; Phase 1 used `datetime('now')` text. Mixed convention — flagged for future unification).
+  - Index: `idx_customers_user_name(user_id, name)` — multi-tenant queries always filter by user_id first.
+- **`quotes` ALTER:** added `customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL`. Same `PRAGMA table_info` guard pattern as `price_list_version_id`. Index `idx_quotes_customer(customer_id)`.
+- **ON DELETE SET NULL** is the right choice: deleting a customer should not destroy historical quote records. Quotes survive with `customer_id=NULL` and the original `customer_name` text snapshot still in the row.
+- **Routes mounted at `/api/customers`** via `routes-customers.js`. Auth applied at the router level (`router.use(authMiddleware)`) — different from pricelist/catalog (per-route on writes only) because **all** customer routes need owner scoping, no public reads.
+- **Owner scoping:** every query filters `WHERE user_id = ?`. 404 returned for both missing-id and foreign-owned (don't leak existence of other tenants' records).
+- **Delete semantics:** 409 `IN_USE` if any quote references the customer, unless `?force=true` query param — then DELETE proceeds and FK SET NULL unlinks quotes. Response includes `quotesUnlinked` count for force deletes.
+- **List endpoint** includes `quote_count` aggregate via `LEFT JOIN quotes ... GROUP BY c.id`. `?search=` does case-sensitive `LIKE` on name+company. Order is `ORDER BY name COLLATE NOCASE`.
+- **Validation:**
+  - `name` required and non-empty on POST. On PUT, if provided must be non-empty (cannot blank an existing name).
+  - `email` regex `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` only when provided + non-empty. Empty string skips check.
+  - Numeric fields validated as `typeof === 'number'` or null.
+- **Quotes integration:**
+  - POST/PUT `/api/quotes` accept optional `customerId`. Validates integer + ownership (`SELECT id FROM customers WHERE id = ? AND user_id = ?`). Returns 400 `INVALID_CUSTOMER` on miss — important: ownership check uses **current user**, so a malicious user can't link to another tenant's customer.
+  - GET single + list now return `customerId` (camelCase).
+  - List supports `?customerId=N` filter — useful for the "deals with this customer" view.
+- **camelCase mapping:** `routes-customers.js` has explicit `CAMEL_TO_SNAKE` map and `toCamel()` row mapper. Keeps DB snake_case clean and API camelCase consistent.
+- **All 25 prior tests pass** unchanged — no regression. Saul will add the customers test suite separately.
+- **Files touched:** `db.js` (+30 lines schema), `index.js` (+2 lines wiring), `routes-quotes.js` (+customerId validation/storage), `routes-customers.js` (NEW, ~210 lines).
