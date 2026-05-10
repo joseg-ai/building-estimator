@@ -8,6 +8,8 @@
 
 ## Team Updates
 
+📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 📌 **2026-05-10 (Round 1 — Phase 1 shipped):** Data contract finalized and merged to decisions.md. All 16+ catalog categories mapped (PERSIST vs. TRANSIENT fields). Versioning strategy: snapshot at quote save (price list, catalog, labor rates, overheads). ⚠️ CRITICAL BUG FLAGGED: Catalog `weight` field all zeros but calculator uses it for structural-steel labor cost. Mitigation: add `weight_per_unit` to schema; derive weight at calc time. 6 risks identified (material string lookup, zero-price items, immutability, sparse categories). Investigation pending on weight field.
@@ -54,3 +56,75 @@
 3. **Weight field bug:** Currently all = 0 in catalog; should store weight_per_unit and derive weight = qty × weight_per_unit × lnFeetToFab / commLength.
 4. **Sparse categories:** leanto-*, overhangs have no entries but are summed in calculator; clarify intent.
 5. **ID immutability:** Add DB constraints to prevent renames of catalog item IDs and price list itemCodes.
+
+### Catalog Weight Investigation (2026-05-10T14:31:41-05:00)
+
+**Data flow uncovered:**
+- `ComponentItem.weight` field has THREE distinct lifecycles depending on category:
+  1. **Structural-steel categories** (main-framing, canopy, plates, frame-openings):
+     `FramingTable` (webapp/src/components/FramingTable.tsx:39-62) computes
+     weight at runtime: `weight = lnFeetToFab * lookupMaterial(material).weightPerFt`.
+     Calculator consumes this via `weightCostSum` (cost) and `sumWeight` (labor).
+  2. **Component categories** (purlins-girts, sheeting, trim, doors, hardware,
+     fasteners, insulation, stairs): `ComponentTable` never sets weight. Cost
+     is `simpleSum` (qty * costPerUnit). Weight stays 0 — and the workbook
+     agrees: components do not contribute to labor.
+  3. **Catalog defaults** are templates only; never read directly by the calculator.
+- So catalog `weight: 0` is correct by design. My earlier data-contract flag
+  was a false positive — but a productive one, because the trace surfaced two
+  real bugs.
+
+**Per-foot vs per-item weight distinction:**
+- The workbook stores weight as a CALCULATED column (Component sheet col [18]),
+  derived from `LnF (commercial-length count) * weightPerFt`. `weightPerFt`
+  lives on the "Beams specs" sheet (one row per AISC designation) — extracted
+  to `webapp/src/materialSpecs.ts`. Our app mirrors this: per-foot weight is
+  the catalog primitive, total weight is computed.
+- I considered moving the per-foot value into the catalog as a `weightPerFoot`
+  field, but it would duplicate `materialSpecs` and break the single source of
+  truth. Rejected.
+
+**What I changed:**
+- `webapp/src/catalog.ts`: fixed 3 BEAMS material designations
+  (`'W x 18 x 65'` → `'W 18 x 65'`, etc.) to match `materialSpecs.ts`.
+  Added a header docstring explaining the weight lifecycle.
+- `webapp/src/calculator.ts`: added a `console.warn` for structural lines
+  with qty>0 but weight=0 (silent under-estimation guard). Math unchanged.
+
+**What I did NOT change (deferred):**
+- `calculator.ts:85` uses `(structuralWeight + componentsWeight) * laborRate`
+  for labor; the workbook (Summary row 73) uses `structuralWeight * laborRate`
+  only. Saul's tests freeze the current behavior. Currently masked because
+  `componentsWeight` is always 0. Needs joint change with Saul.
+- `MF-01 Main Frames` keeps `material: 'Ninguno'` per the workbook;
+  user is expected to pick a real beam. The new console.warn covers this case.
+
+**Extracted data files used:**
+- `extracted_data/Main Framing.txt` (verified W-shape designations and
+  per-line cost formula on row 9 — Direct Cost = qty * weight * costPerPound).
+- `extracted_data/Components.txt` (confirmed ComponentTable categories use
+  qty * costPerUnit and weight is informational only).
+- `extracted_data/Summary.txt` rows 41-83 (verified labor formula:
+  7613.625 = 10151.5 structural * 0.75; components weight not in labor).
+- `extracted_data/Beams specs.txt` (cross-referenced AISC designations
+  vs `materialSpecs.ts`).
+
+**Result:** `npx vitest run` → 11/11 tests pass.
+
+### Phase 2 Customer Domain Design (2026-05-10T14:31:41-05:00)
+
+**Analysis completed:** Full domain model spec written for customer master records linked to quotes. Key insights:
+
+- **Customer TypeScript shape:** `id`, `name` (display), optional `company`/`contactName`/`address`/`email`, `defaultOverheads?: Partial<ProjectOverheads>`, `createdAt`/`updatedAt`, optional server-computed `quoteCount`.
+
+- **Override semantics (critical):** Customer defaults are **initializers only**. Each quote snapshots its overheads at save time. Changing customer defaults does NOT retroactively adjust existing quotes — this ensures historical auditability. Per-quote overheads always win.
+
+- **Ad-hoc mode:** Quotes can be created without a customer (for one-off estimates). Fallback to `customerName` string + app-level defaults in `createDefaultConfig()`.
+
+- **UX for Linus:** DesignPage gets a customer picker modal (hybrid with fallback text field); QuotesPage's "Save Current" flow binds customer ID at quote save, pre-filling overheads from `customer.defaultOverheads`. Extend `apiCreateQuote()` and `apiUpdateQuote()` to accept optional `customerId` parameter.
+
+- **Edge cases handled:** (1) Duplicate customer names — use secondary display info to disambiguate. (2) Deleted customers — orphaned quotes survive with `customer_id = NULL` + cached `customerName` string. (3) Incomplete defaults — shallow merge preserves app defaults for unset fields. (4) No customer at creation — prompt later to link.
+
+- **Migration for existing quotes:** Do NOT auto-link during schema upgrade. Add one-shot UI affordance in Phase 2B ("Convert this name to a customer record?").
+
+- **Spec document:** `.squad/decisions/inbox/livingston-phase2-customer-domain.md` (complete with API routes, edge cases, UX flow diagrams, and reasons for each design choice). Ready for Rusty (schema) and Linus (frontend wiring).

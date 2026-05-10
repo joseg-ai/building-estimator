@@ -7,6 +7,8 @@
 
 ## Team Updates
 
+📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 📌 **2026-05-10 (Round 1 — Phase 1 shipped):** API contract finalized and merged to decisions.md. Schema ready: price_list_versions, materials_catalog_versions, materials_catalog_items, quotes.price_list_version_id. Server boots (required `npm rebuild better-sqlite3` for Node 25). ⚠️ Catalog `weight` field is all zeros; needs schema fix (add weight_per_unit, derive at calc time). Routes not yet implemented.
@@ -35,3 +37,14 @@
 - **Gotcha — native module:** `better-sqlite3@12.8.0` was compiled against `NODE_MODULE_VERSION 127`; current Node 25.9.0 needs 141. Fix: `npm rebuild better-sqlite3` from `server/`. Document this for anyone bumping Node.
 - **Gotcha — PowerShell + node -e:** escaped quotes inside `node -e "..."` on Windows PowerShell choke. Use a temp `.js` file instead when verifying.
 - **Verified boot:** server starts on port 3099 in ~1s, `GET /api/health`, `GET /api/price-list/versions`, `GET /api/catalog/versions` all return 200; unauthenticated `POST /api/price-list/versions` returns 401.
+
+📌 **2026-05-10 — Phase 1 quote pinning wired.**
+
+- **Routes-quotes.js wired for priceListVersionId:**
+  - POST (create quote): accepts optional `priceListVersionId` from body, validates as integer or null, verifies it exists in `price_list_versions` table, returns 400 with `{ error: { code: 'INVALID_VERSION', message: 'Unknown price list version' } }` if not found, inserts into `price_list_version_id` column.
+  - PUT (update quote): same validation and upsert logic as POST.
+  - GET (single quote) and GET (list): both now return `priceListVersionId` (camelCase) in response payloads.
+  - Error envelope mirrors pricelist routes: `{ error: { code, message } }`.
+- **Delete protection in routes-pricelist.js DELETE handler:** already implemented (lines 160–163). Blocks deletion of `price_list_versions` row if any quote references it via `price_list_version_id`, returns 409 with `{ error: { code: 'CONFLICT', message: 'version {id} is referenced by {n} quote(s)' } }`.
+- **Tests:** all 25 tests in `server/test/` pass without modification. Quote routes now persist and read priceListVersionId transparently.
+- **Idempotency:** Column already exists in db.js schema (idempotent migration), so fresh and existing databases both work.

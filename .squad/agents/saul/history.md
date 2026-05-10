@@ -8,6 +8,8 @@
 
 ## Team Updates
 
+📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 📌 **2026-05-10 (Round 1 — Phase 1 shipped):** Test plan finalized and merged to decisions.md. Vitest 4.1.5 scaffolded in webapp/; vitest.config.ts created. 12 calculator tests written in webapp/src/__tests__/calculator.test.ts (not yet executed — deps not installed). Server test plan: 10 endpoint tests spec'd (happy path, 401, 400, 404, 409 cases). Round-trip tests planned. Webapp integration tests planned (mock fetch, assert priceListVersionId in quote save). Test runner recommendation: Node's built-in `node:test` + `supertest` for server (zero new deps).
@@ -29,4 +31,14 @@
   4. **Profit and commission both apply to the same `subTotal`** — they are NOT compounded. `grandTotal = subTotal * (1 + profitRate + commissionRate)`. Verified against the Excel formulas.
   5. **Overhead applies only to (materials + labor)**, not to flat fees (detailing/engineering/freight/etc). Matches the Summary sheet.
   6. **Negative `costPerUnit` is treated as a credit.** No validation. Form layer should clamp to ≥0 unless credits are actually a feature.
+- **2026-05-10 — Server test runner: `node:test` + `supertest`.** Stuck with the original recommendation. Express 5 + better-sqlite3 work cleanly with supertest; no transitive vite/vitest pull-in for a backend package. Only new devDep: `supertest`.
+- **2026-05-10 — `node --test test/` does NOT recurse on Node 25 / Windows the way the docs imply.** It's interpreted as a single-file path. Use an explicit glob in the npm script: `node --test test/*.test.js`. Worth checking again if Node ships a true `--test --recursive` flag.
+- **2026-05-10 — Test DB isolation pattern.** db.js originally hardcoded `path.join(__dirname, 'estimator.db')`. Added a one-line env override: `const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'estimator.db');`. Each test file's `setup.js` sets a unique `DB_PATH` in `os.tmpdir()` BEFORE requiring `../index`. Cleans up `.db`, `.db-wal`, `.db-shm` on `process.exit`. Avoids polluting dev DB and lets node:test run files in parallel without collision.
+- **2026-05-10 — `index.js` refactor to support supertest.** Wrapped `app.listen(...)` in `if (require.main === module)` and added `module.exports = app`. Now tests can boot the express app in-process without binding a port. Production `npm start` behavior is unchanged.
+- **2026-05-10 — Auth helper.** `registerAndLogin(prefix)` in `setup.js` POSTs to `/api/auth/register` with a random suffix to avoid 409s across tests, returns `{ token, user }`. Pair with `authHeader(token)` → `{ Authorization: 'Bearer <jwt>' }` for `request(app).set(authHeader(token))`.
+- **2026-05-10 — Route surprises worth noting:** (a) `POST /api/price-list/versions` returns **201**; activate/PUT-item/DELETE return **200**. (b) Validation errors use the new `{ error: { code: 'VALIDATION', ... } }` envelope, but **401 still uses the legacy `{ error: 'Authorization required' }` shape** — Rusty's contract calls this out. Tests don't assert on 401 envelope shape, only status. (c) `is_active` is stored as integer (0/1), not boolean. (d) Price-list DELETE 409-on-referenced is implemented but not tested here — would require a quote insert with `price_list_version_id` populated, which the quotes route doesn't yet write through; deferred per task instructions.
+- **2026-05-10 — Tests written but NOT YET RUN.** `supertest` isn't installed. Tests load-fail with `MODULE_NOT_FOUND: 'supertest'`. Syntax-check (`node --check`) passes on all three test files. Jose needs to run `npm install` from `server/` before `npm test` will work.
+
+---
+
 - **2026-05-10 — Test file does NOT type-check until vitest is installed** (expected `TS2307: Cannot find module 'vitest'`). After `npm install`, both `npm test` and `npm run build` should pass cleanly *for the test file* — note that `tsconfig.app.json` includes `src/` so test files are part of the build. If we later want to exclude tests from the production build, add `"exclude": ["src/**/*.test.ts", "src/**/__tests__/**"]` to `tsconfig.app.json`.

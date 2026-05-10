@@ -1,0 +1,11 @@
+{
+  "assignments": [
+    {
+      "assignment_id": "2026-05-10-initial",
+      "created_at": "2026-05-10T19:31:41Z",
+      "universe": "Ocean's Eleven",
+      "agents": ["Danny", "Linus", "Rusty", "Livingston", "Saul"],
+      "rationale_signals": ["specialist crew", "precision planning", "well-defined roles"]
+    }
+  ]
+}

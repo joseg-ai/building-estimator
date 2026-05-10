@@ -224,6 +224,28 @@ Each endpoint needs: happy path, auth-required (401), validation (400), 404 on m
 
 ---
 
+---
+
+## Phase 1 — CLOSED
+
+**Date:** 2026-05-10T14:31:41-05:00
+
+### What shipped
+
+✅ **Catalog & Price List API Contract** (Rusty) — Server-backed materials catalog + price list with version tracking. Two parallel resource surfaces. Reads open during dev; writes require JWT. Quotes now persist `priceListVersionId` on create/update; reads return it; price-list-version delete blocked when referenced. All 25 server tests pass.
+
+✅ **Webapp implementation** (Linus) — Server-backed price list and catalog wired into the webapp end-to-end. `api.ts`, `context.tsx`, `storage.ts`, `PriceListPage.tsx`, `QuotesPage.tsx` all updated. 0 new TS/lint errors. 11/11 calculator tests pass. Version picker, activate button, save-as-new-version form implemented. Quotes pin to version on save.
+
+✅ **Server endpoint tests** (Saul) — 25 tests across pricelist + catalog covering happy path, auth (401), validation (400), 404, activate/round-trip, DELETE. All passing after `cd server && npm install`. Added supertest devDep, env DB_PATH override in db.js, app export in index.js.
+
+✅ **Catalog material fix** (Livingston) — Found and fixed real bug: 3 beam catalog items had material strings mismatched with materialSpecs.ts → silent $0 labor. Fixed in catalog.ts. Estimated impact ~$19k under-estimate per affected quote. Added console.warn guard. Investigated weight field (design by intent, not a bug).
+
+### Notable bug fix
+
+**Three BEAMS catalog entries had stale material designations** (`'W x 18 x 65'` instead of `'W 18 x 65'`, etc) that silently failed lookup in materialSpecs.ts, setting labor to $0. Affected: MF-03 Main Frame Rafters, MF-05 Wind Columns, CN-02/CN-03 Canopy Columns & Rafters. **Magnitude: ~$9,400 labor + $10,625 material missed per affected quote.** Now fixed; bundled defaults immediately yield correct weight and cost.
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus
