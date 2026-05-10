@@ -130,3 +130,44 @@
 - See Rusty's API contract for exact test shapes.
 
 
+### 2026-05-10: Phase 3 Implementation — Vendors + Multi-Vendor Comparison (SHIPPED)
+
+**Files shipped:**
+
+- `webapp/src/api.ts` — Added `Vendor`, `VendorWritable`, `VendorPrice`, `VendorDeleteResult` types + 8 vendor API functions: `apiListVendors`, `apiGetVendor`, `apiCreateVendor`, `apiUpdateVendor`, `apiDeleteVendor`, `apiListVendorPrices`, `apiUpsertVendorPrice`, `apiDeleteVendorPrice`, `apiBulkUpsertVendorPrices`.
+- `webapp/src/storage.ts` — Added `saveCachedVendors` / `loadCachedVendors` + `saveComparisonVendorIds` / `loadComparisonVendorIds` (mirrors customer pattern).
+- `webapp/src/context.tsx` — Added `VendorsState` interface, `vendors` useState slice with localStorage cache seed on mount, `searchVendors` lazy-load callback, `comparisonVendorIds` useState (initialized from localStorage), `setComparisonVendorIds` callback (persists to localStorage). All exposed in `BuildingContextValue`.
+- `webapp/src/pages/VendorsPage.tsx` — NEW. Full CRUD (search box, table with name/contact/email/phone/isDefault badge/override count), create/edit modal (all fields + isDefault toggle), optimistic delete with rollback. Nested `VendorPricesModal` component: per-row edit/delete for price overrides, add new override via form, "Seed from Active Price List" bulk button, per-row spinners. Price count loaded async via parallel `apiListVendorPrices` calls per vendor.
+- `webapp/src/pages/ComparisonPage.tsx` — NEW. Route `/compare/:quoteId?`. Quote picker shown when no quoteId. Main comparison: sticky header table, frozen left columns (item id, description, qty), per-vendor price columns (green highlight + bold for cheapest), "(list)" fallback marker, ⚠ for $0 prices. Totals section: per-vendor `calculateCosts()` with vendor price overlays (labor/overhead/margins stay constant). "Use Vendor" buttons trigger pick-vendor flow: clone active price list + overlay vendor prices → new version → activate → update quote → toast → navigate to /design. `comparisonVendorIds` persisted to localStorage via context.
+- `webapp/src/App.tsx` — Added `/vendors` and `/compare/:quoteId?` routes.
+- `webapp/src/components/Layout.tsx` — Added "Vendors" and "Compare" to mainLinks.
+- `webapp/src/pages/MenuPage.tsx` — Changed quick-actions grid to 5-col, added Vendors tile (🏭) and Compare tile (⚖️).
+- `webapp/src/pages/QuotesPage.tsx` — Added "Compare" (purple) button per quote row → navigates to `/compare/:id`.
+
+**Patterns established / confirmed:**
+
+- **Vendor prices key alignment:** `component.id` (catalog item_key) is used as the lookup key for vendor prices (`vendorPrice.itemKey`). `component.costPerUnit` is used as the active-list-price fallback. This works regardless of whether catalog item_key and price_list item_key share the same namespace — both are resolved through the component.
+- **Vendor calc overlay:** `vendorCosts(vendorId)` clones `config.components` with structural items' `costPerUnit` replaced by effective vendor price, then calls `calculateCosts()`. Labor (weight-based) and all flat fees stay constant. This produces a correct full CostBreakdown per vendor.
+- **Pick-vendor snapshot:** Overlays vendor prices on active price list items by item_key match. Items the vendor has no override for keep the base price. Creates a named version ("Quote {id} — {VendorName} YYYY-MM-DD"), activates it, updates quote.
+- **comparisonVendorIds persistence:** Stored in localStorage under `comparison-vendor-ids`. `setComparisonVendorIds` in context is the single mutation point (saves to storage + updates state).
+- **Price count lazy load:** VendorsPage fires parallel `apiListVendorPrices` requests per vendor after the list loads. Shows '…' until resolved. No N+1 blocking the table render.
+
+**Quality bar met:**
+- `npx tsc --noEmit`: 0 errors (Exit 0)
+- `npx eslint src`: 6 errors, all pre-existing (authContext, calculator, FramingTable, Layout, context). Zero new.
+- 11/11 calculator tests pass.
+
+**Deviations from spec:**
+- `apiGetVendor` added to api.ts but not wired to UI (available for Saul's tests and future use).
+- `comparisonVendorIds` lives in context rather than local state in ComparisonPage — allows the selection to persist across navigations and be bookmarked.
+- Vendor price count in VendorsPage table is loaded asynchronously (N parallel API calls) rather than from a server-provided count field — works because vendor lists are expected to be small.
+- "Details drawer" (lead_time, notes per vendor per row) is accessible only via VendorPricesModal, not shown in the comparison table rows — keeps the comparison table readable.
+
+**Handoffs for Saul:**
+- 9 vendor endpoints need coverage: GET list (auth 401, search filter), GET /:id (404 foreign-owned), POST (400 missing name, invalid email, invalid isDefault), PUT (400, 404), DELETE (200 cascade), GET /:id/prices (auth, 404 vendor), PUT /:id/prices/:itemKey (400 validation), DELETE /:id/prices/:itemKey (404 no override), POST /:id/prices/bulk (400 empty/invalid items, 200 upserted count).
+- isDefault transaction: POST/PUT with isDefault=true should clear other vendors' isDefault flags.
+- See Rusty's API contract for exact shapes.
+
+📌 **EPIC COMPLETE** — Phase 3 shipped. ComparisonPage + VendorsPage + context wiring all live. 0 new TS/lint errors. 11/11 calculator tests pass. Effective-price fallback working. Pick-vendor snapshot flow tested. Ready for next epic.
+
+

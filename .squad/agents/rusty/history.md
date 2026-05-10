@@ -76,3 +76,32 @@
 - **camelCase mapping:** `routes-customers.js` has explicit `CAMEL_TO_SNAKE` map and `toCamel()` row mapper. Keeps DB snake_case clean and API camelCase consistent.
 - **All 25 prior tests pass** unchanged — no regression. Saul will add the customers test suite separately.
 - **Files touched:** `db.js` (+30 lines schema), `index.js` (+2 lines wiring), `routes-quotes.js` (+customerId validation/storage), `routes-customers.js` (NEW, ~210 lines).
+
+📌 **2026-05-10 — Phase 2 bug fix: customerId non-integer error code corrected.**
+
+- **Bug (Saul BUG-1):** `POST /api/quotes` and `PUT /api/quotes/:id` were returning `code: 'VALIDATION'` when `customerId` was not an integer. Spec says `INVALID_CUSTOMER`.
+- **Fix:** Two `err('VALIDATION', ...)` calls in `routes-quotes.js` (lines ~86 and ~145) changed to `err('INVALID_CUSTOMER', 'customerId must be an integer')`. HTTP 400 status unchanged.
+- **Test impact:** 46/46 still pass. Test 19 now gets the canonical code.
+
+📌 **2026-05-10 — Phase 3 vendor backend kicked off.**
+
+📌 **EPIC COMPLETE** — Phase 3 shipped. 28 new vendor tests + 46 prior = 74 server tests green. All 9 vendor routes live (CRUD, prices, bulk upsert). `item_key` persistence pattern locked. isDefault atomic swap verified. CASCADE delete on vendor working. Bug fix in Phase 2 customer routes. Ready for next epic.
+
+- **New tables (idempotent `IF NOT EXISTS` in `db.js`):**
+  - `vendors` — `id INTEGER PK AUTOINCREMENT`, `user_id TEXT FK→users`, `name NOT NULL`, optional `contact_name`, `email`, `phone`, address fields (line1/line2/city/state/postal_code, `country DEFAULT 'USA'`), `notes`, `is_default INTEGER DEFAULT 0` (0/1 flag), `created_at/updated_at INTEGER` (epoch ms). Index: `idx_vendors_user_name(user_id, name)`.
+  - `vendor_prices` — `id PK AUTOINCREMENT`, `vendor_id FK→vendors ON DELETE CASCADE`, `item_key TEXT`, `unit_price REAL NOT NULL`, `currency TEXT DEFAULT 'USD'`, `lead_time_days INTEGER NULL`, `notes TEXT NULL`, `updated_at INTEGER`. `UNIQUE(vendor_id, item_key)`. Index: `idx_vendor_prices_item(item_key)`.
+- **Key design decision — `item_key` not `price_list_item_id`:** `vendor_prices` is keyed on `item_key` (the same string key used in `materials_catalog_items` and `material_prices`). This means vendor overrides survive price list version rotations and do not require a price_list join to be useful. The tradeoff: item_key is a string identity contract; renaming a key orphans vendor prices (same risk as catalog key renames).
+- **`is_default` semantics:** At most one vendor per user can have `is_default = 1`. POST/PUT with `isDefault: true` runs inside a `db.transaction()` that first clears all other vendors' flags for that user, then sets the target row. Enforced in app code; SQLite partial unique indexes not used (keeps schema simple, matches Phase 1 activate pattern).
+- **New file `routes-vendors.js`** (~260 lines). All routes require auth (router-level `authMiddleware`). Mirrors `routes-customers.js` style: `toCamel()` mapper, `CAMEL_TO_SNAKE` dict, `pickFields()`, `validate()`. Error envelope `{ error: { code, message } }`. Codes: `VALIDATION` (400), `NOT_FOUND` (404).
+- **Routes shipped:**
+  - `GET /api/vendors` (with `?search=` LIKE on name)
+  - `GET /api/vendors/:id`
+  - `POST /api/vendors` (validates name required, email format, isDefault bool coerce)
+  - `PUT /api/vendors/:id`
+  - `DELETE /api/vendors/:id` (CASCADE removes vendor_prices automatically — no force needed)
+  - `GET /api/vendors/:id/prices` — list all price overrides
+  - `PUT /api/vendors/:id/prices/:itemKey` — upsert single price (uses SQLite `ON CONFLICT ... DO UPDATE`)
+  - `DELETE /api/vendors/:id/prices/:itemKey` — remove single override
+  - `POST /api/vendors/:id/prices/bulk` — bulk upsert array of `{itemKey, unitPrice, leadTimeDays?, notes?}`; validates all items before any write, runs in single transaction.
+- **Wired in `server/index.js`:** `app.use('/api/vendors', vendorsRoutes)` — mirrors customers mounting.
+- **All 46 prior tests pass unchanged** after schema additions. No new tests this round (Saul owns test authoring).

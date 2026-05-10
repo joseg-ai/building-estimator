@@ -52,3 +52,9 @@
 - Auth: JWT tokens, 7-day expiry, stored in localStorage.
 - Quotes tied to user_id; customer/job info embedded in quote.config_json.
 - All cost formulas follow Excel workbook exactly (weight-based for structural steel, qty-based for components).
+
+## Phase 1-3 Coordination (2026-05-10)
+
+Danny's initial survey identified 3-phase roadmap (Phase 1: persist pricing/catalog, Phase 2: customers, Phase 3: vendors/comparison). All 3 phases shipped by team. 85 tests green (74 server + 11 webapp). Server-backed reference data live.
+
+📌 **EPIC COMPLETE** — Danny's Phase 1 kickoff survey led to 3-phase epic. All phases shipped. 85 tests green (74 server + 11 webapp). Server-backed reference data live (catalog, price-list, customers, vendors). Multi-vendor comparison working. Ready for next epic.

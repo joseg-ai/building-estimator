@@ -130,3 +130,35 @@
 - **Migration for existing quotes:** Do NOT auto-link during schema upgrade. Add one-shot UI affordance in Phase 2B ("Convert this name to a customer record?").
 
 - **Spec document:** `.squad/decisions/inbox/livingston-phase2-customer-domain.md` (complete with API routes, edge cases, UX flow diagrams, and reasons for each design choice). Ready for Rusty (schema) and Linus (frontend wiring).
+
+### Phase 3 Multi-Vendor Comparison Domain Spec (2026-05-10T14:31:41-05:00)
+
+**Analysis completed:** Full domain model spec written for side-by-side vendor price comparison on a single building. Key insights:
+
+- **Scope:** Structural materials only (main-framing, canopy, plates, frame-openings categories) in Phase 3. Components (sheets, trim, doors, hardware) stay single-vendor in MVP. Reasoning: structural steel is where PEMB vendor competition is fiercest; components are typically commodity, low-variance.
+
+- **Comparison model:** Tabular view with one row per catalog item used in the build. Columns: Item Key, Description, Qty, Active List Price, Vendor A Price, Vendor B Price, Vendor C Price, Cheapest (highlighted), Row Subtotal. Below: per-vendor totals (materials, labor, overheads, profit, grand total). Labor and profit stay constant (project-level); only materials vary by vendor.
+
+- **Effective price resolution:** (a) vendor override for item_key (if exists), (b) fallback to active price list price, (c) $0 + warn. No ambiguity; first match wins. Vendor prices for items not in the current build are orphaned/ignored; catalog items without vendor prices inherit active list price.
+
+- **Per-vendor profit/commission:** NO. Vendor pricing is input cost; profit (15%) and commission (4%) are project-level and applied after vendor selection. Keeps vendor margin separate from estimator margin.
+
+- **Vendor selection flow:** Estimator clicks "Use Vendor A" → Clone active price list version → Overlay vendor's prices → Save as new version (named "Quote 12345 — VendorName 2026-01-15") → Update quote's priceListVersionId → Quote pinned to snapshot. Original active list untouched. Audit trail preserved via version name + metadata + timestamp.
+
+- **Edge cases handled:** (1) Vendor deleted mid-comparison — remove column, recalculate, show toast. (2) Vendor has price for orphan item — ignore, don't display. (3) Catalog item has no vendor price — fallback to active list, mark with subtle indicator. (4) Zero-priced items — show $0 with warning icon. (5) Vendor added mid-session — offer "Add to comparison" affordance.
+
+- **UX hints for Linus:** Route `/compare/:quoteId` (or `/compare?quoteId=...` with fallback picker). Sticky header for columns, freeze left columns (item key, description) on horizontal scroll. Vendor selector (pills or dropdown). Main table with cheapest-per-row highlight (green/gold background). Totals section below with bold highlight on cheapest grand total. "Use Vendor X" button per vendor column. Collapsible details drawer for lead_time, minimum_order, notes. "Seed prices from active list" affordance in vendor-edit flow to bootstrap new vendors.
+
+- **Data model:** New `vendors` table (id, name, created_at, updated_at, deleted_at for soft delete, supplier_code, notes). New `vendor_prices` table (vendor_id FK, item_key, unit_price, lead_time_days, minimum_order, notes). Extension to `price_list_versions` table (vendor_id FK, snapshot_date, source_version_id for audit trail).
+
+- **API endpoints:** `GET /api/vendors` (list), `GET /api/vendors/:vendorId/prices` (vendor's prices), `GET /api/quotes/:quoteId/comparison?vendorIds=1,2,3` (full comparison data), `POST /api/quotes/:quoteId/select-vendor` (create snapshot, pin quote).
+
+- **Design decisions explained:** Structural materials only (high variance, clear ROI). Snapshot + clone approach (immutability, reproducibility) vs. overlay approach. Vendor column shows "—" for missing items (clarity, actionable). Orphan vendor prices ignored (simplicity, auditability, clean snapshots).
+
+- **Spec document:** `.squad/decisions/inbox/livingston-phase3-comparison-spec.md` (12 sections covering scope, model, effective price rule, profit handling, vendor selection flow, edge cases, UX hints, data model, API, testing, terminology). Ready for team review, Rusty (schema), Linus (UI/UX), Saul (tests).
+
+### Phase 3 Multi-Vendor Comparison — SHIPPED (2026-05-10)
+
+**Analysis locked in:** Effective-price fallback rule implemented exactly per spec. "Pick vendor" snapshot flow working. All edge cases handled (sparse data, orphans, deleted vendors). No rework during implementation. Comparison feature production-ready.
+
+📌 **EPIC COMPLETE** — Phase 3 shipped. Effective-price rule locked in (vendor override → active list → warn). "Pick vendor" snapshot flow implemented per spec. All edge cases handled (sparse data, orphans, deleted vendors). No rework during implementation. Ready for next epic.

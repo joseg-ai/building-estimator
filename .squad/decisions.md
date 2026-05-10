@@ -292,6 +292,86 @@ Each endpoint needs: happy path, auth-required (401), validation (400), 404 on m
 
 ---
 
+## Phase 3 — CLOSED
+
+**Date:** 2026-05-10  
+**Status:** Shipped ✅
+
+### What Shipped
+
+**Multi-Vendor Price Comparison Backend + Frontend + Tests**
+
+#### Schema & API (Rusty)
+- `vendors` table: `id, user_id, name, contact_name, email, phone, address_*, notes, is_default, created_at, updated_at`
+- `vendor_prices` table: `id, vendor_id, item_key (FK → materials_catalog_items), unit_price, currency, lead_time_days, notes, updated_at`
+- **9 vendor routes:** GET /api/vendors, GET /api/vendors/:id, POST, PUT, DELETE (cascade vendor_prices), GET /:id/prices, PUT /:id/prices/:itemKey (upsert), DELETE /:id/prices/:itemKey, POST /:id/prices/bulk
+- **Price key strategy:** Vendor prices keyed on `item_key` (string identity, not FK to price_list_versions) so overrides persist across version rotations. Priority: vendor override → active list price → 0 (warn)
+- **isDefault atomic swap:** At most one vendor per user has is_default=1; POST/PUT with isDefault=true clears all others in transaction
+- **All 28 new tests green** (9 endpoint suites covering auth, validation, owner-scoping, cascade, atomicity, bulk ops). Plus 46 prior Phase 1+2 tests = **74 server tests total**
+
+#### Frontend Wiring (Linus)
+- `webapp/src/components/VendorsPage.tsx` — NEW CRUD: search, table (name, contact, email, phone, isDefault, override count), create/edit modal, force-delete flow
+- `webapp/src/components/VendorPricesModal.tsx` — Nested modal in VendorsPage: per-row edit/delete overrides, bulk "Seed from Active Price List" button, async count load
+- `webapp/src/components/ComparisonPage.tsx` — NEW comparison view: structural items only, sticky-header table with per-vendor price columns, green highlight + bold cheapest, "(list)" fallback marker, ⚠ for $0 prices. Totals section: per-vendor `calculateCosts()` with vendor overlays (labor/margins constant). "Use Vendor" button triggers pick-vendor snapshot flow
+- `webapp/src/context.tsx` — `VendorsState`, `searchVendors` lazy-load, `comparisonVendorIds` localStorage-persisted selection set
+- `webapp/src/api.ts` — 9 vendor API functions + `Vendor`, `VendorPrice` types (mirror Phase 1/2 patterns)
+- `webapp/src/storage.ts` — vendor + comparison localStorage helpers
+- `webapp/src/pages/MenuPage.tsx` — 5-col grid layout; +Vendors tile, +Compare tile
+- `webapp/src/pages/QuotesPage.tsx` — Compare button per quote → /compare/:id
+- **TypeScript:** 0 new errors (tsc --noEmit: Exit 0)
+- **ESLint:** 0 new errors (6 pre-existing, unchanged from Phase 2)
+- **Tests:** 11/11 calculator tests pass
+
+#### Comparison Spec (Livingston)
+- **Scope:** Structural materials only (categories: main-framing, canopy, plates, frame-openings) — the items that feed `weightCostSum()`.
+- **Effective price resolution:** `vendor_prices[itemKey]` (if override exists) → `activePriceList[itemKey].unitPrice` (fallback) → 0 (warn)
+- **Per-vendor profit/commission:** NO — vendor pricing is INPUT cost; estimator's 15% profit + 4% commission applied project-level after selection
+- **"Pick vendor" snapshot flow:** Clone active price list + overlay vendor prices → new version named "Quote {id} — {VendorName} YYYY-MM-DD" → activate → update quote.priceListVersionId → audit trail preserved
+- **Edge cases handled:** Sparse vendor data (show "—"), zero-priced items (show $0 + ⚠), vendor deleted mid-comparison (remove column + toast), orphan vendor prices (ignore), vendor added mid-session (offer "Add to comparison")
+
+#### Test Coverage (Saul)
+- **28 new vendor endpoint tests:** Vendor CRUD (15: auth 401, isDefault atomic swap, owner-scoping 404, POST validation, search filter, PUT, DELETE cascade). Vendor prices single-item (9: upsert, update, delete, validation, ordering). Vendor prices bulk (4: atomic validation, empty reject, owner-scoping).
+- **Prior tests:** 46 catalog/pricelist/customers tests still green
+- **Total: 74/74 tests passing** (28 new + 46 prior)
+
+#### Schema & Files Changed
+| File | Change |
+|---|---|
+| `server/db.js` | +`vendors` + `vendor_prices` tables + indexes (IF NOT EXISTS), CASCADE delete |
+| `server/routes-vendors.js` | NEW ~260 lines — all 9 routes (CRUD, prices, bulk) |
+| `server/index.js` | +require('./routes-vendors') + app.use('/api/vendors', ...) |
+| `server/routes-quotes.js` | Bug fix: 2 occurrences of `VALIDATION` → `INVALID_CUSTOMER` for non-integer customerId |
+
+### Summary
+
+✅ Phase 3 completes the vendor feature set: server-backed vendors table, multi-vendor price overrides, comparison UI with per-vendor totals, and "pick vendor" price-list snapshot flow. All 28 new tests pass; prior 46 tests remain green. Total: **74 server tests + 11 webapp tests = 85 green.**
+
+---
+
+## EPIC COMPLETE
+
+**3-Phase Journey:** 2026-05-10 Phase 1 → Phase 2 → Phase 3
+
+### Start State
+- localStorage-only persistence (price list + catalog)
+- No customers master
+- No vendors master
+- Single hardcoded vendor (Central States)
+- No server-backed reference data
+- 0 tests
+
+### End State
+- ✅ **Phase 1:** Server-backed catalog + price-list with version tracking (25 tests). Quote pinning to price-list version. Catalog bug fixed ($19k impact).
+- ✅ **Phase 2:** Customers master + quote↔customer linking (46 tests including Phase 1). Customer default overheads pre-fill. Quote search + filtering.
+- ✅ **Phase 3:** Vendors master + multi-vendor price comparison (74 server tests + 11 webapp tests = 85 total). Structural materials comparison, effective-price fallback, pick-vendor snapshot flow.
+- ✅ **Server:** Full CRUD for catalog, price-list, customers, vendors with JWT auth, owner-scoping, foreign-key constraints
+- ✅ **Frontend:** PriceListPage, CustomersPage, VendorsPage, ComparisonPage all live with integrated workflows
+- ✅ **Quality:** 0 new TS errors (tsc --noEmit: Exit 0), 0 new lint errors (eslint: 6 pre-existing), 11/11 calculator tests pass
+
+**Final Test Count: 85 green (74 server + 11 webapp)**
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus

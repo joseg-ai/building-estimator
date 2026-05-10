@@ -18,6 +18,8 @@
 
 ## Learnings
 
+📌 **EPIC COMPLETE** — Phase 3 shipped. 28 new vendor tests all green. 74 total (28 new + 46 prior) server tests passing. Verified auth 401, owner-scoping 404, isDefault atomic swap, cascade delete, bulk validation semantics. All endpoints behave exactly per contract. 0 bugs found. Ready for next epic.
+
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
 
 - **2026-05-10 — Vitest pinned at `^4.1.5`** (latest stable, supports vite 6/7/8 per peerDeps). Test runner config lives in `webapp/vitest.config.ts` with `environment: 'node'` for pure-module tests. Test files: `webapp/src/__tests__/*.test.ts`.
@@ -51,3 +53,12 @@
 - **Phase 2 — `DELETE /api/customers/:id?force=true` FK cascade verified.** SQLite `PRAGMA foreign_keys = ON` + `ALTER TABLE quotes ADD COLUMN customer_id … ON DELETE SET NULL` works correctly. After force-delete, quote rows have `customer_id = NULL` as confirmed by `GET /api/quotes/:id`.
 - **Phase 2 — Minor spec/code discrepancy in quotes routes.** `POST /api/quotes` and `PUT /api/quotes/:id` return `{ error: { code: 'VALIDATION' } }` when `customerId` is a non-integer, but Rusty's contract specifies `INVALID_CUSTOMER`. The 400 status is correct; only the error code diverges. Documented in `saul-phase2-customer-tests.md`; Rusty to fix. Tests accept either code to stay green.
 - **Phase 2 — Helper pattern extended.** Both new test files define local `createCustomer(token, name)` and `createQuote(token, overrides)` helpers (not in shared setup.js) to keep cross-file coupling low. Only shared setup.js exports are `app`, `request`, `registerAndLogin`, `authHeader`.
+
+---
+
+- **Phase 3 (2026-05-10) — 28 new vendor tests written; 74 total now green.** `server/test/vendors.test.js` covers all 9 vendor routes: CRUD (15 tests), vendor_prices single-item (9 tests), and bulk upsert (4 tests). All 74 tests pass (28 new + 46 prior).
+- **Phase 3 — Cascade delete confirmed working.** `ON DELETE CASCADE` on `vendor_prices.vendor_id` verified: upserted prices are auto-removed when the parent vendor is deleted (tested by reading price count before/after delete).
+- **Phase 3 — `isDefault` atomic swap verified.** POSTing a second vendor with `isDefault: true` correctly flips the first vendor's `is_default` to 0 via the transaction in `routes-vendors.js`. Tested with round-trip GET.
+- **Phase 3 — Bulk upsert batch-rejects correctly.** `POST /:id/prices/bulk` validates all items before writing. A single invalid item (negative unitPrice at index 1) causes 400 VALIDATION with zero rows written — confirmed by GET returning empty list after failed bulk.
+- **Phase 3 — PUT /:id/prices/:itemKey always returns 200** (never 201), even on first insert. This is an upsert (INSERT OR REPLACE via ON CONFLICT DO UPDATE). Rusty's contract says "200 or 201" but implementation is always 200. Tests assert 200; no bug filed (both are acceptable per contract).
+- **Phase 3 — No bugs found in Rusty's routes.** All 9 endpoints behave exactly per the API contract. Error envelopes, status codes, owner-scoping (404 not 403), isDefault semantics, cascade, and bulk validation all pass.
