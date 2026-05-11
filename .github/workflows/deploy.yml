@@ -43,9 +43,15 @@ jobs:
           cd deploy
           zip -r ../vmbc-estimator.zip .
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          app-name: 'vmbc-estimator'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: vmbc-estimator.zip
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        run: |
+          az webapp deploy --name vmbc-estimator \
+            --resource-group rg-vmbc-estimator \
+            --src-path vmbc-estimator.zip \
+            --type zip \
+            --async false
