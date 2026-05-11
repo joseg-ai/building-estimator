@@ -44,10 +44,13 @@ jobs:
           zip -r ../vmbc-estimator.zip .
 
       - name: Deploy to Azure Web App via Kudu ZipDeploy
+        env:
+          KUDU_USER: ${{ secrets.KUDU_USERNAME }}
+          KUDU_PASS: ${{ secrets.KUDU_PASSWORD }}
         run: |
           curl -X POST \
             "https://vmbc-estimator.scm.azurewebsites.net/api/zipdeploy" \
-            -u "${{ secrets.KUDU_USERNAME }}:${{ secrets.KUDU_PASSWORD }}" \
+            -u "${KUDU_USER}:${KUDU_PASS}" \
             -H "Content-Type: application/zip" \
             --data-binary @vmbc-estimator.zip \
             --fail-with-body \
