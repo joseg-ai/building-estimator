@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '18'
 
       - name: Install webapp dependencies
         working-directory: webapp
@@ -26,26 +26,20 @@ jobs:
           VITE_API_URL: ''
         run: npx vite build
 
+      - name: Install server production dependencies (Node 18 for Azure ABI compat)
+        working-directory: server
+        run: npm ci --omit=dev
+
       - name: Assemble deployment artifact
         run: |
           mkdir -p deploy/server
           mkdir -p deploy/webapp/dist
-          # Copy server source + package manifests only (NO node_modules — Oryx rebuilds on Azure)
+          # Copy server source + node_modules (compiled for Node 18 = Azure runtime)
           rsync -av --exclude='*.db' --exclude='*.db-shm' --exclude='*.db-wal' \
-            --exclude='test/' --exclude='.env*' --exclude='node_modules/' \
+            --exclude='test/' --exclude='.env*' \
             server/ deploy/server/
           # Copy built webapp
           cp -r webapp/dist/. deploy/webapp/dist/
-          # Root package.json tells Oryx the startup entry point
-          cat > deploy/package.json << 'EOF'
-          {
-            "name": "vmbc-estimator",
-            "version": "1.0.0",
-            "scripts": {
-              "start": "node server/index.js"
-            }
-          }
-          EOF
           # Create zip
           cd deploy
           zip -r ../vmbc-estimator.zip .
@@ -62,4 +56,5 @@ jobs:
             --data-binary @vmbc-estimator.zip \
             --fail-with-body \
             -w "\nHTTP Status: %{http_code}\n"
+
 
