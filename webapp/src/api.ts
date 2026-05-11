@@ -108,13 +108,13 @@ import type { BuildingConfig } from './types';
 
 export interface QuoteListItem {
   id: string;
-  project_name: string;
-  customer_name: string;
-  job_location: string;
-  grand_total: number;
+  projectName: string;
+  customerName: string;
+  jobLocation: string;
+  grandTotal: number;
   status: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   /** FK to customers.id — present on Phase-2+ quotes */
   customerId?: number | null;
 }
@@ -366,4 +366,106 @@ export async function apiDeleteCustomer(id: number, force = false): Promise<Cust
 
 export async function apiListCustomerQuotes(id: number): Promise<QuoteListItem[]> {
   return apiFetch(`/customers/${id}/quotes`);
+}
+
+// ---- Vendors ----
+
+export interface Vendor {
+  id: number;
+  userId: string;
+  name: string;
+  contactName: string | null;
+  email: string | null;
+  phone: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  state: string | null;
+  postalCode: string | null;
+  country: string;
+  notes: string | null;
+  isDefault: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export type VendorWritable = {
+  name: string;
+  contactName?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postalCode?: string | null;
+  country?: string;
+  notes?: string | null;
+  isDefault?: boolean;
+};
+
+export interface VendorPrice {
+  id: number;
+  vendorId: number;
+  itemKey: string;
+  unitPrice: number;
+  currency: string;
+  leadTimeDays: number | null;
+  notes: string | null;
+  updatedAt: number;
+}
+
+export interface VendorDeleteResult {
+  deleted: boolean;
+  id: number;
+}
+
+export async function apiListVendors(search?: string): Promise<Vendor[]> {
+  const qs = search ? `?search=${encodeURIComponent(search)}` : '';
+  return apiFetch(`/vendors${qs}`);
+}
+
+export async function apiGetVendor(id: number): Promise<Vendor> {
+  return apiFetch(`/vendors/${id}`);
+}
+
+export async function apiCreateVendor(body: VendorWritable): Promise<Vendor> {
+  return apiFetch('/vendors', { method: 'POST', body: JSON.stringify(body) });
+}
+
+export async function apiUpdateVendor(id: number, body: Partial<VendorWritable>): Promise<Vendor> {
+  return apiFetch(`/vendors/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+}
+
+export async function apiDeleteVendor(id: number): Promise<VendorDeleteResult> {
+  return apiFetch(`/vendors/${id}`, { method: 'DELETE' });
+}
+
+export async function apiListVendorPrices(vendorId: number): Promise<VendorPrice[]> {
+  return apiFetch(`/vendors/${vendorId}/prices`);
+}
+
+export async function apiUpsertVendorPrice(
+  vendorId: number,
+  itemKey: string,
+  body: { unitPrice: number; currency?: string; leadTimeDays?: number | null; notes?: string | null }
+): Promise<VendorPrice> {
+  return apiFetch(`/vendors/${vendorId}/prices/${encodeURIComponent(itemKey)}`, {
+    method: 'PUT',
+    body: JSON.stringify({ unitPrice: body.unitPrice, currency: body.currency, leadTimeDays: body.leadTimeDays, notes: body.notes }),
+  });
+}
+
+export async function apiDeleteVendorPrice(vendorId: number, itemKey: string): Promise<{ deleted: boolean; vendorId: number; itemKey: string }> {
+  return apiFetch(`/vendors/${vendorId}/prices/${encodeURIComponent(itemKey)}`, { method: 'DELETE' });
+}
+
+export async function apiBulkUpsertVendorPrices(
+  vendorId: number,
+  items: Array<{ itemKey: string; unitPrice: number; leadTimeDays?: number | null; notes?: string | null }>
+): Promise<{ upserted: number; vendorId: number }> {
+  return apiFetch(`/vendors/${vendorId}/prices/bulk`, {
+    method: 'POST',
+    body: JSON.stringify({ items }),
+  });
 }

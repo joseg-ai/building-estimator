@@ -79,6 +79,21 @@
 
 **Type-check / lint baseline (pre-existing, not mine):** DesignPage.tsx (2× `as Record<string, number>`), FramingTable.tsx (unused var), Layout.tsx (unused import), calculator.ts (unused var), authContext.tsx (setState-in-effect + fast-refresh), context.tsx (fast-refresh on `useBuildingConfig`).
 
+### 2026-05-10: Blank Page Bug Audit — /quotes and /vendors
+
+**Root causes found and fixed:**
+
+1. **`/quotes` blank page** — `QuoteListItem` interface in `api.ts` used snake_case field names (`grand_total`, `project_name`, `customer_name`, `job_location`, `created_at`, `updated_at`) but the server has always returned camelCase (`grandTotal`, `projectName`, etc.). When quotes exist, `formatUSD(q.grand_total)` crashed with `TypeError: Cannot read properties of undefined (reading 'toLocaleString')` because `q.grand_total` was `undefined`. React had no error boundary so the whole tree unmounted → blank page. Fixed by updating the interface and all template references to camelCase.
+
+2. **`/vendors` blank page + `VendorPricesModal` crash** — Two hooks pattern anti-patterns: `useCallback` was declared AFTER the `useEffect` calls that referenced it in their dependency arrays. At runtime, JavaScript's Temporal Dead Zone (TDZ) throws `ReferenceError: Cannot access 'X' before initialization` when the dep array is evaluated. Fixed by reordering: always declare `useCallback` BEFORE any `useEffect` that uses it in a dependency array.
+
+3. **`/compare` quote list crash** — Same `QuoteListItem` snake_case issue as /quotes; `formatUSD(q.grand_total)` crashed. Fixed alongside the interface change.
+
+**Pattern to remember:**
+- Always declare `useCallback`/`useMemo` functions BEFORE any `useEffect` dep arrays that reference them.
+- When TypeScript interfaces describe API responses, verify field casing matches actual server JSON (camelCase vs snake_case). TypeScript doesn't validate this at runtime.
+- `formatUSD(undefined)` is silent in types but throws at runtime — use `?? 0` guard if the type allows null/undefined.
+
 **Tests:** Saul's 11 calculator tests pass. No new tests added (deferred to Saul per RACI).
 
 ### 2026-05-10: Phase 2 — Customers CRUD + Quote Linking Wiring Map (COMPLETED)

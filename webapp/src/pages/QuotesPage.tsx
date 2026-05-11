@@ -145,23 +145,27 @@ export default function QuotesPage() {
             <tbody>
               {quotes.map((q) => (
                 <tr key={q.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium">{q.project_name || '(untitled)'}</td>
-                  <td className="py-3 px-4 text-gray-600">{q.customer_name || '-'}</td>
-                  <td className="py-3 px-4 text-gray-600">{q.job_location || '-'}</td>
-                  <td className="py-3 px-4 text-right font-medium">{formatUSD(q.grand_total)}</td>
+                  <td className="py-3 px-4 font-medium">{q.projectName || '(untitled)'}</td>
+                  <td className="py-3 px-4 text-gray-600">{q.customerName || '-'}</td>
+                  <td className="py-3 px-4 text-gray-600">{q.jobLocation || '-'}</td>
+                  <td className="py-3 px-4 text-right font-medium">{formatUSD(q.grandTotal)}</td>
                   <td className="py-3 px-4 text-center">
                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${statusColors[q.status] || 'bg-gray-100 text-gray-600'}`}>
                       {q.status}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-gray-500 text-xs">
-                    {new Date(q.updated_at).toLocaleDateString()}
+                    {new Date(q.updatedAt).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-1">
                       <button onClick={() => handleOpen(q.id)}
                         className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded hover:bg-blue-50">
                         Open
+                      </button>
+                      <button onClick={() => navigate(`/compare/${q.id}`)}
+                        className="text-xs text-purple-600 hover:text-purple-800 font-medium px-2 py-1 rounded hover:bg-purple-50">
+                        Compare
                       </button>
                       <button onClick={() => handleDelete(q.id)}
                         className="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded hover:bg-red-50">
