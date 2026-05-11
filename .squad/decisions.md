@@ -372,6 +372,52 @@ Each endpoint needs: happy path, auth-required (401), validation (400), 404 on m
 
 ---
 
+## Azure Deployment Prep — Round 1
+
+### API Base URL via Vite Env Var (Linus)
+
+**Date:** 2026-05-11  
+**Status:** Implemented
+
+**Context:** The app hardcoded `http://localhost:3001/api` in `webapp/src/api.ts`. With Azure App Service deployment (React served from the same origin as Express), this breaks production — all API calls would hit localhost instead of the live server.
+
+**Decision:** Use Vite's env var with `/api` fallback:
+```ts
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
+```
+
+- **Local dev:** `webapp/.env.development` sets `VITE_API_URL=http://localhost:3001/api`
+- **Production (Azure):** env var absent → falls back to `/api`
+- **Custom deployments:** set `VITE_API_URL` at build time
+
+**Convention:** `.env.development` committed (local dev URLs only, no secrets). Never hardcode `http://localhost:*` — always use env vars with sensible fallbacks.
+
+### Production Static Serving Pattern (Rusty)
+
+**Date:** 2026-05-11  
+**Status:** Shipped
+
+**Context:** Express serves both the React build and the API from one process in production. Need to gate static serving so dev workflow (Vite on 5173) remains unaffected.
+
+**Decision:** Use `SERVE_WEBAPP=true` flag to gate static serving:
+```js
+if (process.env.SERVE_WEBAPP === 'true') {
+  const webappDist = path.join(__dirname, '..', 'webapp', 'dist');
+  app.use(express.static(webappDist));
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(webappDist, 'index.html'));
+  });
+}
+```
+
+**Rules:**
+- **Dev:** `SERVE_WEBAPP` absent or `false`. Vite on 5173 proxies `/api/*` to Express on 3001.
+- **Production (Azure App Service):** Set `SERVE_WEBAPP=true` in Application Settings. Azure injects `PORT` (typically 8080). Express serves both SPA and API on same origin — no CORS.
+- **DB path:** `process.env.DB_PATH` (Azure should set `/home/site/data/estimator.db` for persistence).
+- **Port:** `process.env.PORT || 3001`. Azure injects PORT automatically.
+- **SPA fallback:** Uses `app.use()` (not `app.get('*', ...)`) to avoid Express 5's path-to-regexp v8 requirement for named wildcards.
+
 ## Governance
 
 - All meaningful changes require team consensus
