@@ -9,6 +9,27 @@ const catalogRoutes = require('./routes-catalog');
 const customersRoutes = require('./routes-customers');
 const vendorsRoutes = require('./routes-vendors');
 
+// Idempotent admin seeder — runs only when SEED_ADMIN=true and no users exist yet
+function seedAdminIfEmpty() {
+  const db = require('./db');
+  const bcrypt = require('bcryptjs');
+  const { v4: uuidv4 } = require('uuid');
+  const count = db.prepare('SELECT COUNT(*) as n FROM users').get();
+  if (count.n === 0) {
+    const id = uuidv4();
+    const hash = bcrypt.hashSync('admin123', 10);
+    db.prepare('INSERT INTO users (id, username, password_hash, display_name) VALUES (?, ?, ?, ?)').run(id, 'admin', hash, 'Admin');
+    console.log('[seed] Created default admin user (username: admin, password: admin123) — change this password immediately.');
+  }
+}
+if (process.env.SEED_ADMIN === 'true') {
+  // Ensure the DB data directory exists before seeding
+  const fs = require('fs');
+  const dbDir = path.dirname(process.env.DB_PATH || path.join(__dirname, 'estimator.db'));
+  fs.mkdirSync(dbDir, { recursive: true });
+  seedAdminIfEmpty();
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
