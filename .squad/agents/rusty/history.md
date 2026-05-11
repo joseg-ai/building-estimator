@@ -87,6 +87,8 @@
 
 📌 **EPIC COMPLETE** — Phase 3 shipped. 28 new vendor tests + 46 prior = 74 server tests green. All 9 vendor routes live (CRUD, prices, bulk upsert). `item_key` persistence pattern locked. isDefault atomic swap verified. CASCADE delete on vendor working. Bug fix in Phase 2 customer routes. Ready for next epic.
 
+📌 **2026-05-11 — Production architecture greenlight pending.** Danny completed Azure architecture proposal: Tier 1 = App Service B1 + SQLite + Key Vault (~$13-15/mo). Tier 2 (10+ users) = PostgreSQL Flex + scaled App Service. DB path already env-driven. Awaiting Jose greenlight. Linus handles API URL config; Rusty's DB/API changes if needed post-approval.
+
 - **New tables (idempotent `IF NOT EXISTS` in `db.js`):**
   - `vendors` — `id INTEGER PK AUTOINCREMENT`, `user_id TEXT FK→users`, `name NOT NULL`, optional `contact_name`, `email`, `phone`, address fields (line1/line2/city/state/postal_code, `country DEFAULT 'USA'`), `notes`, `is_default INTEGER DEFAULT 0` (0/1 flag), `created_at/updated_at INTEGER` (epoch ms). Index: `idx_vendors_user_name(user_id, name)`.
   - `vendor_prices` — `id PK AUTOINCREMENT`, `vendor_id FK→vendors ON DELETE CASCADE`, `item_key TEXT`, `unit_price REAL NOT NULL`, `currency TEXT DEFAULT 'USD'`, `lead_time_days INTEGER NULL`, `notes TEXT NULL`, `updated_at INTEGER`. `UNIQUE(vendor_id, item_key)`. Index: `idx_vendor_prices_item(item_key)`.
