@@ -32,21 +32,11 @@ jobs:
 
       - name: Assemble deployment artifact
         run: |
-          mkdir -p deploy/server
           mkdir -p deploy/webapp/dist
-          # Copy server source (excluding dev node_modules, test, db files)
-          cp server/index.js deploy/server/
-          cp server/auth.js deploy/server/
-          cp server/db.js deploy/server/
-          cp server/routes-auth.js deploy/server/
-          cp server/routes-quotes.js deploy/server/
-          cp server/routes-pricelist.js deploy/server/
-          cp server/routes-catalog.js deploy/server/
-          cp server/routes-customers.js deploy/server/
-          cp server/routes-vendors.js deploy/server/
-          cp server/package.json deploy/server/
-          cp server/package-lock.json deploy/server/
-          cp -r server/node_modules deploy/server/
+          # Copy entire server directory (JS files + node_modules), excluding dev/local artifacts
+          rsync -av --exclude='*.db' --exclude='*.db-shm' --exclude='*.db-wal' \
+            --exclude='test/' --exclude='.env*' \
+            server/ deploy/server/
           # Copy built webapp
           cp -r webapp/dist/. deploy/webapp/dist/
           # Create zip
