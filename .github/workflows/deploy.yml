@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -26,18 +26,20 @@ jobs:
           VITE_API_URL: ''
         run: npx vite build
 
+      - name: Install server production dependencies
+        working-directory: server
+        run: npm ci --omit=dev
+
       - name: Assemble deployment artifact
         run: |
           mkdir -p deploy/server
           mkdir -p deploy/webapp/dist
-          # Copy server source + package manifests only (startup.sh rebuilds native deps on Azure)
+          # Copy server source + node_modules (compiled on ubuntu-22.04 glibc 2.35 — compat with Azure glibc 2.36)
           rsync -av --exclude='*.db' --exclude='*.db-shm' --exclude='*.db-wal' \
-            --exclude='test/' --exclude='.env*' --exclude='node_modules/' \
+            --exclude='test/' --exclude='.env*' \
             server/ deploy/server/
           # Copy built webapp
           cp -r webapp/dist/. deploy/webapp/dist/
-          # Include startup script
-          cp startup.sh deploy/startup.sh
           # Create zip
           cd deploy
           zip -r ../vmbc-estimator.zip .
