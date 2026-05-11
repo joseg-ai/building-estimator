@@ -47,6 +47,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'vmbc-estimator'
-          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: vmbc-estimator.zip
