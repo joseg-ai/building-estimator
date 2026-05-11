@@ -11,10 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22 (for Vite webapp build)
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install webapp dependencies
         working-directory: webapp
@@ -25,6 +25,11 @@ jobs:
         env:
           VITE_API_URL: ''
         run: npx vite build
+
+      - name: Setup Node.js 18 (matches Azure runtime for native module ABI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
       - name: Install server production dependencies (Node 18 for Azure ABI compat)
         working-directory: server
