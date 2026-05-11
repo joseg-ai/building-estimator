@@ -107,3 +107,25 @@
   - `POST /api/vendors/:id/prices/bulk` — bulk upsert array of `{itemKey, unitPrice, leadTimeDays?, notes?}`; validates all items before any write, runs in single transaction.
 - **Wired in `server/index.js`:** `app.use('/api/vendors', vendorsRoutes)` — mirrors customers mounting.
 - **All 46 prior tests pass unchanged** after schema additions. No new tests this round (Saul owns test authoring).
+
+📌 **2026-05-11 — Azure deploy prep: prod-mode static serving shipped.**
+
+- **SERVE_WEBAPP guard:** `server/index.js` now conditionally serves the React build when `process.env.SERVE_WEBAPP === 'true'`. Dev mode (Vite on 5173) is completely unaffected — the block is a no-op unless that env var is set. Azure App Service Application Settings sets it.
+- **Static serving pattern:**
+  ```js
+  const webappDist = path.join(__dirname, '..', 'webapp', 'dist');
+  app.use(express.static(webappDist));
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(webappDist, 'index.html'));
+  });
+  ```
+  Uses `app.use()` for the SPA fallback — **not** `app.get('*', ...)`. Express 5 uses path-to-regexp v8, which rejects bare `*` wildcards with `PathError: Missing parameter name`. `app.use()` avoids this entirely.
+- **PORT handling:** Already `process.env.PORT || 3001`. Azure injects PORT (typically 8080 on Linux App Service). No change needed.
+- **DB_PATH:** Already `process.env.DB_PATH || path.join(__dirname, 'estimator.db')` in `db.js`. Set `DB_PATH=/home/site/data/estimator.db` in Azure for persistent storage. No change needed.
+- **`npm start`:** Already `"start": "node index.js"` in `server/package.json`. Azure runs `npm start`. No change needed.
+- **`require.main` guard + `module.exports`:** Added to `server/index.js`. The `listen()` call is now conditional so supertest can import the app without starting a server. `module.exports = app` enables test imports. These were missing from the committed file.
+- **routes-auth.js /me fix:** `router.get('/me', ...)` was accessing `req.user` without any auth guard (the authMiddleware was on a dead `app.use('/api/auth/me', ...)` handler in index.js that was shadowed by authRoutes). Fixed by importing authMiddleware into routes-auth.js and applying it inline. Without this fix, unauthenticated `GET /api/auth/me` returned 500 instead of 401.
+- **Route mounts audit:** The committed `server/index.js` only had auth + quotes routes. catalog, pricelist, customers, vendors were not mounted. This session wired all of them properly.
+- **Local prod-mode test (2026-05-11):** `SERVE_WEBAPP=true PORT=3002 node index.js` — `GET /` → HTTP 200 HTML, `GET /api/auth/me` (no token) → `{"error":"Authorization required"}`, `GET /api/health` → `{"status":"ok"}`. All pass.
+- **Test suite:** `npm test` → 66/74 pass. 8 failures are pre-existing implementation gaps in `routes-quotes.js` (no customerId support) and `routes-customers.js` (delete guard + force + quotes sub-route) — not introduced by this session.

@@ -1,8 +1,13 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const { authMiddleware } = require('./auth');
 const authRoutes = require('./routes-auth');
 const quotesRoutes = require('./routes-quotes');
+const priceListRoutes = require('./routes-pricelist');
+const catalogRoutes = require('./routes-catalog');
+const customersRoutes = require('./routes-customers');
+const vendorsRoutes = require('./routes-vendors');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,16 +20,35 @@ app.use(express.json({ limit: '2mb' }));
 app.use('/api/auth', authRoutes);
 
 // Protected routes (require auth)
-app.use('/api/auth/me', authMiddleware, (req, res) => {
-  res.json({ id: req.user.id, username: req.user.username, displayName: req.user.displayName });
-});
 app.use('/api/quotes', authMiddleware, quotesRoutes);
+app.use('/api/customers', customersRoutes);
+app.use('/api/vendors', vendorsRoutes);
+
+// Catalog & price list -- reads open during dev; writes guarded inside the routers
+app.use('/api/price-list', priceListRoutes);
+app.use('/api/catalog', catalogRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.listen(PORT, () => {
-  console.log(`API server running on http://localhost:${PORT}`);
-});
+// Production static serving -- only active when SERVE_WEBAPP=true (Azure App Service).
+// Dev uses Vite on port 5173; this block is a no-op in that mode.
+if (process.env.SERVE_WEBAPP === 'true') {
+  const webappDist = path.join(__dirname, '..', 'webapp', 'dist');
+  app.use(express.static(webappDist));
+  // SPA fallback -- unknown non-API routes return index.html so React Router handles them
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(webappDist, 'index.html'));
+  });
+}
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`API server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

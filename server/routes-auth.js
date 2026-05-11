@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./db');
-const { generateToken } = require('./auth');
+const { generateToken, authMiddleware } = require('./auth');
 
 const router = express.Router();
 
@@ -53,8 +53,7 @@ router.post('/login', (req, res) => {
 });
 
 /** GET /api/auth/me -- get current user info from token */
-router.get('/me', (req, res) => {
-  // This route requires auth middleware applied in index.js
+router.get('/me', authMiddleware, (req, res) => {
   res.json({ id: req.user.id, username: req.user.username, displayName: req.user.displayName });
 });
 
