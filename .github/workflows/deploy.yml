@@ -43,15 +43,12 @@ jobs:
           cd deploy
           zip -r ../vmbc-estimator.zip .
 
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App via Kudu ZipDeploy
         run: |
-          az webapp deploy --name vmbc-estimator \
-            --resource-group rg-vmbc-estimator \
-            --src-path vmbc-estimator.zip \
-            --type zip \
-            --async false
+          curl -X POST \
+            "https://vmbc-estimator.scm.azurewebsites.net/api/zipdeploy" \
+            -u "${{ secrets.KUDU_USERNAME }}:${{ secrets.KUDU_PASSWORD }}" \
+            -H "Content-Type: application/zip" \
+            --data-binary @vmbc-estimator.zip \
+            --fail-with-body \
+            -w "\nHTTP Status: %{http_code}\n"
