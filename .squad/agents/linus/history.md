@@ -58,3 +58,7 @@ rusty fixed login "Failed to fetch" issue by adding dev-only Vite proxy.
 - No impact to your infrastructure (dev-only, not used in production)
 - But good to know for future webapp dev setup discussions
 
+### Key API URL Pattern
+
+When working on API integration, remember: **`const API_BASE = import.meta.env.VITE_API_URL ?? '/api'`** in `webapp/src/api.ts` is the pattern for same-origin production deployment. The `??` operator uses `/api` fallback only if `VITE_API_URL` is `null` or `undefined`—empty string is NOT treated as falsy. In CI/deploy workflows, always set `VITE_API_URL: '/api'` (not `''`). For local dev, use Vite proxy with `VITE_API_URL` unset or commented out.
+
