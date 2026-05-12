@@ -18,3 +18,24 @@
 - `.squad/decisions/inbox/rusty-prod-static-serving.md` → `.squad/decisions.md`
 
 **Next Round:** Round 2 — Azure provisioning (resource groups, App Service, database)
+
+---
+
+## Round 2: Azure Admin Seed Diagnosis (Unscheduled Sync)
+
+**Round Name:** Azure admin seed diagnosis  
+**Date:** 2026-05-11  
+**Agents Spawned:**
+- `rusty` (Backend Dev) — sync, claude-sonnet-4.6
+
+**Outcomes:**
+- Root cause identified: PowerShell + curl JSON escape bug, NOT server
+- Login actually works (HTTP 200 + JWT returned)
+- Seeder already wired in `server/index.js` (lines 12–27)
+- `SEED_ADMIN=true` already set on Azure web app
+- Decision: Keep seeder enabled (idempotent, protects against DB resets)
+
+**Decisions Merged:**
+- `.squad/decisions/inbox/rusty-azure-admin-seed.md` → `.squad/decisions.md`
+
+**Next Round:** Round 3 — (pending Jose greenlight on Azure architecture)
