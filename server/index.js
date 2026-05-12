@@ -23,10 +23,6 @@ function seedAdminIfEmpty() {
   }
 }
 if (process.env.SEED_ADMIN === 'true') {
-  // Ensure the DB data directory exists before seeding
-  const fs = require('fs');
-  const dbDir = path.dirname(process.env.DB_PATH || path.join(__dirname, 'estimator.db'));
-  fs.mkdirSync(dbDir, { recursive: true });
   seedAdminIfEmpty();
 }
 
