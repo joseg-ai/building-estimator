@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-22.04
@@ -40,58 +44,28 @@ jobs:
             server/ deploy/server/
           # Copy built webapp
           cp -r webapp/dist/. deploy/webapp/dist/
+          # Report artifact size
+          du -sh deploy/
           # Create zip
           cd deploy
           zip -r ../vmbc-estimator.zip .
+          ls -lh ../vmbc-estimator.zip
 
-      - name: Deploy to Azure Web App via Kudu ZipDeploy
-        env:
-          KUDU_USER: ${{ secrets.KUDU_USERNAME }}
-          KUDU_PASS: ${{ secrets.KUDU_PASSWORD }}
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
         run: |
-          # Check zip size
-          ls -lh vmbc-estimator.zip
-          
-          # Deploy asynchronously (avoids timeout on large zips)
-          RESPONSE=$(curl -X POST \
-            "https://vmbc-estimator.scm.azurewebsites.net/api/zipdeploy?isAsync=true" \
-            -u "${KUDU_USER}:${KUDU_PASS}" \
-            -H "Content-Type: application/zip" \
-            --data-binary @vmbc-estimator.zip \
-            --max-time 300 \
-            -w "\n%{http_code}" \
-            -s)
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          echo "Deploy HTTP status: $HTTP_CODE"
-          
-          # 202 = accepted for async deploy
-          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "202" ]; then
-            echo "Deploy failed with status $HTTP_CODE"
-            echo "$RESPONSE"
-            exit 1
-          fi
-          
-          # Poll until deployment completes (max 5 minutes)
-          echo "Polling deployment status..."
-          for i in $(seq 1 30); do
-            sleep 10
-            STATUS=$(curl -s -u "${KUDU_USER}:${KUDU_PASS}" \
-              "https://vmbc-estimator.scm.azurewebsites.net/api/deployments/latest" | \
-              python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',0), d.get('complete',False))")
-            echo "Poll $i: $STATUS"
-            COMPLETE=$(echo "$STATUS" | awk '{print $2}')
-            DEPLOY_STATUS=$(echo "$STATUS" | awk '{print $1}')
-            if [ "$COMPLETE" = "True" ]; then
-              if [ "$DEPLOY_STATUS" = "4" ]; then
-                echo "Deployment succeeded!"
-                exit 0
-              else
-                echo "Deployment failed with status $DEPLOY_STATUS"
-                exit 1
-              fi
-            fi
-          done
-          echo "Deployment polling timed out"
-          exit 1
+          az webapp deploy \
+            --resource-group rg-vmbc-estimator \
+            --name vmbc-estimator \
+            --src-path vmbc-estimator.zip \
+            --type zip \
+            --async true \
+            --timeout 600
 
 
