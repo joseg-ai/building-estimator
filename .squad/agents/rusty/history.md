@@ -17,7 +17,8 @@
 ## Recent Work (2026-05-11 to 2026-05-12)
 
 - **2026-05-11:** Azure deploy architecture greenlit (Tier 1: B1 + SQLite + KeyVault ~\–15/mo; Tier 2: PostgreSQL + scaled App Service). Prod-mode static serving wired (SERVE_WEBAPP guard, SPA fallback via \pp.use()\ not \pp.get('*')\). Auth \/me\ fix (missing authMiddleware inline). Routes audit: all 4 routers (auth, quotes, catalog, pricelist, customers, vendors) now mounted.
-- **2026-05-12:** Login "Failed to fetch" fix (Vite proxy + root npm run dev) completed by Rusty.
+- **2026-05-12 (dev):** Login "Failed to fetch" fix (Vite proxy + root npm run dev) completed by Rusty -- but those changes were only in the working tree; never committed.
+- **2026-05-12 (prod):** Azure "Failed to fetch" on login diagnosed and fixed. Root cause: api.ts had API_BASE = 'http://localhost:3001/api' hardcoded; Azure HTTPS page calling HTTP localhost = mixed content blocked by browser. Fix: committed api.ts env-driven approach + set VITE_API_URL: '/api' in deploy.yml. Pushed to main; deploy triggered (run 25766914057).
 
 ## Key Learnings
 
@@ -46,6 +47,12 @@ pm rebuild better-sqlite3\ from server/.
 
 📌 **Mixed timestamp convention**
 - Phase 1 uses \datetime('now')\ TEXT; Phase 2+ use INTEGER epoch-ms. Flag for future unification.
+
+📌 **Azure prod "Failed to fetch" — mixed content, not CORS**
+- Single App Service hosts both React (HTTPS) and Express API. Azure topology: same origin, no CORS needed.
+- If `api.ts` has a hardcoded `http://localhost:3001` URL, the HTTPS prod page tries to call HTTP → browser blocks as mixed content → `TypeError: Failed to fetch`.
+- Fix: api.ts must use `import.meta.env.VITE_API_URL ?? '/api'`. Deploy CI must set `VITE_API_URL: '/api'` (not `''` — `??` does NOT treat empty string as absent; only `null`/`undefined` trigger the fallback).
+- Lesson: always commit the dev-fix to git. Working-tree-only changes don't reach Azure.
 
 ## Next
 
