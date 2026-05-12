@@ -28,11 +28,17 @@
 ### Core Patterns (To Remember)
 
 - **State separation:** Per-quote config (BuildingConfig reducer) stays separate from app-wide reference data (priceList/catalog/customers/vendors useState slices).
-- **API pattern:** `apiFetch()` wraps fetch, auto-injects token, throws `Error & { code?, status? }` for error surfacing.
+- **API pattern:** `apiFetch()` wraps fetch, auto-injects token, throws `Error & { code?, status? }` for error surfacing. Returns `Promise<any>` — callers are typed by their declared return types.
+- **API URL config:** `const API_BASE = import.meta.env.VITE_API_URL ?? '/api'` in `api.ts`. `.env.development` sets `VITE_API_URL=http://localhost:3001/api` for local dev. Production (Azure App Service same-origin) uses `/api` fallback.
 - **Optimistic updates:** Snapshot previous state, mutate immediately, PUT in background, restore on failure. Error surfaced via `sync.error` field on state slice.
 - **Offline fallback:** Bundled defaults + localStorage cache. On 404, POST defaults as new version and activate.
 - **Vendor calc overlay:** Clone components, replace `costPerUnit` with effective vendor price, call `calculateCosts()`. Labor + flat fees unchanged.
 - **Error handling:** `apiFetch` validates status + code. TDZ (Temporal Dead Zone) in useCallback/useEffect ordering.
+
+## Learnings
+
+### 2026-05-11 — API URL env var pattern
+`const API_BASE = import.meta.env.VITE_API_URL ?? '/api'` is the correct pattern for Vite apps deployed to a same-origin server. Local dev overrides via `.env.development` (committed, no secrets); production uses the `/api` fallback automatically. Never hardcode `http://localhost:3001` — it breaks production.
 
 ### Important Files & Patterns
 
@@ -42,4 +48,13 @@
 - **Components:** CustomerPicker (autocomplete), VendorPricesModal (nested, per-vendor overrides).
 - **Storage:** `webapp/src/storage.ts` — localStorage cache helpers for price-list, catalog, customers, vendors, comparison selection.
 
+
+
+## 2026-05-12: Webapp Vite dev proxy for API routing
+
+rusty fixed login "Failed to fetch" issue by adding dev-only Vite proxy.
+- webapp/vite.config.ts now proxies /api → http://localhost:3001
+- Root package.json runs both server + webapp with 'npm run dev'
+- No impact to your infrastructure (dev-only, not used in production)
+- But good to know for future webapp dev setup discussions
 

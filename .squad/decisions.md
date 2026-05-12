@@ -521,3 +521,47 @@ if (process.env.SERVE_WEBAPP === 'true') {
 - All meaningful changes require team consensus
 - Document architectural decisions here
 - Keep history focused on work, decisions focused on direction
+
+
+---
+
+# Decision: Dev API routing — Vite proxy over absolute VITE_API_URL
+
+**Date:** 2026-05-12  
+**Author:** Rusty  
+**Trigger:** Login "Failed to fetch" bug
+
+## Context
+
+The webapp was making absolute cross-origin HTTP requests to `http://localhost:3001/api` using `VITE_API_URL` in `.env.development`. There was no joint startup command; developers who only ran `npm run dev` in `webapp/` had no backend, causing every login to fail silently with "Failed to fetch".
+
+## Decision
+
+**Use Vite's dev proxy instead of an absolute `VITE_API_URL`.**
+
+- `webapp/vite.config.ts` now includes:
+  ```ts
+  server: {
+    proxy: {
+      '/api': { target: 'http://localhost:3001', changeOrigin: true }
+    }
+  }
+  ```
+- `VITE_API_URL` in `.env.development` is commented out. `api.ts` falls back to `/api` (relative), which the proxy forwards.
+- A root-level `package.json` with `concurrently` was added. Running `npm run dev` at project root starts both server and webapp together.
+
+## Why proxy over absolute URL
+
+| | Proxy approach | Absolute VITE_API_URL |
+|---|---|---|
+| CORS in dev | Not needed | Required |
+| Startup | One `npm run dev` | Two terminals |
+| Misconfig surface | Low | Env var can be wrong/missing |
+| Production | Unaffected (not used in prod) | Unaffected |
+
+## Impact
+
+- CORS config in `server/index.js` is unchanged (still needed for production and any non-proxy client).
+- `VITE_API_URL` can still be set to point at a remote staging server when needed.
+- No changes to `api.ts` or any auth code.
+
