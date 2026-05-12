@@ -60,12 +60,31 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
+          # az webapp deploy can time out on the client side while deploy is still in progress
+          # Use || true so the workflow doesn't fail on timeout; we verify liveness below
           az webapp deploy \
             --resource-group rg-vmbc-estimator \
             --name vmbc-estimator \
             --src-path vmbc-estimator.zip \
             --type zip \
             --async true \
-            --timeout 600
+            --timeout 600 || true
+
+      - name: Verify app is live
+        run: |
+          echo "Waiting for app to start (up to 5 min)..."
+          for i in $(seq 1 30); do
+            sleep 10
+            HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 \
+              https://vmbc-estimator.azurewebsites.net/api/health)
+            echo "Poll $i: HTTP $HTTP"
+            if [ "$HTTP" = "200" ]; then
+              echo "App is live!"
+              curl -s https://vmbc-estimator.azurewebsites.net/api/health
+              exit 0
+            fi
+          done
+          echo "App did not respond in time"
+          exit 1
 
 
