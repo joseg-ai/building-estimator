@@ -27,7 +27,7 @@ jobs:
       - name: Build React app (prod — same-origin /api)
         working-directory: webapp
         env:
-          VITE_API_URL: ''
+          VITE_API_URL: '/api'
         run: npx vite build
 
       - name: Install server production dependencies

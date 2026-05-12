@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
 
 function getToken(): string | null {
   return localStorage.getItem('auth_token');
@@ -12,7 +12,8 @@ function clearToken() {
   localStorage.removeItem('auth_token');
 }
 
-async function apiFetch(path: string, options: RequestInit = {}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function apiFetch(path: string, options: RequestInit = {}): Promise<any> {
   const token = getToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
