@@ -20,6 +20,8 @@ import {
 import {
   saveConfig,
   loadConfig,
+  saveStairConfig,
+  loadStairConfig,
   saveCachedPriceList,
   loadCachedPriceList,
   saveCachedCatalog,
@@ -47,6 +49,7 @@ import {
 } from './api';
 import { defaultPriceList } from './priceList';
 import { allCatalogs } from './catalog';
+import type { StairConfig } from './stairEngine';
 
 // ---- Actions ----
 
@@ -208,6 +211,10 @@ interface BuildingContextValue {
   customers: CustomersState;
   /** Search customers (lazy-load, debounce in caller). Populates customers.list. */
   searchCustomers: (query?: string) => Promise<Customer[]>;
+
+  /** Parametric stair calculator config — auto-saved to localStorage. */
+  stairConfig: StairConfig;
+  setStairConfig: (next: StairConfig | ((prev: StairConfig) => StairConfig)) => void;
 }
 
 const BuildingContext = createContext<BuildingContextValue | null>(null);
@@ -260,12 +267,21 @@ export function BuildingProvider({ children }: { children: ReactNode }) {
   const [priceList, setPriceList] = useState<PriceListState>(emptyPriceList);
   const [catalog, setCatalog] = useState<CatalogState>(emptyCatalog);
   const [customers, setCustomers] = useState<CustomersState>(emptyCustomers);
+  const [stairConfig, setStairConfigState] = useState<StairConfig>(() => loadStairConfig());
   const initRanRef = useRef(false);
 
   // Auto-save to localStorage on every state change
   useEffect(() => {
     saveConfig(config);
   }, [config]);
+
+  useEffect(() => {
+    saveStairConfig(stairConfig);
+  }, [stairConfig]);
+
+  const setStairConfig = useCallback<BuildingContextValue['setStairConfig']>((next) => {
+    setStairConfigState((prev) => (typeof next === 'function' ? (next as (p: StairConfig) => StairConfig)(prev) : next));
+  }, []);
 
   // First-load: seed from localStorage cache (works offline / unauthenticated)
   useEffect(() => {
@@ -545,6 +561,8 @@ export function BuildingProvider({ children }: { children: ReactNode }) {
         catalog,
         customers,
         searchCustomers,
+        stairConfig,
+        setStairConfig,
       }}
     >
       {children}

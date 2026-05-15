@@ -1,7 +1,74 @@
 import type { BuildingConfig } from './types';
 import { createDefaultConfig } from './types';
+import type { StairConfig } from './stairEngine';
 
 const STORAGE_KEY = 'building-estimator-config';
+const STAIR_STORAGE_KEY = 'building-estimator-stair-config';
+
+/** Default stair config — mirrors the workbook canonical reference building
+ *  (3 levels / 12.5 ft FtF / 5 ft wide / 11" run / treads [10,9,9] /
+ *  mid-landing 10.5×4.667 / floor-landing 10.5×6 / right guard + both hand rails).
+ *  Matches the engine's golden test case so first-load values reproduce workbook totals.
+ */
+export function createDefaultStairConfig(): StairConfig {
+  return {
+    levels: 3,
+    width: 5,
+    floorToFloorHeight: 12.5,
+    treadsPerFlight: [10, 9, 9],
+    treadRunInches: 11,
+    hasMidLanding: true,
+    midLanding: {
+      width: 10.5,
+      length: 4.666666666666667,
+      guardRailA: true,
+      guardRailB: true,
+      guardRailC: true,
+    },
+    floorLanding: {
+      width: 10.5,
+      length: 6,
+      guardRailA: true,
+      guardRailB: true,
+      guardRailC: true,
+    },
+    rails: {
+      rightGuardRail: true,
+      leftGuardRail: false,
+      rightHandRail: true,
+      leftHandRail: true,
+    },
+  };
+}
+
+export function saveStairConfig(cfg: StairConfig): void {
+  try {
+    localStorage.setItem(STAIR_STORAGE_KEY, JSON.stringify(cfg));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadStairConfig(): StairConfig {
+  try {
+    const raw = localStorage.getItem(STAIR_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<StairConfig>;
+      const defaults = createDefaultStairConfig();
+      return {
+        ...defaults,
+        ...parsed,
+        treadsPerFlight: parsed.treadsPerFlight ?? defaults.treadsPerFlight,
+        midLanding: { ...defaults.midLanding!, ...(parsed.midLanding ?? {}) },
+        floorLanding: { ...defaults.floorLanding, ...(parsed.floorLanding ?? {}) },
+        rails: { ...defaults.rails, ...(parsed.rails ?? {}) },
+      };
+    }
+  } catch {
+    // fall through to defaults
+  }
+  return createDefaultStairConfig();
+}
 
 /** Save config to localStorage */
 export function saveConfig(config: BuildingConfig): void {
