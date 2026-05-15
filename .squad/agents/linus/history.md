@@ -78,23 +78,7 @@ When working on API integration, remember: **`const API_BASE = import.meta.env.V
 - **Server test failures (14 SQLite ON CONFLICT errors)** are pre-existing, unrelated to UI changes — Rusty's domain (vendor_prices schema migration issue).
 - **Build validated**: `npm run build` exits 0, 54 modules, no TS errors after all three fixes.
 
-## 2026-05-14T19:22:29Z: UI/API Fixes Sprint (w/ Rusty)
+📌 **2026-05-14T19:45:20Z: Reuben Full App Assessment Complete**
 
-**Parallel session:** Linus (374s) + Rusty (692s) resolved 5 critical issues.
-
-**Linus Deliverables (3 files):**
-- LoginPage: Removed Sign In / Register tab, Display Name field, register branch
-- CustomersPage: Renamed "Customer Name" → "Company Name" (underlying `name` field), added HTML `required`, disabled submit on empty, removed Company column
-- QuotesPage + api.ts: Fixed snake_case → camelCase mapping; added defensive guards (`?? 0`, `?.` for dates)
-
-**Rusty Deliverables (parallel backend fixes):**
-- db.js: Added all missing phase 2/3 table DDLs + UNIQUE constraint on vendor_prices
-- index.js: Global error middleware (JSON errors, not HTML 500s)
-- routes-quotes.js: Wired customerId in POST/PUT/GET
-
-**Outcomes:**
-- Webapp build clean (54 modules, no TS errors)
-- Server tests: 74/74 pass (was 60/14)
-- POST /api/customers → 201 with row in DB
-- Quotes page no longer blank after opening
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: 2 critical gaps (no parametric BOM generation engine; Beams/Take-off sheet missing), 2 pricing bugs (labor applied to cold-formed components, frame-opening cost method broken), 14 terminology improvements, 17-item prioritized backlog (6 critical, 6 important, 5 nice-to-have), and 1 reusable PEMB proposal anatomy skill. Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning. See `.squad/decisions.md` for full 17-item breakdown.
 

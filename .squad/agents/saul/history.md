@@ -56,9 +56,8 @@
 
 ---
 
-- **Phase 3 (2026-05-10) — 28 new vendor tests written; 74 total now green.** `server/test/vendors.test.js` covers all 9 vendor routes: CRUD (15 tests), vendor_prices single-item (9 tests), and bulk upsert (4 tests). All 74 tests pass (28 new + 46 prior).
-- **Phase 3 — Cascade delete confirmed working.** `ON DELETE CASCADE` on `vendor_prices.vendor_id` verified: upserted prices are auto-removed when the parent vendor is deleted (tested by reading price count before/after delete).
-- **Phase 3 — `isDefault` atomic swap verified.** POSTing a second vendor with `isDefault: true` correctly flips the first vendor's `is_default` to 0 via the transaction in `routes-vendors.js`. Tested with round-trip GET.
-- **Phase 3 — Bulk upsert batch-rejects correctly.** `POST /:id/prices/bulk` validates all items before writing. A single invalid item (negative unitPrice at index 1) causes 400 VALIDATION with zero rows written — confirmed by GET returning empty list after failed bulk.
-- **Phase 3 — PUT /:id/prices/:itemKey always returns 200** (never 201), even on first insert. This is an upsert (INSERT OR REPLACE via ON CONFLICT DO UPDATE). Rusty's contract says "200 or 201" but implementation is always 200. Tests assert 200; no bug filed (both are acceptable per contract).
-- **Phase 3 — No bugs found in Rusty's routes.** All 9 endpoints behave exactly per the API contract. Error envelopes, status codes, owner-scoping (404 not 403), isDefault semantics, cascade, and bulk validation all pass.
+📌 **2026-05-14T19:45:20Z: Reuben Full App Assessment Complete**
+
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: 2 critical gaps (no parametric BOM generation engine; Beams/Take-off sheet missing), 2 pricing bugs (labor applied to cold-formed components, frame-opening cost method broken), 14 terminology improvements, 17-item prioritized backlog (6 critical, 6 important, 5 nice-to-have), and 1 reusable PEMB proposal anatomy skill. Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning. See `.squad/decisions.md` for full 17-item breakdown.
+
+

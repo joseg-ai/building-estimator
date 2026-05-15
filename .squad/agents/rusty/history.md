@@ -62,6 +62,12 @@ pm rebuild better-sqlite3\ from server/.
 
 ---
 
+📌 **2026-05-14T19:45:20Z: Reuben Full App Assessment Complete**
+
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: 2 critical gaps (no parametric BOM generation engine; Beams/Take-off sheet missing), 2 pricing bugs (labor applied to cold-formed components, frame-opening cost method broken), 14 terminology improvements, 17-item prioritized backlog (6 critical, 6 important, 5 nice-to-have), and 1 reusable PEMB proposal anatomy skill. Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning. See `.squad/decisions.md` for full 17-item breakdown.
+
+---
+
 ## 2026-05-14 — Customers 500 Fix
 
 ### Root Causes Found

@@ -157,8 +157,8 @@
 
 - **Spec document:** `.squad/decisions/inbox/livingston-phase3-comparison-spec.md` (12 sections covering scope, model, effective price rule, profit handling, vendor selection flow, edge cases, UX hints, data model, API, testing, terminology). Ready for team review, Rusty (schema), Linus (UI/UX), Saul (tests).
 
-### Phase 3 Multi-Vendor Comparison — SHIPPED (2026-05-10)
+### 2026-05-14T19:45:20Z: Reuben App Assessment Complete
 
-**Analysis locked in:** Effective-price fallback rule implemented exactly per spec. "Pick vendor" snapshot flow working. All edge cases handled (sparse data, orphans, deleted vendors). No rework during implementation. Comparison feature production-ready.
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: (1) No parametric BOM generation engine → every quantity entered manually (slower than Excel); (2) Beams/Take-off sheet missing → no purchasing document for steel service center; (3) Labor applied to both structural + cold-formed components (should be structural-only → ~$9–19k underestimate per quote); (4) Frame opening cold-form items use weight-based cost method but are priced per LnFt (silent $0 cost). Backlog: 6 critical items (parametric BOM, Beams, insulation calc, stair calc, legal language, sales tax), 6 important (wind load, ridge vents, color persistence, revision history, freight, vendors), 5 nice-to-have ($/sqft metrics, PDF gen, comparison, customer portal, escalation). Assessment merged to `.squad/decisions.md`. Ready for sprint planning.
 
-📌 **EPIC COMPLETE** — Phase 3 shipped. Effective-price rule locked in (vendor override → active list → warn). "Pick vendor" snapshot flow implemented per spec. All edge cases handled (sparse data, orphans, deleted vendors). No rework during implementation. Ready for next epic.
+
