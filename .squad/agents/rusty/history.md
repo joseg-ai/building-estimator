@@ -114,3 +114,38 @@ Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Ke
 - Live POST /api/customers `{ name: "Test" }` → 201 with id
 
 **Key takeaway:** All schema DDL must live in db.js. Fresh test DBs depend on it. No one-time direct DB commands.
+
+---
+
+## 2026-05-15 — Issue #20: Additional Structures (Section 5)
+
+**Branch:** `squad/20-additional-structures`
+
+### What Was Built
+
+Full Section 5 implementation: DB migration, API validation, TypeScript types, React form, quotation render.
+
+### Learnings
+
+📌 **JSON column vs. discrete columns for checklist data**
+- Chose single `additional_structures_json TEXT` column over 5+ discrete columns.
+- Rationale: matches existing `config_json` pattern; logically cohesive group; rarely queried server-side individually; fewer ALTER TABLEs = less migration risk.
+- Primary data still lives in `config_json` (as part of `BuildingConfig`); the dedicated column is a denormalized copy for potential future filtering.
+- If server-side per-field querying is ever needed, add discrete columns then — SQLite JSON functions (json_extract) can also work without schema change.
+
+📌 **Always declare JS const/functions before use in TSX component body**
+- TypeScript function expressions (`const hasComp = ...`) are not hoisted. Moving `addlItems` computation below `hasComp` declaration avoided a `used before declaration` TS2448 error in QuotationPage.tsx. Arrow function constants must appear before any reference.
+
+📌 **Reducer action for nested config sub-object**
+- Used `SET_ADDITIONAL_STRUCTURES: Partial<AdditionalStructures>` with shallow merge at top-level only.
+- UI always sends the complete sub-object when changing a nested field (e.g. `{ overhangs: { ...existing, enabled: true } }`), matching the `SET_DOORS_WINDOWS` pattern.
+- Simpler than deep-merge; consistent with codebase pattern.
+
+📌 **Legacy fallback in quotation render**
+- QuotationPage Section 5 checks `config.additionalStructures` first (new form data), falls back to `leanTos` + component scan for existing saved quotes that predate this feature.
+- Pattern: check presence of new optional field → use it; else derive from legacy fields.
+
+### Verified
+- `npm run build` → green (54 modules, no TS errors)
+- `npm test` (vitest) → 32 pass
+- Server: `node --test test/*.test.js` → 90 pass (from main repo with shared node_modules)

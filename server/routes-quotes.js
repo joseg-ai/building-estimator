@@ -7,6 +7,31 @@ const router = express.Router();
 // Issue #6: status enum.
 const ALLOWED_STATUSES = ['draft', 'sent', 'accepted', 'rejected', 'expired', 'superseded'];
 
+// Issue #20: validate additionalStructures shape. Returns null if valid, error string if not.
+function validateAdditionalStructures(as) {
+  if (as === undefined || as === null) return null; // optional field
+  if (typeof as !== 'object' || Array.isArray(as)) return 'additionalStructures must be an object';
+  const boolNumStr = (obj, key, type) => {
+    if (obj[key] === undefined) return null;
+    if (type === 'bool' && typeof obj[key] !== 'boolean') return `${key} must be boolean`;
+    if (type === 'num' && typeof obj[key] !== 'number') return `${key} must be number`;
+    if (type === 'str' && typeof obj[key] !== 'string') return `${key} must be string`;
+    return null;
+  };
+  const checks = [
+    () => as.overhangs && (boolNumStr(as.overhangs, 'enabled', 'bool') || boolNumStr(as.overhangs, 'qty', 'num') || boolNumStr(as.overhangs, 'dims', 'str')),
+    () => as.leanTos && (boolNumStr(as.leanTos, 'enabled', 'bool') || boolNumStr(as.leanTos, 'qty', 'num') || boolNumStr(as.leanTos, 'width', 'num') || boolNumStr(as.leanTos, 'length', 'num')),
+    () => as.parapets && (boolNumStr(as.parapets, 'enabled', 'bool') || boolNumStr(as.parapets, 'height', 'num')),
+    () => as.canopies && (boolNumStr(as.canopies, 'enabled', 'bool') || boolNumStr(as.canopies, 'qty', 'num') || boolNumStr(as.canopies, 'width', 'num') || boolNumStr(as.canopies, 'depth', 'num') || boolNumStr(as.canopies, 'height', 'num')),
+    () => as.hssCanopies && (boolNumStr(as.hssCanopies, 'enabled', 'bool') || boolNumStr(as.hssCanopies, 'qty', 'num')),
+  ];
+  for (const check of checks) {
+    const err = check();
+    if (err) return err;
+  }
+  return null;
+}
+
 // Issue #6: quote number format QT-YYYY-NNNN, per-user per-year sequence.
 // Padded to 4 digits; rolls over above 9999 (unlikely in practice).
 function generateQuoteNumber(userId) {
@@ -106,6 +131,12 @@ router.post('/', (req, res) => {
     });
   }
 
+  // Issue #20: validate additionalStructures shape if provided
+  const asErr = validateAdditionalStructures(config.additionalStructures);
+  if (asErr) {
+    return res.status(400).json({ error: { code: 'VALIDATION', message: `additionalStructures: ${asErr}` } });
+  }
+
   // Validate customerId if provided
   let resolvedCustomerId = null;
   if (customerId !== undefined && customerId !== null) {
@@ -133,14 +164,15 @@ router.post('/', (req, res) => {
   const now = new Date().toISOString();
   const quoteNumber = generateQuoteNumber(req.user.id);
   const initialStatus = status || 'draft';
+  const additionalStructuresJson = config.additionalStructures ? JSON.stringify(config.additionalStructures) : null;
 
   db.prepare(`
     INSERT INTO quotes (
       id, user_id, project_name, customer_name, job_location, config_json,
       grand_total, status, created_at, updated_at, customer_id,
-      quote_number, revision, parent_quote_id, valid_until
+      quote_number, revision, parent_quote_id, valid_until, additional_structures_json
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?)
   `).run(
     id,
     req.user.id,
@@ -154,7 +186,8 @@ router.post('/', (req, res) => {
     now,
     resolvedCustomerId,
     quoteNumber,
-    resolvedValidUntil
+    resolvedValidUntil,
+    additionalStructuresJson
   );
 
   res.status(201).json({
@@ -230,8 +263,15 @@ router.put('/:id', (req, res) => {
   const params = [];
 
   if (config) {
+    // Issue #20: validate additionalStructures shape if provided in config
+    const asErr = validateAdditionalStructures(config.additionalStructures);
+    if (asErr) {
+      return res.status(400).json({ error: { code: 'VALIDATION', message: `additionalStructures: ${asErr}` } });
+    }
     updates.push('config_json = ?', 'project_name = ?', 'customer_name = ?', 'job_location = ?');
     params.push(JSON.stringify(config), config.projectName || '', config.customerName || '', config.jobLocation || '');
+    updates.push('additional_structures_json = ?');
+    params.push(config.additionalStructures ? JSON.stringify(config.additionalStructures) : null);
   }
   if (grandTotal !== undefined) {
     updates.push('grand_total = ?');

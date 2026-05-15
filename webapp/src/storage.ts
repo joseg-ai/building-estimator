@@ -40,6 +40,9 @@ export function loadConfig(): BuildingConfig {
         customerName: parsed.customerName ?? defaults.customerName,
         jobLocation: parsed.jobLocation ?? defaults.jobLocation,
         overheads: { ...defaults.overheads, ...parsed.overheads },
+        additionalStructures: parsed.additionalStructures
+          ? { ...defaults.additionalStructures, ...parsed.additionalStructures }
+          : defaults.additionalStructures,
       };
     }
   } catch {
