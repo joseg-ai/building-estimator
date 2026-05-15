@@ -139,17 +139,27 @@ db.exec(`
     updated_at TEXT DEFAULT (datetime('now')),
     price_list_version_id INTEGER,
     customer_id INTEGER,
+    quote_number TEXT,
+    revision INTEGER NOT NULL DEFAULT 0,
+    parent_quote_id TEXT,
+    valid_until TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
-    FOREIGN KEY (price_list_version_id) REFERENCES price_list_versions(id)
+    FOREIGN KEY (price_list_version_id) REFERENCES price_list_versions(id),
+    FOREIGN KEY (parent_quote_id) REFERENCES quotes(id) ON DELETE SET NULL
   );
 
   CREATE INDEX IF NOT EXISTS idx_quotes_user ON quotes(user_id);
   CREATE INDEX IF NOT EXISTS idx_quotes_status ON quotes(status);
+  CREATE INDEX IF NOT EXISTS idx_quotes_parent ON quotes(parent_quote_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_quotes_user_quote_number
+    ON quotes(user_id, quote_number, revision)
+    WHERE quote_number IS NOT NULL;
 `);
 
 // ── Idempotent migrations for existing DBs ────────────────────────────────────
 // Adds columns introduced after initial deploy, safe to re-run on any DB.
+// SQLite has no `ALTER TABLE ADD COLUMN IF NOT EXISTS`, so we PRAGMA-check first.
 (function applyMigrations() {
   const existingQuoteCols = new Set(
     db.prepare('PRAGMA table_info(quotes)').all().map((c) => c.name)
@@ -160,6 +170,23 @@ db.exec(`
   if (!existingQuoteCols.has('customer_id')) {
     db.exec('ALTER TABLE quotes ADD COLUMN customer_id INTEGER');
   }
+  // Issue #6: quote number, revision, parent FK, valid-until.
+  if (!existingQuoteCols.has('quote_number')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN quote_number TEXT');
+  }
+  if (!existingQuoteCols.has('revision')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN revision INTEGER NOT NULL DEFAULT 0');
+  }
+  if (!existingQuoteCols.has('parent_quote_id')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN parent_quote_id TEXT REFERENCES quotes(id) ON DELETE SET NULL');
+  }
+  if (!existingQuoteCols.has('valid_until')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN valid_until TEXT');
+  }
+  db.exec('CREATE INDEX IF NOT EXISTS idx_quotes_parent ON quotes(parent_quote_id)');
+  db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_quotes_user_quote_number
+           ON quotes(user_id, quote_number, revision)
+           WHERE quote_number IS NOT NULL`);
 })();
 
 module.exports = db;
