@@ -183,6 +183,11 @@ db.exec(`
   db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_quotes_user_quote_number
            ON quotes(user_id, quote_number, revision)
            WHERE quote_number IS NOT NULL`);
+  // Issue #20: additional structures JSON column.
+  // Shape: { overhangs, leanTos, parapets, canopies, hssCanopies } — see SKILL.md Section 5.
+  if (!existingQuoteCols.has('additional_structures_json')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN additional_structures_json TEXT');
+  }
 })();
 
 module.exports = db;
