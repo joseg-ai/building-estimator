@@ -241,3 +241,125 @@ All items with dual owners: primary owner is the label; secondary collaborates b
 
 *Filed by Danny (squad lead) — 2026-05-14*
 
+---
+
+## Decision: PR #21 Merge Resolution (2026-05-14)
+
+**Author:** Rusty  
+**Date:** 2026-05-14T21:10:00-05:00  
+**Branch:** squad/1-2-fix-calc-bugs  
+**PR:** #21 (Livingston's calc bug fix)
+
+### Problem
+
+PR #21 could not merge into main because of conflicts in:
+- `server/db.js`
+- `server/routes-quotes.js`
+- `.squad/agents/livingston/history.md`
+
+Root cause: PR #21 was based on commit `d3b9a07` ("fix(backend): add missing table DDLs, global error middleware, customerId to quotes") which never landed as a discrete PR. Meanwhile, PR #19 (my quote schema work: quote_number, revision, parent_quote_id FK, valid_until, status enum, revisions endpoint) merged to main and diverged.
+
+### Resolution Applied
+
+#### server/db.js
+Both sides' changes were **additive and non-overlapping** — merged manually:
+- Kept `customer_id INTEGER` FK from d3b9a07 (already in HEAD)
+- Added `quote_number`, `revision`, `parent_quote_id`, `valid_until` columns from PR #19 (origin/main)
+- `applyMigrations()` now covers all five idempotent column additions
+- **Critical fix applied:** `idx_quotes_parent` and `idx_quotes_user_quote_number` were in the bootstrap `db.exec()` DDL block on origin/main but reference columns that don't exist yet on existing databases. Removed them from the DDL block; they remain only in `applyMigrations()` where they execute after column additions. This was causing `SqliteError: no such column: parent_quote_id` on startup.
+
+#### server/routes-quotes.js
+origin/main was the strict superset — it already carried `customerId` validation (from d3b9a07) inside PR #19's work. Used `git checkout origin/main -- server/routes-quotes.js` to avoid error-prone manual resolution across 9 conflict blocks.
+
+#### .squad/agents/livingston/history.md
+Append-only file. HEAD had the full set of entries (Reuben assessment + calc bug fixes + learnings); origin/main had only the Reuben assessment. Kept HEAD content (superset), which is the correct union.
+
+### Outcome
+
+- `npm test` (webapp): 19/19 ✓
+- `node -e "require('./db.js')"`: OK ✓
+- Pushed: `git push origin squad/1-2-fix-calc-bugs` → `d6d01c4..b183471` ✓
+- PR #21 should now be mergeable.
+
+### Team Notes
+
+- Linus (webapp): PR #21 calc fixes are intact, webapp/ untouched.
+- Saul: test count still 19 (webapp). Server tests not re-run here (no server test runner wired in this branch), but schema changes are backward-compatible via migrations.
+- Future: if anyone adds indexes that reference new columns, put them ONLY in `applyMigrations()`, not in the bootstrap DDL block.
+
+---
+
+## Found Bug: ComparisonPage references non-existent context fields
+
+**Date:** 2026-05-14
+**By:** Linus
+**Found during:** `squad/build-fix-ts-errors` (unblocking TS build on `main`)
+
+### Summary
+
+`webapp/src/pages/ComparisonPage.tsx` destructures `comparisonVendorIds` and
+`setComparisonVendorIds` from `useBuildingConfig()`, but these fields **do not
+exist** on `BuildingContextValue` (`webapp/src/context.tsx` lines 166–190).
+
+At runtime this means:
+- `selectedVendorIds` was initialised from `undefined`, so any `.filter`,
+  `.includes`, or spread (`[...selectedVendorIds, id]`) on it would throw
+  `TypeError: ... is not iterable / not a function`.
+- Calling `setComparisonVendorIds(next)` would throw because it is `undefined`.
+
+In other words, the Comparison page has been crashing on render for any user
+who reaches it — the TS build error was masking a real runtime bug shipped in
+the Phase 3 (Vendors + Comparison) work.
+
+The `history.md` note for Phase 3 claims "localStorage persistence of
+comparison selection" was implemented; `storage.ts` contains no such helpers
+and `context.tsx` was never extended with these fields. The persistence wiring
+appears to have been dropped between design and merge.
+
+### Workaround applied in PR #22
+
+Replaced the broken context destructure with a plain `useState<number[]>([])`:
+
+```ts
+const { config, priceList } = useBuildingConfig();
+...
+const [selectedVendorIds, setSelectedVendorIds] = useState<number[]>([]);
+```
+
+Removed the two `setComparisonVendorIds(next)` calls (the `setSelectedVendorIds`
+calls remain — local React state still works).
+
+**Behavioural effect:** the Comparison page now actually renders (it was crashing
+before), but the user's vendor selection no longer persists across reloads.
+This restores the page to a working baseline; persistence can be reintroduced
+properly in a follow-up.
+
+### Recommended follow-up (NOT in PR #22)
+
+Either:
+1. Add `comparisonVendorIds: number[]` and `setComparisonVendorIds(next: number[]): void`
+   to `BuildingContextValue` and back them with `storage.ts` helpers
+   (`saveComparisonVendorIds` / `loadComparisonVendorIds`); or
+2. Inline localStorage read/write directly in `ComparisonPage.tsx` (simpler,
+   no context churn) — initial state from `localStorage.getItem(...)`, update
+   on add/remove.
+
+Option 2 is the smaller change and matches the "context for per-quote config,
+local state for page-scoped UI" pattern Linus has used elsewhere.
+
+### Files referenced
+
+- `webapp/src/pages/ComparisonPage.tsx` (lines 37, 47, 125, 132 pre-fix)
+- `webapp/src/context.tsx` (lines 166–190, `BuildingContextValue` interface)
+- `webapp/src/storage.ts` (no comparison helpers exist)
+
+---
+
+## Sprint 1 Closure (2026-05-14)
+
+**Status:** Complete
+
+PRs #19 (Rusty schema), #21 (Livingston calc bugs), #22 (Linus build fix) merged to main.  
+Issues #1, #2, #6 closed.  
+Sprint 1 complete — Sprint 2 ready to start once Jose confirms scope.
+

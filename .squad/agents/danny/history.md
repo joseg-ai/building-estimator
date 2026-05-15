@@ -62,3 +62,21 @@ Danny's initial survey identified 3-phase roadmap (Phase 1: persist pricing/cata
 📌 **EPIC COMPLETE** — Danny's Phase 1 kickoff survey led to 3-phase epic. All phases shipped. 85 tests green (74 server + 11 webapp). Server-backed reference data live (catalog, price-list, customers, vendors). Multi-vendor comparison working. Ready for next epic.
 
 📌 **2026-05-14: Backlog Triage Complete** — Filed 17 GitHub issues (#1–#17) from Reuben's domain assessment. 8 P0 (incl. 2 bugs), 4 P1, 5 P2. 3-sprint plan drafted. See `.squad/decisions/inbox/danny-backlog-triage-2026-05-14.md`.
+
+---
+
+## Sprint 1 Closed (2026-05-14)
+
+**PRs merged to main:**
+- **PR #19** (Rusty): Quote schema (quote_number, revision, parent_quote_id, valid_until, status enum)
+- **PR #21** (Livingston): Calc bug fixes (labor base, frame opening cost)  
+- **PR #22** (Linus): Build fix + ComparisonPage runtime bug fix
+
+**Issues closed:** #1 (labor calc), #2 (frame opening), #6 (quote schema)
+
+**Build status:** All 8 TS errors resolved. 19/19 webapp tests passing. Schema migrations backward-compatible.
+
+**Orchestration:** Scribe processed all decisions inbox files, created agent run logs, updated cross-agent notes.
+
+**Sprint 2 ready:** Parametric engines (#3 main framing BOM, #4 component calc, #5 stair calc) queued once Jose confirms scope.
+
