@@ -309,7 +309,7 @@ export default function QuotationPage() {
               <YesNo value={true} />
             </div>
             <div className="check-row flex justify-between border-b border-gray-100 py-0.5">
-              <span>Wind Load Design 140 MPH</span>
+              <span>Wind Load Design {config.windSpeedMph} MPH, Exposure {config.exposureCategory}</span>
               <YesNo value={true} />
             </div>
             <div className="check-row flex justify-between border-b border-gray-100 py-0.5">
@@ -367,9 +367,9 @@ export default function QuotationPage() {
 
           <div className="mt-3 text-sm space-y-0.5">
             <p><span className="font-medium text-gray-800">Colors:</span></p>
-            <p className="pl-4 text-gray-600">Roof: Galvalume</p>
-            <p className="pl-4 text-gray-600">Walls: Color by Customer</p>
-            <p className="pl-4 text-gray-600">Trim: Color by Customer</p>
+            <p className="pl-4 text-gray-600">Roof: {config.roofColor}</p>
+            <p className="pl-4 text-gray-600">Walls: {config.wallColor}</p>
+            <p className="pl-4 text-gray-600">Trim: {config.trimColor}</p>
           </div>
 
           {/* Footer / signatures */}

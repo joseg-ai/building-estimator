@@ -1,5 +1,5 @@
 import { useBuildingConfig } from '../context';
-import type { LeanToDirection } from '../types';
+import type { LeanToDirection, ExposureCategory } from '../types';
 import { createDefaultConfig } from '../types';
 import LeanToCard from '../components/LeanToCard';
 import BuildingDiagram from '../components/BuildingDiagram';
@@ -91,6 +91,34 @@ export default function DesignPage() {
       </label>
     );
   }
+
+  const PEMB_COLORS = [
+    'Galvalume',
+    'Polar White',
+    'Burnished Slate',
+    'Light Stone',
+    'Saddle Tan',
+    'Hawaiian Blue',
+    'Brick Red',
+    'Forest Green',
+  ];
+
+  function colorSelect(label: string, value: string, onChange: (v: string) => void) {
+    return (
+      <div>
+        <label className="block text-xs text-gray-500 mb-0.5">{label}</label>
+        <select value={value} onChange={(e) => onChange(e.target.value)}
+          className="w-full border border-gray-300 rounded px-1 py-1 text-sm bg-white">
+          {PEMB_COLORS.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </div>
+    );
+  }
+
+  const windSpeedError =
+    config.windSpeedMph < 80 || config.windSpeedMph > 200
+      ? 'Wind speed must be 80–200 mph'
+      : null;
 
   return (
     <div>
@@ -219,6 +247,46 @@ export default function DesignPage() {
               {checkbox('Roof', insulation.roof, (v) => dispatch({ type: 'SET_INSULATION', payload: { roof: v } }))}
               {checkbox('Side Wall', insulation.wall, (v) => dispatch({ type: 'SET_INSULATION', payload: { wall: v } }))}
               {checkbox('End Wall', insulation.additional, (v) => dispatch({ type: 'SET_INSULATION', payload: { additional: v } }))}
+            </div>
+          </section>
+
+          {/* Design Loads */}
+          <section className="bg-white border border-gray-200 rounded p-3">
+            <h2 className="font-semibold text-gray-800 text-sm mb-1.5">Design Loads</h2>
+            <div className="grid grid-cols-2 gap-1">
+              <div>
+                <label className="block text-xs text-gray-500 mb-0.5">Wind Speed (mph)</label>
+                <input
+                  type="number" min={80} max={200} step={5}
+                  value={config.windSpeedMph || ''}
+                  onChange={(e) => dispatch({ type: 'SET_DESIGN_LOADS', payload: { windSpeedMph: Number(e.target.value) } })}
+                  className={`w-full border rounded px-2 py-1 text-sm ${windSpeedError ? 'border-red-400' : 'border-gray-300'}`}
+                />
+                {windSpeedError && <p className="text-red-500 text-[10px] mt-0.5">{windSpeedError}</p>}
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-0.5">Exposure</label>
+                <select
+                  value={config.exposureCategory}
+                  onChange={(e) => dispatch({ type: 'SET_DESIGN_LOADS', payload: { exposureCategory: e.target.value as ExposureCategory } })}
+                  className="w-full border border-gray-300 rounded px-1 py-1 text-sm bg-white">
+                  <option value="B">B — Suburban/wooded</option>
+                  <option value="C">C — Open terrain</option>
+                  <option value="D">D — Coastal/water</option>
+                </select>
+              </div>
+              {numInput('Roof LL (psf)', config.roofLiveLoadPsf, (v) => dispatch({ type: 'SET_DESIGN_LOADS', payload: { roofLiveLoadPsf: Math.max(0, v) } }))}
+              {numInput('Snow (psf)', config.snowLoadPsf, (v) => dispatch({ type: 'SET_DESIGN_LOADS', payload: { snowLoadPsf: Math.max(0, v) } }))}
+            </div>
+          </section>
+
+          {/* Colors */}
+          <section className="bg-white border border-gray-200 rounded p-3">
+            <h2 className="font-semibold text-gray-800 text-sm mb-1.5">Colors</h2>
+            <div className="space-y-1">
+              {colorSelect('Roof', config.roofColor, (v) => dispatch({ type: 'SET_COLORS', payload: { roofColor: v } }))}
+              {colorSelect('Walls', config.wallColor, (v) => dispatch({ type: 'SET_COLORS', payload: { wallColor: v } }))}
+              {colorSelect('Trim', config.trimColor, (v) => dispatch({ type: 'SET_COLORS', payload: { trimColor: v } }))}
             </div>
           </section>
         </div>
