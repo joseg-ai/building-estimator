@@ -56,6 +56,37 @@ pm rebuild better-sqlite3\ from server/.
 - Fix: api.ts must use `import.meta.env.VITE_API_URL ?? '/api'`. Deploy CI must set `VITE_API_URL: '/api'` (not `''` — `??` does NOT treat empty string as absent; only `null`/`undefined` trigger the fallback).
 - Lesson: always commit the dev-fix to git. Working-tree-only changes don't reach Azure.
 
+## 2026-05-15 — Issue #17: Server-side PDF Generation
+
+**Branch:** `squad/17-server-pdf`
+
+### What Was Built
+
+New endpoint `GET /api/quotes/:id/pdf` that streams a PEMB quotation PDF using **pdfkit** (chosen over puppeteer — 3 MB vs 170 MB Chromium). Decision recorded in `.squad/decisions/inbox/rusty-issue17-pdf-tool.md`.
+
+- **`server/pdf-quote.js`**: pdfkit-based PDF composer. Covers all 13 PEMB anatomy sections from SKILL.md: company header, client/job block, quote/revision #, building description, additional structures checklist, components checklist, accessories, building engineering, itemized pricing table (Building Price / Erection / Foundation / Permits / Total), observations, colors, T&C legal, signature block.
+- **`server/routes-quotes.js`**: Added `GET /:id/pdf` route (before `GET /:id` to avoid routing conflict). Auth-protected via existing `authMiddleware`. Returns `Content-Type: application/pdf` and `Content-Disposition: attachment; filename="Q-{id}-r{rev}.pdf"`.
+- **`server/test/quotes-pdf.test.js`**: 4 new tests — 200+`%PDF-` magic bytes, Content-Disposition filename, cross-user 404, non-existent 404.
+
+### Test Results
+
+- Before: 101 pass, 0 fail
+- After: **105 pass, 0 fail**
+
+### Smoke Test
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  http://localhost:3001/api/quotes/$QUOTE_ID/pdf \
+  --output Q-test.pdf && head -c 5 Q-test.pdf
+# Output: %PDF-
+```
+
+📌 **pdfkit chosen over puppeteer for server-side PDF**
+- puppeteer downloads ~170 MB Chromium; pdfkit is ~3 MB pure JS.
+- All 13 PEMB anatomy sections renderable programmatically from stored config_json.
+- Pattern: use pdfkit for any future server-side document generation.
+
 ## Next
 
 - Saul: Customer + vendor test suites

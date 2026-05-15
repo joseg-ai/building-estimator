@@ -1,6 +1,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./db');
+const { generateQuotePDF } = require('./pdf-quote');
 
 const router = express.Router();
 
@@ -119,6 +120,23 @@ router.get('/', (req, res) => {
   sql += ' ORDER BY updated_at DESC';
   const rows = db.prepare(sql).all(...params);
   res.json(rows.map((r) => rowToQuote(r)));
+});
+
+/** GET /api/quotes/:id/pdf -- generate and stream a PDF for a quote */
+router.get('/:id/pdf', (req, res) => {
+  const row = db.prepare('SELECT * FROM quotes WHERE id = ? AND user_id = ?')
+    .get(req.params.id, req.user.id);
+
+  if (!row) return res.status(404).json({ error: 'Quote not found' });
+
+  try {
+    generateQuotePDF(row, res);
+  } catch (err) {
+    // If headers haven't been sent yet, return JSON error; otherwise just end.
+    if (!res.headersSent) {
+      res.status(500).json({ error: { code: 'PDF_ERROR', message: err.message } });
+    }
+  }
 });
 
 /** GET /api/quotes/:id -- get a single quote with full config */
