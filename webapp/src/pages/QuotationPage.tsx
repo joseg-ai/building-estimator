@@ -21,6 +21,11 @@ export default function QuotationPage() {
   const costs = calculateCosts(config);
   const printRef = useRef<HTMLDivElement>(null);
 
+  const activeQuoteId = localStorage.getItem('active_quote_id');
+  const quoteLabel = activeQuoteId ? `Q-${activeQuoteId}` : '—';
+  // No revision_number in schema yet — Rev 1 placeholder. See inbox note for Rusty.
+  const revLabel = 'Rev 1';
+
   // Local input string for the percentage field so users can type "8.25" naturally
   // (including a trailing dot). We persist the parsed decimal on every valid edit.
   const [taxRateInput, setTaxRateInput] = useState<string>(
@@ -103,6 +108,8 @@ export default function QuotationPage() {
         th { background: #f5f5f5; font-weight: 600; }
         .header-bar { background: #1e3a5f; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-bar h1 { color: white; }
+        .quote-badge { margin-top: 8px; font-size: 10px; opacity: 0.9; letter-spacing: 0.03em; }
+        .quote-badge strong { font-size: 13px; opacity: 1; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-top: 10px; }
         .label { color: #6b7280; font-size: 10px; text-transform: uppercase; }
         .val { font-weight: 600; }
@@ -192,6 +199,10 @@ export default function QuotationPage() {
           <div className="text-right text-xs">
             <p>OFFICE: 281-999-8810</p>
             <p>FAX: 281-999-8811</p>
+            <div className="quote-badge mt-2 text-right">
+              <strong className="block text-sm font-bold font-mono">{quoteLabel}</strong>
+              <span className="opacity-80">{revLabel}</span>
+            </div>
           </div>
         </div>
 
