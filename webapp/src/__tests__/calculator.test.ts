@@ -321,3 +321,239 @@ describe('formatUSD', () => {
     expect(formatUSD(0)).toBe('$0.00');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Issue #13 — Sales tax field
+//
+// Reuben's formula:
+//   salesTaxBase = Materials + Labor + Freight + Overhead + Erection
+//                + Foundation + Permits + Contingency + Profit + Commission
+//   salesTax     = salesTaxBase * salesTaxRate
+//   grandTotal   = subTotal + profit + commission + (included ? salesTax : 0)
+//
+// Note: contingency (#15) is not yet implemented and is treated as 0 in the
+// engine — these tests therefore omit it from expected values.
+// ---------------------------------------------------------------------------
+describe('Sales tax (#13) — defaults & toggle', () => {
+  it('createDefaultConfig sets Texas default rate (8.25%) and excluded toggle', () => {
+    const cfg = createDefaultConfig();
+    expect(cfg.salesTaxRate).toBe(0.0825);
+    expect(cfg.salesTaxIncluded).toBe(false);
+  });
+
+  it('excluded: grandTotal contains NO tax even with a nonzero rate', () => {
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const cfg = makeConfig(components, { detailing: 0, engineering: 0, overheadRate: 0, laborRate: 0 });
+    cfg.salesTaxRate = 0.0825;
+    cfg.salesTaxIncluded = false;
+    const r = calculateCosts(cfg);
+    // subTotal = 10000; profit = 1500; commission = 400 → expected grandTotal w/o tax = 11900
+    expect(r.subTotal).toBe(10000);
+    expect(r.grandTotal).toBeCloseTo(11900, 6);
+    // Engine still computes the tax number (so the UI can show "would-be tax"),
+    // but it must not flow into the grand total.
+    expect(r.salesTaxIncluded).toBe(false);
+  });
+
+  it('excluded with extreme rate (1.0) still leaves grandTotal untaxed', () => {
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const cfg = makeConfig(components, { detailing: 0, engineering: 0, overheadRate: 0, laborRate: 0 });
+    cfg.salesTaxRate = 1.0;
+    cfg.salesTaxIncluded = false;
+    const r = calculateCosts(cfg);
+    expect(r.grandTotal).toBeCloseTo(11900, 6); // same as rate=0 when excluded
+  });
+});
+
+describe('Sales tax (#13) — Reuben formula correctness', () => {
+  it('included: salesTax = (Materials + Labor + Freight + Overhead + Erection + Foundation + Permits + Profit + Commission) × rate', () => {
+    // Build a configuration that exercises every component of the tax base.
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const cfg = makeConfig(components, {
+      laborRate: 0.75,
+      detailing: 5000,        // NOT in tax base
+      engineering: 1500,      // NOT in tax base
+      loadingHauling: 200,    // NOT in tax base
+      freight: 300,           // in tax base
+      overheadRate: 0.02,
+      erection: 400,
+      foundation: 500,
+      permits: 600,
+      profitRate: 0.15,
+      commissionRate: 0.04,
+    });
+    cfg.salesTaxRate = 0.0825;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+
+    // Sanity: directMaterials=10000, labor=750, totalML=10750
+    // overhead = 10750 * 0.02 = 215
+    // subTotal = 10750 + 5000 + 1500 + 200 + 300 + 215 + 400 + 500 + 600 = 19465
+    // profit = 19465 * 0.15 = 2919.75
+    // commission = 19465 * 0.04 = 778.6
+    // taxBase = 10000 + 750 + 300 + 215 + 400 + 500 + 600 + 2919.75 + 778.6 = 16463.35
+    // tax = 16463.35 * 0.0825 = 1358.226375
+    // grandTotal = 19465 + 2919.75 + 778.6 + 1358.226375 = 24521.576375
+    expect(r.directMaterials).toBe(10000);
+    expect(r.labor).toBe(750);
+    expect(r.overheadCost).toBeCloseTo(215, 6);
+    expect(r.subTotal).toBeCloseTo(19465, 6);
+    expect(r.profit).toBeCloseTo(2919.75, 6);
+    expect(r.commission).toBeCloseTo(778.6, 6);
+
+    const expectedBase =
+      r.directMaterials + r.labor + r.freight + r.overheadCost +
+      r.erection + r.foundation + r.permits + r.profit + r.commission;
+    expect(r.salesTaxBase).toBeCloseTo(expectedBase, 6);
+    expect(r.salesTaxBase).toBeCloseTo(16463.35, 6);
+    expect(r.salesTax).toBeCloseTo(16463.35 * 0.0825, 6);
+    expect(r.salesTax).toBeCloseTo(1358.226375, 6);
+    expect(r.grandTotal).toBeCloseTo(19465 + 2919.75 + 778.6 + 1358.226375, 6);
+  });
+
+  it('detailing, engineering and loadingHauling are EXCLUDED from the tax base', () => {
+    // Same materials, but vary the excluded fees — tax must not change.
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const base = (over: Partial<ReturnType<typeof makeOverheads>>) => {
+      const cfg = makeConfig(components, {
+        laborRate: 0, overheadRate: 0, profitRate: 0, commissionRate: 0,
+        erection: 0, foundation: 0, permits: 0, freight: 0,
+        ...over,
+      });
+      cfg.salesTaxRate = 0.1;
+      cfg.salesTaxIncluded = true;
+      return calculateCosts(cfg);
+    };
+    const a = base({ detailing: 0, engineering: 0, loadingHauling: 0 });
+    const b = base({ detailing: 9999, engineering: 8888, loadingHauling: 7777 });
+    // Tax base unchanged → tax unchanged.
+    expect(b.salesTaxBase).toBeCloseTo(a.salesTaxBase, 6);
+    expect(b.salesTax).toBeCloseTo(a.salesTax, 6);
+    // ... even though subTotal/grandTotal DO change by the excluded fees.
+    expect(b.subTotal - a.subTotal).toBeCloseTo(9999 + 8888 + 7777, 6);
+  });
+
+  it('grandTotal = pre-tax-subtotal + tax when included, = pre-tax-subtotal when excluded', () => {
+    // pre-tax-subtotal here means subTotal + profit + commission (the legacy total).
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const mk = (included: boolean) => {
+      const cfg = makeConfig(components, { detailing: 0, engineering: 0, overheadRate: 0, laborRate: 0 });
+      cfg.salesTaxRate = 0.0825;
+      cfg.salesTaxIncluded = included;
+      return calculateCosts(cfg);
+    };
+    const excluded = mk(false);
+    const included = mk(true);
+    const preTax = excluded.subTotal + excluded.profit + excluded.commission;
+    expect(excluded.grandTotal).toBeCloseTo(preTax, 6);
+    expect(included.grandTotal).toBeCloseTo(preTax + included.salesTax, 6);
+    expect(included.grandTotal - excluded.grandTotal).toBeCloseTo(included.salesTax, 6);
+  });
+});
+
+describe('Sales tax (#13) — edge cases', () => {
+  it('rate = 0 → tax = 0 regardless of included flag', () => {
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    for (const included of [true, false]) {
+      const cfg = makeConfig(components, { detailing: 0, engineering: 0, overheadRate: 0, laborRate: 0 });
+      cfg.salesTaxRate = 0;
+      cfg.salesTaxIncluded = included;
+      const r = calculateCosts(cfg);
+      expect(r.salesTax).toBe(0);
+      expect(r.grandTotal).toBeCloseTo(11900, 6);
+    }
+  });
+
+  it('rate = 1.0 sanity check: tax exactly equals the tax base', () => {
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const cfg = makeConfig(components, {
+      detailing: 0, engineering: 0, loadingHauling: 0,
+      freight: 100, overheadRate: 0, erection: 50, foundation: 25, permits: 10,
+      profitRate: 0.1, commissionRate: 0.05, laborRate: 0,
+    });
+    cfg.salesTaxRate = 1.0;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+    expect(r.salesTax).toBeCloseTo(r.salesTaxBase, 6);
+    // grandTotal = subTotal + profit + commission + salesTaxBase
+    expect(r.grandTotal).toBeCloseTo(r.subTotal + r.profit + r.commission + r.salesTaxBase, 6);
+  });
+
+  it('empty building with included tax: tax base reduces to profit + commission of flat fees', () => {
+    // Default detailing+engineering fees are NOT in the tax base, so with no
+    // materials/labor/freight/overhead/erection/foundation/permits, the base is
+    // exactly profit + commission (both computed off subTotal = 5000+1500 = 6500).
+    const cfg = createDefaultConfig();
+    cfg.overheads = makeOverheads();
+    cfg.salesTaxRate = 0.0825;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+    expect(r.subTotal).toBe(6500);
+    expect(r.profit).toBeCloseTo(975, 6);
+    expect(r.commission).toBeCloseTo(260, 6);
+    expect(r.salesTaxBase).toBeCloseTo(975 + 260, 6);
+    expect(r.salesTax).toBeCloseTo((975 + 260) * 0.0825, 6);
+    expect(r.grandTotal).toBeCloseTo(7735 + r.salesTax, 6);
+  });
+
+  it('negative rate is NOT rejected or clamped — documents current behavior (FLAG for review)', () => {
+    // The engine does not validate the rate; a negative rate produces a credit
+    // against grand total. Form layer should clamp at >= 0 (analogous to the
+    // negative costPerUnit case in Bug #1 fix tests).
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const cfg = makeConfig(components, { detailing: 0, engineering: 0, overheadRate: 0, laborRate: 0 });
+    cfg.salesTaxRate = -0.05;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+    expect(r.salesTax).toBeLessThan(0);
+    expect(r.salesTax).toBeCloseTo(r.salesTaxBase * -0.05, 6);
+    // grandTotal is reduced — credit applied.
+    expect(r.grandTotal).toBeLessThan(r.subTotal + r.profit + r.commission);
+  });
+
+  it('very large totals: tax keeps precision and no overflow', () => {
+    const components = [makeComponent({ category: 'main-framing', weight: 1_000_000, costPerUnit: 1.5 })];
+    const cfg = makeConfig(components, { detailing: 0, engineering: 0, overheadRate: 0 });
+    cfg.salesTaxRate = 0.0825;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+    expect(Number.isFinite(r.salesTax)).toBe(true);
+    expect(Number.isFinite(r.grandTotal)).toBe(true);
+    expect(r.salesTax).toBeCloseTo(r.salesTaxBase * 0.0825, 2);
+  });
+});
+
+describe('Sales tax (#13) — rounding & display', () => {
+  it('keeps full float precision internally (no mid-calc rounding)', () => {
+    // 0.0825 × 100 = 8.25 exactly... but most rates × bases drift. Verify the
+    // engine does NOT pre-round salesTax to cents — raw float is preserved
+    // so it can be summed across many lines without compounding rounding error.
+    const components = [makeComponent({ category: 'main-framing', weight: 1, costPerUnit: 0.1 })];
+    const cfg = makeConfig(components, {
+      laborRate: 0, detailing: 0, engineering: 0, overheadRate: 0,
+      profitRate: 0, commissionRate: 0,
+    });
+    cfg.salesTaxRate = 0.0825;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+    // base = directMaterials = 0.1, tax = 0.00825 — must NOT be rounded to 0.01
+    expect(r.salesTaxBase).toBe(0.1);
+    expect(r.salesTax).toBeCloseTo(0.00825, 10);
+    // And the raw value is reachable (not pre-rounded).
+    expect(r.salesTax).not.toBe(0.01);
+  });
+
+  it('formatUSD rounds the tax to cents at the display boundary', () => {
+    // 16463.35 × 0.0825 = 1358.226375 → display "$1,358.23"
+    const components = [makeComponent({ category: 'main-framing', weight: 1000, costPerUnit: 10 })];
+    const cfg = makeConfig(components, {
+      laborRate: 0.75, detailing: 5000, engineering: 1500, loadingHauling: 200,
+      freight: 300, overheadRate: 0.02, erection: 400, foundation: 500, permits: 600,
+      profitRate: 0.15, commissionRate: 0.04,
+    });
+    cfg.salesTaxRate = 0.0825;
+    cfg.salesTaxIncluded = true;
+    const r = calculateCosts(cfg);
+    expect(formatUSD(r.salesTax)).toBe('$1,358.23');
+  });
+});
