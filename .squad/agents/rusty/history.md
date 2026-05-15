@@ -59,3 +59,29 @@ pm rebuild better-sqlite3\ from server/.
 - Saul: Customer + vendor test suites
 - Danny/Linus: Azure deployment + DNS config
 - Phase 4 candidate: Comparison logic or advanced search
+
+---
+
+## 2026-05-14 — Customers 500 Fix
+
+### Root Causes Found
+1. **`db.js` missing all Phase 2+ table DDLs.** Only `users` and `quotes` were in `CREATE TABLE IF NOT EXISTS`. The `customers`, `vendors`, `vendor_prices`, `price_list_versions`, `material_prices`, `materials_catalog_versions`, `materials_catalog_items` tables were created by one-time ad hoc commands against the live DB — never committed to `db.js`. Fresh temp DBs used by tests (and any new deployment) were missing these tables entirely → unhandled `SqliteError: no such table` → Express HTML 500 page.
+2. **No global error-handling middleware in `index.js`.** Any unhandled throw in a route returned Express's default HTML 500 page instead of JSON `{ error: { code, message } }`.
+3. **`routes-quotes.js` never updated for Phase 2 `customer_id` FK.** POST and PUT didn't accept `customerId`; GET didn't return it. Made customer delete-guard test (COUNT quotes by customer_id) return 0 always.
+4. **`vendor_prices` DDL missing `UNIQUE(vendor_id, item_key)`.** The routes use `INSERT ... ON CONFLICT(vendor_id, item_key)` upsert; without the constraint the clause throws `SQLITE_ERROR`.
+
+### Fixes Applied
+- `server/db.js`: Added `CREATE TABLE IF NOT EXISTS` for all 7 missing tables with correct columns, FK constraints, and indexes (including `UNIQUE(vendor_id, item_key)` for vendor_prices). Added idempotent `ALTER TABLE` migration block to add `price_list_version_id` and `customer_id` to existing `quotes` tables.
+- `server/index.js`: Added global 4-arg Express error-handling middleware that logs 5xx and always returns `{ error: { code, message } }` JSON.
+- `server/routes-quotes.js`: Added `customerId` support to POST (validate ownership) and PUT (validate or null), and included `customerId`/`priceListVersionId` in GET list and GET /:id responses. Added `?customerId=N` filter to GET list.
+
+### Verified
+- `node --test test/*.test.js` → **74 pass, 0 fail** (was 60 pass / 14 fail before fix).
+- Live curl: POST /api/customers `{ name: "Test Company 2026" }` → 201 with id + quoteCount.
+
+📌 **Schema bootstrap must live in `db.js`**
+- All `CREATE TABLE IF NOT EXISTS` DDL goes in `db.js`. Never create tables directly against the live DB without committing to `db.js`. Fresh test DBs and new deployments need full bootstrap.
+
+📌 **Always add global error middleware last in `index.js`**
+- 4-arg `(err, req, res, next)` must be after all routes. Returns `{ error: { code, message } }` JSON; logs 5xx to console.
+

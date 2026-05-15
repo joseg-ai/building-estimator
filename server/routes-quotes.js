@@ -8,14 +8,33 @@ const router = express.Router();
 
 /** GET /api/quotes -- list all quotes for the current user */
 router.get('/', (req, res) => {
-  const rows = db.prepare(`
-    SELECT id, project_name, customer_name, job_location, grand_total, status, created_at, updated_at
+  const customerIdFilter = req.query.customerId !== undefined ? Number(req.query.customerId) : null;
+  let sql = `
+    SELECT id, project_name, customer_name, job_location, grand_total, status,
+           created_at, updated_at, price_list_version_id, customer_id
     FROM quotes
     WHERE user_id = ?
-    ORDER BY updated_at DESC
-  `).all(req.user.id);
+  `;
+  const params = [req.user.id];
+  if (customerIdFilter !== null && !isNaN(customerIdFilter)) {
+    sql += ' AND customer_id = ?';
+    params.push(customerIdFilter);
+  }
+  sql += ' ORDER BY updated_at DESC';
+  const rows = db.prepare(sql).all(...params);
 
-  res.json(rows);
+  res.json(rows.map((row) => ({
+    id: row.id,
+    projectName: row.project_name,
+    customerName: row.customer_name,
+    jobLocation: row.job_location,
+    grandTotal: row.grand_total,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    priceListVersionId: row.price_list_version_id,
+    customerId: row.customer_id,
+  })));
 });
 
 /** GET /api/quotes/:id -- get a single quote with full config */
@@ -35,21 +54,37 @@ router.get('/:id', (req, res) => {
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    priceListVersionId: row.price_list_version_id ?? null,
+    customerId: row.customer_id ?? null,
   });
 });
 
 /** POST /api/quotes -- create a new quote */
 router.post('/', (req, res) => {
-  const { config, grandTotal } = req.body;
+  const { config, grandTotal, customerId } = req.body;
 
   if (!config) return res.status(400).json({ error: 'config is required' });
+
+  // Validate customerId if provided
+  let resolvedCustomerId = null;
+  if (customerId !== undefined && customerId !== null) {
+    const cidNum = Number(customerId);
+    if (!Number.isInteger(cidNum) || cidNum <= 0) {
+      return res.status(400).json({ error: { code: 'VALIDATION', message: 'customerId must be a positive integer' } });
+    }
+    const cust = db.prepare('SELECT id FROM customers WHERE id = ? AND user_id = ?').get(cidNum, req.user.id);
+    if (!cust) {
+      return res.status(400).json({ error: { code: 'INVALID_CUSTOMER', message: 'Customer not found or does not belong to you' } });
+    }
+    resolvedCustomerId = cidNum;
+  }
 
   const id = uuidv4();
   const now = new Date().toISOString();
 
   db.prepare(`
-    INSERT INTO quotes (id, user_id, project_name, customer_name, job_location, config_json, grand_total, status, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?)
+    INSERT INTO quotes (id, user_id, project_name, customer_name, job_location, config_json, grand_total, status, created_at, updated_at, customer_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)
   `).run(
     id,
     req.user.id,
@@ -59,15 +94,16 @@ router.post('/', (req, res) => {
     JSON.stringify(config),
     grandTotal || 0,
     now,
-    now
+    now,
+    resolvedCustomerId
   );
 
-  res.status(201).json({ id, status: 'draft', createdAt: now });
+  res.status(201).json({ id, status: 'draft', createdAt: now, customerId: resolvedCustomerId });
 });
 
 /** PUT /api/quotes/:id -- update an existing quote */
 router.put('/:id', (req, res) => {
-  const { config, grandTotal, status } = req.body;
+  const { config, grandTotal, status, customerId } = req.body;
   const existing = db.prepare('SELECT id FROM quotes WHERE id = ? AND user_id = ?')
     .get(req.params.id, req.user.id);
 
@@ -88,6 +124,23 @@ router.put('/:id', (req, res) => {
   if (status) {
     updates.push('status = ?');
     params.push(status);
+  }
+  if (customerId !== undefined) {
+    if (customerId === null) {
+      updates.push('customer_id = ?');
+      params.push(null);
+    } else {
+      const cidNum = Number(customerId);
+      if (!Number.isInteger(cidNum) || cidNum <= 0) {
+        return res.status(400).json({ error: { code: 'VALIDATION', message: 'customerId must be a positive integer' } });
+      }
+      const cust = db.prepare('SELECT id FROM customers WHERE id = ? AND user_id = ?').get(cidNum, req.user.id);
+      if (!cust) {
+        return res.status(400).json({ error: { code: 'INVALID_CUSTOMER', message: 'Customer not found or does not belong to you' } });
+      }
+      updates.push('customer_id = ?');
+      params.push(cidNum);
+    }
   }
   updates.push('updated_at = ?');
   params.push(now);

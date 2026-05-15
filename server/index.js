@@ -50,6 +50,20 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Global error-handling middleware — must be last, after all routes.
+// Catches any unhandled synchronous throws and next(err) calls.
+// Returns JSON { error: { code, message } } instead of the default HTML 500 page.
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+  const status = err.status || err.statusCode || 500;
+  const code = err.code || 'INTERNAL_ERROR';
+  const message = (process.env.NODE_ENV === 'production' && status === 500)
+    ? 'An unexpected error occurred'
+    : (err.message || 'Internal Server Error');
+  if (status >= 500) console.error('[error]', err);
+  res.status(status).json({ error: { code, message } });
+});
+
 // Production static serving -- only active when SERVE_WEBAPP=true (Azure App Service).
 // Dev uses Vite on port 5173; this block is a no-op in that mode.
 if (process.env.SERVE_WEBAPP === 'true') {
