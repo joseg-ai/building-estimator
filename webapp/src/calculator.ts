@@ -189,6 +189,11 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
   const salesTax = salesTaxBase * salesTaxRate;
   const grandTotal = subTotal + profit + commission + (salesTaxIncluded ? salesTax : 0);
 
+  // Cold-formed linear feet: sum of lnF (or qty×length) for COLD FORM / Ln Ft items.
+  const coldFormedLengthFt = config.components
+    .filter((c) => (c.group ?? '').trim().toUpperCase() === 'COLD FORM' && isLnFtMeasure(c.measure))
+    .reduce((sum, c) => sum + (c.lnF > 0 ? c.lnF : c.qty * c.length), 0);
+
   return {
     mainBuildingArea,
     leanToAreas,
@@ -204,6 +209,7 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
     detailing, engineering, loadingHauling, freight, overheadCost, erection, foundation, permits,
     subTotal, profitRate, profit, commissionRate, commission,
     salesTaxRate, salesTaxIncluded, salesTaxBase, salesTax,
+    coldFormedLengthFt,
     grandTotal,
   };
 }

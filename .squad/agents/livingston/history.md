@@ -56,7 +56,37 @@ webapp/package.json had no test script or vitest devDep. Test file at webapp/src
 2. **Zero-price items:** Mark with flag or add cost_override field.
 3. **ID immutability:** Add DB constraints to prevent renames of catalog IDs and item codes.
 
-## Sprint 2 Ready
+## Learnings
+
+### BOM Engine: Main Framing Formulas (2026-05-15)
+
+All formulas derived from `extracted_data/Main Framing.txt` reference building (50W × 100L × 20H ft, 4 bays @ 25 ft, pitch 1:12, gable). Verified each output against workbook cell values.
+
+**Main Frame Columns:** Qty = 2 × (nBays+1). Length = eaveHeight. Custom tapered plate girder → weight = 0, flagged `engineerInputRequired`.
+
+**Main Frame Rafters:** Qty = nBays+1. Length = W (commercial bar length). LnFtToFab = nFrames × 2 × rafterLengthPerSide (gable) or nFrames × W × slopeFactor (single-slope). Weight = 0, flagged.
+
+**Wind Columns:** W 8×35. Qty = 4 for W ≥ 40 ft, 2 for W ≥ 20 ft. Deterministic weight = lnF × 35 lb/ft. Verified: qty=4, weight=2800, cost=2380 ✓
+
+**Base Plates (Flat Bar 1/2 × 8):** Qty = 2 × (3×nFrames + windQty). Verified: 2×(15+4)=38 ✓. Plate length = 1.5208 ft (18.25"). Weight uses commercial lnF (rounded up to 20 ft).
+
+**Purlin Plates (Flat Bar 3/16 × 6):** Qty = purlins × nFrames. Verified: 10×5=50 ✓. Plate length = 0.6875 ft (8.25"). Minor rounding: engine uses 3.83 lb/ft → 153.2 lbs; workbook shows 153. Delta = 0.2 lbs. ⚠️ Flagged for Danny.
+
+**Side Girt Plates (Flat Bar 3/16 × 6):** Qty = girts × 4 × nFrames. ×4 = 2 sidewalls × 2 clips per column face (bypass girt). Verified: 4×4×5=80 ✓.
+
+**End Girt Plates (Flat Bar 3/16 × 6):** Qty = girts × columnsPerEndwall × 2. columnsPerEndwall = 2 + windColumnsPerEndwall. Verified: 4×4×2=32 ✓.
+
+**Issue #3 "25ft bay spacing" on 60ft building:** 60/25=2.4 bays (non-integer). Engine uses nBays=2. Flag for Jose/Danny: is the intended building 40×75 (3 bays × 25ft) or 40×60 (2 bays × 30ft)?
+
+### Override Pattern (2026-05-15)
+
+Engine generates ComponentItem defaults indexed by catalog ID (MF-01, PL-01, etc.). `mergeWithExisting(bomItems, existing)` preserves any existing component where qty > 0 OR weight > 0 (treated as deliberate user override). Zero-value existing items get the BOM default. User-added custom items (not in BOM) are preserved at end of list. Linus wires a "Recalculate BOM" button that calls generateMainFramingBOM → mergeWithExisting → writes to config.components.
+
+### Single-Slope Geometry (2026-05-15)
+
+For single-slope: rafter spans full width (not half-width). LnFtToFab = nFrames × W × slopeFactor. Column qty same as gable (2 × nFrames) but high-side column height = H + W×(pitch/12) — engine uses H (low side) for both. ⚠️ Flagged for engineer review.
+
+
 
 Parametric engines (#3 main framing BOM, #4 component calc, #5 stair calc) queued. Awaiting Jose scope confirmation.
 
