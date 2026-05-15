@@ -253,7 +253,7 @@ export default function DesignPage() {
               <div key={i} className="flex items-center gap-0.5 mb-0.5">
                 <span className="w-8 text-[10px] text-gray-400">{i+1}</span>
                 {(['qty','width','height'] as const).map((f) => (
-                  <input key={f} type="number" min={0} placeholder={f[0].toUpperCase()} value={(rd as Record<string,number>)[f] || ''} onChange={(e) => { const arr = [...doorsWindows.rollUpDoors]; arr[i] = { ...arr[i], [f]: Number(e.target.value) }; dispatch({ type: 'SET_DOORS_WINDOWS', payload: { rollUpDoors: arr } }); }} className="w-12 border border-gray-300 rounded px-1 py-0 text-xs" />
+                  <input key={f} type="number" min={0} placeholder={f[0].toUpperCase()} value={(rd as unknown as Record<string,number>)[f] || ''} onChange={(e) => { const arr = [...doorsWindows.rollUpDoors]; arr[i] = { ...arr[i], [f]: Number(e.target.value) }; dispatch({ type: 'SET_DOORS_WINDOWS', payload: { rollUpDoors: arr } }); }} className="w-12 border border-gray-300 rounded px-1 py-0 text-xs" />
                 ))}
               </div>
             ))}
@@ -262,7 +262,7 @@ export default function DesignPage() {
               <div key={i} className="flex items-center gap-0.5 mb-0.5">
                 <span className="w-8 text-[10px] text-gray-400">{i+1}</span>
                 {(['qty','width','height'] as const).map((f) => (
-                  <input key={f} type="number" min={0} placeholder={f[0].toUpperCase()} value={(fo as Record<string,number>)[f] || ''} onChange={(e) => { const arr = [...doorsWindows.frameOpenings]; arr[i] = { ...arr[i], [f]: Number(e.target.value) }; dispatch({ type: 'SET_DOORS_WINDOWS', payload: { frameOpenings: arr } }); }} className="w-12 border border-gray-300 rounded px-1 py-0 text-xs" />
+                  <input key={f} type="number" min={0} placeholder={f[0].toUpperCase()} value={(fo as unknown as Record<string,number>)[f] || ''} onChange={(e) => { const arr = [...doorsWindows.frameOpenings]; arr[i] = { ...arr[i], [f]: Number(e.target.value) }; dispatch({ type: 'SET_DOORS_WINDOWS', payload: { frameOpenings: arr } }); }} className="w-12 border border-gray-300 rounded px-1 py-0 text-xs" />
                 ))}
               </div>
             ))}

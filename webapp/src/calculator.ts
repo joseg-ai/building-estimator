@@ -2,13 +2,6 @@ import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory 
 
 const LEAN_TO_DIRECTIONS: LeanToDirection[] = ['right', 'left', 'front', 'back'];
 
-/** Sum the direct cost (qty * lnFeetToFab * costPerUnit or qty * costPerUnit) for components in given categories */
-function sumCategories(config: BuildingConfig, categories: ComponentCategory[]): number {
-  return config.components
-    .filter((c) => categories.includes(c.category))
-    .reduce((sum, c) => sum + c.qty * c.costPerUnit * (c.lnFeetToFab > 0 ? c.lnFeetToFab / c.qty || 1 : 1), 0);
-}
-
 /** Simple sum: qty * costPerUnit for components matching categories */
 function simpleSum(config: BuildingConfig, categories: ComponentCategory[]): number {
   return config.components

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../authContext';
 import { useBuildingConfig } from '../context';
-import { calculateCosts, formatUSD } from '../calculator';
+import { calculateCosts } from '../calculator';
 import { apiCreateQuote, apiUpdateQuote } from '../api';
 
 const mainLinks = [

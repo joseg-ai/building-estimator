@@ -66,12 +66,7 @@ export default function FramingTable({ category, catalog, title }: Props) {
     upsert(item, { costPerUnit });
   }
 
-  // Available material groups for this section
-  const groups = [...new Set(catalog.map((c) => c.group))];
-  // Build a merged list of available materials across all groups in this catalog
-  const availableMaterials = groups.flatMap((g) => getSpecsByGroup(g));
-
-  const sectionWeight = catalog.reduce((sum, item) => {
+  const sectionWeight= catalog.reduce((sum, item) => {
     const existing = itemMap.get(item.id);
     return sum + (existing?.weight ?? 0);
   }, 0);
