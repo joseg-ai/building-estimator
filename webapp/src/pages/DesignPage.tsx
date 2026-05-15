@@ -5,6 +5,7 @@ import LeanToCard from '../components/LeanToCard';
 import BuildingDiagram from '../components/BuildingDiagram';
 import CustomerPicker from '../components/CustomerPicker';
 import type { Customer } from '../api';
+import { PEMB_PANEL_COLORS } from '../priceList';
 
 const directions: LeanToDirection[] = ['right', 'left', 'front', 'back'];
 
@@ -99,24 +100,13 @@ export default function DesignPage() {
     );
   }
 
-  const PEMB_COLORS = [
-    'Galvalume',
-    'Polar White',
-    'Burnished Slate',
-    'Light Stone',
-    'Saddle Tan',
-    'Hawaiian Blue',
-    'Brick Red',
-    'Forest Green',
-  ];
-
   function colorSelect(label: string, value: string, onChange: (v: string) => void) {
     return (
       <div>
         <label className="block text-xs text-gray-500 mb-0.5">{label}</label>
         <select value={value} onChange={(e) => onChange(e.target.value)}
           className="w-full border border-gray-300 rounded px-1 py-1 text-sm bg-white">
-          {PEMB_COLORS.map((c) => <option key={c} value={c}>{c}</option>)}
+          {PEMB_PANEL_COLORS.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
     );

@@ -1,4 +1,5 @@
 import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory, ComponentItem } from './types';
+import { getPanelUnitPrice, getTrimUnitPrice, getRValuePrice } from './priceList';
 
 const LEAN_TO_DIRECTIONS: LeanToDirection[] = ['right', 'left', 'front', 'back'];
 
@@ -101,6 +102,134 @@ function sumLaborBaseWeight(config: BuildingConfig, categories: ComponentCategor
     .reduce((sum, c) => sum + c.weight, 0);
 }
 
+// ---------------------------------------------------------------------------
+// Issue #8 — Color-aware sheeting / trim cost
+// ---------------------------------------------------------------------------
+
+/**
+ * Map a SHEETING-group component to the correct color role.
+ * Returns 'roof' if the description contains "Roof" (but not "Wall" or "Liner"),
+ * 'wall' for wall/liner panels, null for ridge caps, soffits, and other non-panel items.
+ */
+function sheetingColorRole(c: ComponentItem): 'roof' | 'wall' | null {
+  if ((c.group ?? '').toUpperCase() !== 'SHEETING') return null;
+  const desc = (c.description ?? '').toLowerCase();
+  if (desc.includes('soffit') || desc.includes('ridge') || desc.includes('peak')) return null;
+  if (desc.includes('roof') || desc.includes('lean-to') || desc.includes('canopy')) return 'roof';
+  if (desc.includes('wall') || desc.includes('liner')) return 'wall';
+  return null;
+}
+
+/**
+ * Cost of a single sheeting component, substituting the color-based unit price
+ * for roof and wall panels.  Ridge caps, soffits, and unknowns keep their stored
+ * costPerUnit (no color adjustment).
+ */
+function colorAdjustedSheetingCost(c: ComponentItem, config: BuildingConfig): number {
+  const role = sheetingColorRole(c);
+  if (role === 'roof') {
+    return c.qty * getPanelUnitPrice(config.roofColor, 'roof');
+  }
+  if (role === 'wall') {
+    return c.qty * getPanelUnitPrice(config.wallColor, 'wall');
+  }
+  return c.qty * c.costPerUnit;
+}
+
+/**
+ * Cost of a single trim component, substituting the color-based trim price.
+ * Only applied to ROOF TRIM and WALL TRIM group items.
+ * Per-piece items (Ea / pc) keep their stored costPerUnit (no color adjustment).
+ */
+function colorAdjustedTrimCost(c: ComponentItem, config: BuildingConfig): number {
+  const grp = (c.group ?? '').toUpperCase();
+  if (grp !== 'ROOF TRIM' && grp !== 'WALL TRIM') return c.qty * c.costPerUnit;
+  const meas = (c.measure ?? '').toLowerCase();
+  // Only adjust linear-foot-priced trim; per-piece items (end caps, straps) keep stored price
+  if (meas === 'ln ft' || meas === 'lnft' || meas === 'linear ft') {
+    return c.qty * getTrimUnitPrice(config.trimColor);
+  }
+  return c.qty * c.costPerUnit;
+}
+
+/** Color-adjusted sum for roof-wall-sheeting category. */
+function colorAdjustedSheetingSum(config: BuildingConfig): number {
+  return config.components
+    .filter((c) => c.category === 'roof-wall-sheeting')
+    .reduce((sum, c) => sum + colorAdjustedSheetingCost(c, config), 0);
+}
+
+/** Color-adjusted sum for roof-trim and wall-trim categories. */
+function colorAdjustedTrimSum(config: BuildingConfig): number {
+  return config.components
+    .filter((c) => c.category === 'roof-trim' || c.category === 'wall-trim')
+    .reduce((sum, c) => sum + colorAdjustedTrimCost(c, config), 0);
+}
+
+// ---------------------------------------------------------------------------
+// Issue #10 — Auto-calculated insulation cost
+// ---------------------------------------------------------------------------
+
+/**
+ * Compute total insulation cost.
+ *
+ * Override path: if any insulation component has qty > 0, the user has manually
+ * entered quantities → use simpleSum (qty × costPerUnit) as stored.
+ *
+ * Auto-calc path: derive roof and wall insulation sqft from building geometry and
+ * apply the R-value $/sqft rate from rValuePriceTable.
+ *   Roof sqft  = (width/2) × slopeFactor × 2 × length   (both slopes)
+ *   Wall sqft  = 2×(width+length) × eaveHeight − openings sqft
+ *
+ * Opening deductions (for wall insulation):
+ *   Walk doors (3070/4070/6070): nominal w×h (3×7, 4×7, 6×7 ft)
+ *   Roll-up doors: qty × user-entered w × h
+ *   Frame openings: qty × user-entered w × h
+ *   Windows (3030/4030/6030/6040): nominal w×h (3×3, 4×3, 6×3, 6×4 ft)
+ */
+export function computeInsulationCost(config: BuildingConfig): number {
+  // Manual override: any insulation component with qty > 0
+  const hasManual = config.components
+    .filter((c) => c.category === 'insulation')
+    .some((c) => c.qty > 0);
+
+  if (hasManual) {
+    return simpleSum(config, ['insulation']);
+  }
+
+  const { dimensions, doorsWindows, insulation } = config;
+  const rValuePrice = getRValuePrice(insulation.rValue);
+  let totalCost = 0;
+
+  if (insulation.roof && dimensions.width > 0 && dimensions.length > 0) {
+    const slopeFactor = Math.sqrt(1 + (dimensions.roofPitch / 12) ** 2);
+    const roofSqft = (dimensions.width / 2) * slopeFactor * 2 * dimensions.length;
+    totalCost += roofSqft * rValuePrice;
+  }
+
+  if (insulation.wall && dimensions.width > 0 && dimensions.length > 0 && dimensions.eaveHeight > 0) {
+    const perimeter = 2 * (dimensions.width + dimensions.length);
+    const grossWallSqft = perimeter * dimensions.eaveHeight;
+
+    const { doors3070, doors4070, door6070, rollUpDoors, frameOpenings,
+            window3030, window4030, window6030, window6040 } = doorsWindows;
+    const openingsSqft =
+      doors3070.qty  * 3 * 7 +
+      doors4070.qty  * 4 * 7 +
+      door6070.qty   * 6 * 7 +
+      rollUpDoors.reduce((s, d) => s + d.qty * Math.max(0, d.width)  * Math.max(0, d.height), 0) +
+      frameOpenings.reduce((s, d) => s + d.qty * Math.max(0, d.width) * Math.max(0, d.height), 0) +
+      window3030.qty * 3 * 3 +
+      window4030.qty * 4 * 3 +
+      window6030.qty * 6 * 3 +
+      window6040.qty * 6 * 4;
+
+    totalCost += Math.max(0, grossWallSqft - openingsSqft) * rValuePrice;
+  }
+
+  return totalCost;
+}
+
 /** Compute full cost breakdown matching the Summary sheet layout */
 export function calculateCosts(config: BuildingConfig): CostBreakdown {
   const { dimensions, leanTos } = config;
@@ -141,15 +270,16 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
   // Components
   const purlinsGirtsCost = simpleSum(config, ['purlins-girts']);
   const anglesCost = simpleSum(config, ['base-rake-angles']);
-  const sheetingCost = simpleSum(config, ['roof-wall-sheeting']);
-  const roofWallTrimCost = simpleSum(config, ['roof-trim', 'wall-trim']);
+  // Issue #8: sheeting and trim costs use color-based unit prices for panel/trim SKUs.
+  const sheetingCost = colorAdjustedSheetingSum(config);
+  const roofWallTrimCost = colorAdjustedTrimSum(config);
   const doorsWindowsCost = simpleSum(config, ['doors-windows']);
   const hardwareCost = simpleSum(config, ['standard-hardware']);
   const componentsTotal = purlinsGirtsCost + anglesCost + sheetingCost + roofWallTrimCost + doorsWindowsCost + hardwareCost;
   const componentsWeight = sumWeight(config, ['purlins-girts', 'base-rake-angles', 'roof-wall-sheeting', 'roof-trim', 'wall-trim', 'doors-windows', 'standard-hardware']);
 
-  // Insulation
-  const insulationTotal = simpleSum(config, ['insulation']);
+  // Issue #10: insulation cost auto-calculated from geometry (falls back to manual qty override).
+  const insulationTotal = computeInsulationCost(config);
 
   // Fasteners
   const anchorBoltsCost = simpleSum(config, ['anchor-bolts']);

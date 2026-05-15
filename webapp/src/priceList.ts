@@ -9,6 +9,175 @@ export interface PriceListItem {
   mapTo: string[];
 }
 
+// ---------------------------------------------------------------------------
+// Color → SKU / price table (Issue #8)
+// ---------------------------------------------------------------------------
+
+/** Panel and trim pricing keyed by PEMB color name. */
+export interface ColorSku {
+  /** Display name / color selection value */
+  color: string;
+  /** Central States SKU for roof panel (PBR / RLoc) */
+  roofPanelSku: string;
+  /** Central States SKU for wall panel (PBR / RLoc) */
+  wallPanelSku: string;
+  /** Central States SKU for trim (Sculptured Rake / Corner / Jamb trim) */
+  trimSku: string;
+  /** Roof panel unit price $/LF */
+  roofPanelPricePerLF: number;
+  /** Wall panel unit price $/LF */
+  wallPanelPricePerLF: number;
+  /** Trim unit price $/LF (blended rake-trim rate; eave gutter priced separately) */
+  trimPricePerLF: number;
+}
+
+/**
+ * PEMB color options with Central States supplier codes and pricing.
+ *
+ * Pricing basis:
+ *   Galvalume (baseline):   CL244GL @ $3.2783/LF roof,  RL6GLST @ $3.0082/LF wall,  trim ~$4.60/LF (estimated — no Galvalume-trim SKU in current supplier sheet).
+ *   SMP color panels:       RL6LS  @ $4.0843/LF  (~24.6 % above Galvalume, per workbook CL244GL vs RL6LS).
+ *   Color trim:             SSRA6LS @ $5.4699/LF  (~18.9 % above Galvalume trim estimate).
+ *
+ * NOTE: The brief requested "5–15 % markup"; actual workbook shows ~25 % for panels and ~19 % for trim.
+ *       Using workbook values as authoritative. See .squad/decisions/inbox/livingston-issue8-10.md.
+ *
+ * All SMP colors share the same per-LF price from Central States — the SKU code encodes the
+ * color, not the price tier.  Future: if the supplier introduces different price tiers per color,
+ * extend ColorSku with per-SKU overrides.
+ */
+export const colorPriceTable: ColorSku[] = [
+  {
+    color: 'Galvalume',
+    roofPanelSku: 'CL244GL',   wallPanelSku: 'RL6GLST',  trimSku: 'SSRA6GL',
+    roofPanelPricePerLF: 3.2783, wallPanelPricePerLF: 3.0082, trimPricePerLF: 4.60,
+  },
+  {
+    color: 'Polar White',
+    roofPanelSku: 'RL6PW',    wallPanelSku: 'RL6PW',    trimSku: 'SSRA6PW',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Light Stone',
+    roofPanelSku: 'RL6LTS',   wallPanelSku: 'RL6LTS',   trimSku: 'SSRA6LTS',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Saddle Tan',
+    roofPanelSku: 'RL6ST',    wallPanelSku: 'RL6ST',    trimSku: 'SSRA6ST',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Burnished Slate',
+    roofPanelSku: 'RL6BS',    wallPanelSku: 'RL6BS',    trimSku: 'SSRA6BS',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Hawaiian Blue',
+    roofPanelSku: 'RL6HB',    wallPanelSku: 'RL6HB',    trimSku: 'SSRA6HB',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Brite Red',
+    roofPanelSku: 'RL6BR',    wallPanelSku: 'RL6BR',    trimSku: 'SSRA6BR',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Forest Green',
+    roofPanelSku: 'RL6FG',    wallPanelSku: 'RL6FG',    trimSku: 'SSRA6FG',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Charcoal Gray',
+    roofPanelSku: 'RL6CG',    wallPanelSku: 'RL6CG',    trimSku: 'SSRA6CG',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Snow White',
+    roofPanelSku: 'RL6SW',    wallPanelSku: 'RL6SW',    trimSku: 'SSRA6SW',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Ash Gray',
+    roofPanelSku: 'RL6AG',    wallPanelSku: 'RL6AG',    trimSku: 'SSRA6AG',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+  {
+    color: 'Koko Brown',
+    roofPanelSku: 'RL6KB',    wallPanelSku: 'RL6KB',    trimSku: 'SSRA6KB',
+    roofPanelPricePerLF: 4.0843, wallPanelPricePerLF: 4.0843, trimPricePerLF: 5.4699,
+  },
+];
+
+/** All valid PEMB color names in display order. Single source of truth for UI selects. */
+export const PEMB_PANEL_COLORS: string[] = colorPriceTable.map((c) => c.color);
+
+/**
+ * Return the panel unit price ($/LF) for the given color.
+ * Falls back to Galvalume price when the color is unknown or blank.
+ */
+export function getPanelUnitPrice(color: string, role: 'roof' | 'wall'): number {
+  const entry = colorPriceTable.find((c) => c.color === color);
+  if (!entry) {
+    // Unknown / blank → Galvalume baseline
+    const galvalume = colorPriceTable[0];
+    return role === 'roof' ? galvalume.roofPanelPricePerLF : galvalume.wallPanelPricePerLF;
+  }
+  return role === 'roof' ? entry.roofPanelPricePerLF : entry.wallPanelPricePerLF;
+}
+
+/**
+ * Return the trim unit price ($/LF) for the given color.
+ * Falls back to Galvalume trim price when the color is unknown or blank.
+ */
+export function getTrimUnitPrice(color: string): number {
+  const entry = colorPriceTable.find((c) => c.color === color);
+  return entry ? entry.trimPricePerLF : colorPriceTable[0].trimPricePerLF;
+}
+
+// ---------------------------------------------------------------------------
+// R-value insulation pricing (Issue #10)
+// ---------------------------------------------------------------------------
+
+/** Standard R-value options for PEMB blanket insulation. */
+export type RValue = 'R-13' | 'R-19' | 'R-25' | 'R-30';
+
+/** All R-value options in ascending order. */
+export const R_VALUE_OPTIONS: RValue[] = ['R-13', 'R-19', 'R-25', 'R-30'];
+
+export interface RValuePrice {
+  rValue: RValue;
+  /** Nominal thickness in inches (for display) */
+  thicknessIn: number;
+  /** Cost per square foot of coverage ($/sqft) */
+  pricePerSqft: number;
+}
+
+/**
+ * PEMB faced-fiberglass blanket insulation pricing by R-value.
+ *
+ * Basis: industry-standard PEMB blanket insulation (faced fiberglass roll, double-bubble).
+ * The workbook has R-10 at $3.4956/LnFt (≈ $0.58/sqft assuming 72" wide roll).
+ * Extrapolated to R-13/19/25/30 using proportional thickness and standard market premiums.
+ * No per-R-value data found in the current workbook extract — assumptions filed in inbox.
+ * Override pattern: if any insulation component has qty > 0 the stored qty×cost is used instead.
+ */
+export const rValuePriceTable: RValuePrice[] = [
+  { rValue: 'R-13', thicknessIn: 3.5, pricePerSqft: 0.55 },
+  { rValue: 'R-19', thicknessIn: 6.0, pricePerSqft: 0.72 },
+  { rValue: 'R-25', thicknessIn: 8.0, pricePerSqft: 0.89 },
+  { rValue: 'R-30', thicknessIn: 10.0, pricePerSqft: 1.05 },
+];
+
+/**
+ * Return the insulation unit price ($/sqft) for the given R-value.
+ * Falls back to R-13 when unknown.
+ */
+export function getRValuePrice(rValue: RValue | string | undefined): number {
+  const entry = rValuePriceTable.find((r) => r.rValue === rValue);
+  return entry ? entry.pricePerSqft : rValuePriceTable[0].pricePerSqft; // R-13 default
+}
+
 /** Master price list sourced from the Central States supplier sheet */
 export const defaultPriceList: PriceListItem[] = [
   // Cold Form -- Purlins & Girts (Zee)
