@@ -125,3 +125,26 @@ Both issues batched into one branch/PR to avoid same-file merge contention on Qu
 - `npm run build` — exit 0, 54 modules, no TS errors
 - `npm test` — 110 tests passed (78 bomEngine + 32 calculator)
 
+## 2026-05-15 — Issues #12 + Auto-BOM Display (squad/12-bom-display)
+
+Two features in one PR, two commits.
+
+### Files Changed
+- `webapp/src/pages/QuotationPage.tsx` — both commits
+
+### Commit 1: Issue #12 — Quote # + Rev in header
+- Added `Q-{active_quote_id}` and `Rev 1` (placeholder) to the top-right of the printable quotation header bar.
+- Source: `localStorage.getItem('active_quote_id')` — consistent with Layout.tsx / MenuPage.tsx pattern.
+- No revision_number in schema; `Rev 1` is fixed placeholder. Inbox note filed at `.squad/decisions/inbox/linus-issue12-bom.md` for Rusty to add `revision_number` column.
+
+### Commit 2: Auto-BOM display panel (Livingston PR #29 follow-up)
+- Added collapsible `<details>` section "Bill of Materials (Auto-Calculated)" powered by `computeFullBom(config)` from `bomEngine.ts`.
+- Table: Description | Qty | Unit | Unit Cost | Extended.
+- Engineer-flagged items (MF-01, MF-03) highlighted amber.
+- Always-expanded in print/PDF via `details.bom-section` print CSS pattern.
+- Calculation notes footnote from Livingston's inbox assumptions.
+- Chose Option B (read-only panel); Option A deferred to DesignPage sprint.
+
+### Build & Tests
+- `npm run build` — ✅ exit 0, 55 modules, no TS errors
+- `npm test` — ✅ 226 tests passed (78 bomEngine + 116 bomEngine.secondary + 32 calculator)

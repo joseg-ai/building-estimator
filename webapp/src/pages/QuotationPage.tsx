@@ -3,7 +3,8 @@ import { useBuildingConfig } from '../context';
 import { calculateCosts, formatUSD } from '../calculator';
 import BuildingElevation from '../components/BuildingElevation';
 import InsulationDiagram from '../components/InsulationDiagram';
-import type { LeanToDirection } from '../types';
+import type { LeanToDirection, ComponentItem } from '../types';
+import { computeFullBom } from '../bomEngine';
 
 const dirLabels: Record<LeanToDirection, string> = { right: 'Right', left: 'Left', front: 'Front', back: 'Back' };
 
@@ -20,6 +21,27 @@ export default function QuotationPage() {
   const { dimensions, leanTos, insulation } = config;
   const costs = calculateCosts(config);
   const printRef = useRef<HTMLDivElement>(null);
+
+  const activeQuoteId = localStorage.getItem('active_quote_id');
+  const quoteLabel = activeQuoteId ? `Q-${activeQuoteId}` : '—';
+  // No revision_number in schema yet — Rev 1 placeholder. See inbox note for Rusty.
+  const revLabel = 'Rev 1';
+
+  const { items: bomItems, mainFramingSummary } = computeFullBom(config);
+  const engineerFlags = new Set(mainFramingSummary.engineerInputRequired);
+
+  function bomItemExtended(item: ComponentItem): number {
+    const m = (item.measure ?? '').trim().toLowerCase();
+    if (m === 'ln ft' || m === 'ln. ft' || m === 'lnft' || m === 'linear ft' || m === 'linft' || m === 'ln. ft' || m === 'ln ft') {
+      return (item.lnF > 0 ? item.lnF : item.qty * item.length) * item.costPerUnit;
+    }
+    if (m === 'pound/ft' || m === 'lb/ft' || m === 'pound' || m === 'lb' || m === '$/lb') {
+      return item.weight * item.costPerUnit;
+    }
+    return item.weight > 0 ? item.weight * item.costPerUnit : item.qty * item.costPerUnit;
+  }
+
+  const bomTotal = bomItems.reduce((sum, it) => sum + bomItemExtended(it), 0);
 
   // Local input string for the percentage field so users can type "8.25" naturally
   // (including a trailing dot). We persist the parsed decimal on every valid edit.
@@ -103,6 +125,8 @@ export default function QuotationPage() {
         th { background: #f5f5f5; font-weight: 600; }
         .header-bar { background: #1e3a5f; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-bar h1 { color: white; }
+        .quote-badge { margin-top: 8px; font-size: 10px; opacity: 0.9; letter-spacing: 0.03em; }
+        .quote-badge strong { font-size: 13px; opacity: 1; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-top: 10px; }
         .label { color: #6b7280; font-size: 10px; text-transform: uppercase; }
         .val { font-weight: 600; }
@@ -120,10 +144,16 @@ export default function QuotationPage() {
         details.terms-section { border: 1px solid #e5e7eb; border-radius: 4px; margin-top: 16px; overflow: hidden; page-break-inside: avoid; }
         details.terms-section summary { display: none; }
         details.terms-section > :not(summary) { display: block; }
+        details.bom-section { border: 1px solid #e5e7eb; border-radius: 4px; margin-top: 16px; overflow: hidden; page-break-inside: avoid; }
+        details.bom-section summary { display: none; }
+        details.bom-section > :not(summary) { display: block !important; }
+        .bom-flag td { background: #fef3c7 !important; }
+        .calc-notes { font-size: 9px; color: #6b7280; padding: 6px 14px 8px; border-top: 1px solid #f3f4f6; line-height: 1.5; }
+        .calc-notes ul { margin: 2px 0 0 14px; list-style: disc; }
         .legal-body { padding: 10px 14px; font-size: 9px; color: #6b7280; line-height: 1.6; text-align: justify; }
         .legal-body p { margin: 3px 0; }
         .legal-title { font-size: 10px; text-transform: uppercase; color: #9ca3af; font-weight: 600; letter-spacing: 0.05em; padding: 6px 14px 4px; border-bottom: 1px solid #f3f4f6; }
-        @media print { body { margin: 15px 20px; } details.terms-section summary { display: none; } details.terms-section > :not(summary) { display: block !important; } }
+        @media print { body { margin: 15px 20px; } details.terms-section summary { display: none; } details.terms-section > :not(summary) { display: block !important; } details.bom-section summary { display: none; } details.bom-section > :not(summary) { display: block !important; } }
       </style></head><body>`);
     w.document.write(el.innerHTML);
     w.document.write('</body></html>');
@@ -192,6 +222,10 @@ export default function QuotationPage() {
           <div className="text-right text-xs">
             <p>OFFICE: 281-999-8810</p>
             <p>FAX: 281-999-8811</p>
+            <div className="quote-badge mt-2 text-right">
+              <strong className="block text-sm font-bold font-mono">{quoteLabel}</strong>
+              <span className="opacity-80">{revLabel}</span>
+            </div>
           </div>
         </div>
 
@@ -417,6 +451,66 @@ export default function QuotationPage() {
               )}
             </div>
           )}
+
+          {/* Auto-Calculated BOM — follow-up from Livingston PR #29 */}
+          <details className="bom-section mt-4 border border-gray-200 rounded overflow-hidden" style={{ pageBreakInside: 'avoid' }}>
+            <summary className="px-4 py-2 bg-gray-50 text-[10px] font-semibold uppercase text-gray-500 cursor-pointer select-none tracking-wide hover:bg-gray-100 list-none flex items-center justify-between print:hidden">
+              <span>Bill of Materials (Auto-Calculated)</span>
+              <span className="text-gray-400 text-xs print:hidden">▼</span>
+            </summary>
+            <div>
+              <p className="legal-title px-4 py-1.5 text-[10px] uppercase text-gray-400 font-semibold tracking-wide border-b border-gray-100">
+                Bill of Materials — Auto-Calculated
+              </p>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="py-1.5 px-3 text-left font-semibold text-gray-600 border-b border-gray-200">Description</th>
+                    <th className="py-1.5 px-3 text-right font-semibold text-gray-600 border-b border-gray-200">Qty</th>
+                    <th className="py-1.5 px-3 text-right font-semibold text-gray-600 border-b border-gray-200">Unit</th>
+                    <th className="py-1.5 px-3 text-right font-semibold text-gray-600 border-b border-gray-200">Unit Cost</th>
+                    <th className="py-1.5 px-3 text-right font-semibold text-gray-600 border-b border-gray-200">Extended</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bomItems.map((item) => {
+                    const extended = bomItemExtended(item);
+                    const flagged = engineerFlags.has(item.id);
+                    return (
+                      <tr key={item.id} className={`border-b border-gray-100 ${flagged ? 'bom-flag bg-yellow-50' : ''}`}>
+                        <td className="py-1 px-3">
+                          {item.description}
+                          {flagged && (
+                            <span className="ml-1 text-[9px] font-semibold text-amber-700 bg-amber-100 rounded px-1">Engineer input req.</span>
+                          )}
+                        </td>
+                        <td className="py-1 px-3 text-right font-mono">{Number.isInteger(item.qty) ? item.qty : item.qty.toFixed(2)}</td>
+                        <td className="py-1 px-3 text-right text-gray-500">{item.measure || 'pc'}</td>
+                        <td className="py-1 px-3 text-right font-mono">{formatUSD(item.costPerUnit)}</td>
+                        <td className="py-1 px-3 text-right font-mono font-semibold">{formatUSD(extended)}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="bg-gray-50 font-semibold">
+                    <td colSpan={4} className="py-1.5 px-3 text-right text-gray-600 text-xs uppercase tracking-wide">BOM Total</td>
+                    <td className="py-1.5 px-3 text-right font-mono">{formatUSD(bomTotal)}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="calc-notes px-4 py-2 text-[9px] text-gray-500 border-t border-gray-100">
+                <p className="font-semibold text-gray-600 mb-1">Calculation Notes (Livingston)</p>
+                <ul className="list-disc ml-4 space-y-0.5">
+                  <li>MF-01, MF-03 (main frame columns &amp; rafters): custom plate girders — weight = 0 until structural engineer supplies values.</li>
+                  <li>Purlin length = building length L (excludes gable overhangs; workbook uses L + overhang extensions).</li>
+                  <li>Fastener count: 0.71 screws/sqft of total sheeted area.</li>
+                  <li>Tape sealant: 1 roll per 25 ft of building length.</li>
+                  <li>Tube sealant: 1 tube per 2,960 sqft of sheeted area.</li>
+                  <li>Eave plate: 1 per 4 ft of building length. Rake support: (W/2 × slope factor) / 5 per slope.</li>
+                  <li>Backup plate: 1 per ft of building length. Sheeting angle: 1 per ft of perimeter.</li>
+                </ul>
+              </div>
+            </div>
+          </details>
 
           {/* Observations & Colors */}
           <div className="mt-4 text-sm space-y-1 text-gray-600">
