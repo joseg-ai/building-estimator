@@ -7,6 +7,9 @@ const router = express.Router();
 // Issue #6: status enum.
 const ALLOWED_STATUSES = ['draft', 'sent', 'accepted', 'rejected', 'expired', 'superseded'];
 
+// PR #24 follow-up: valid exposure categories per ASCE 7.
+const ALLOWED_EXPOSURE_CATEGORIES = ['B', 'C', 'D'];
+
 // Issue #20: validate additionalStructures shape. Returns null if valid, error string if not.
 function validateAdditionalStructures(as) {
   if (as === undefined || as === null) return null; // optional field
@@ -82,6 +85,13 @@ function rowToQuote(row, { includeConfig = false } = {}) {
     revision: row.revision ?? 0,
     parentQuoteId: row.parent_quote_id ?? null,
     validUntil: row.valid_until ?? null,
+    windSpeedMph: row.wind_speed_mph ?? 115,
+    exposureCategory: row.exposure_category ?? 'C',
+    roofLiveLoadPsf: row.roof_live_load_psf ?? 20,
+    snowLoadPsf: row.snow_load_psf ?? 20,
+    roofColor: row.roof_color ?? '',
+    wallColor: row.wall_color ?? '',
+    trimColor: row.trim_color ?? '',
   };
   if (includeConfig) base.config = JSON.parse(row.config_json);
   return base;
@@ -95,7 +105,9 @@ router.get('/', (req, res) => {
   let sql = `
     SELECT id, project_name, customer_name, job_location, grand_total, status,
            created_at, updated_at, price_list_version_id, customer_id,
-           quote_number, revision, parent_quote_id, valid_until
+           quote_number, revision, parent_quote_id, valid_until,
+           wind_speed_mph, exposure_category, roof_live_load_psf, snow_load_psf,
+           roof_color, wall_color, trim_color
     FROM quotes
     WHERE user_id = ?
   `;
@@ -137,6 +149,21 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: { code: 'VALIDATION', message: `additionalStructures: ${asErr}` } });
   }
 
+  // PR #24 follow-up: validate design loads + colors from config
+  if (config.exposureCategory !== undefined && !ALLOWED_EXPOSURE_CATEGORIES.includes(config.exposureCategory)) {
+    return res.status(400).json({ error: { code: 'VALIDATION', message: `exposureCategory must be one of: ${ALLOWED_EXPOSURE_CATEGORIES.join(', ')}` } });
+  }
+  for (const numField of ['windSpeedMph', 'roofLiveLoadPsf', 'snowLoadPsf']) {
+    if (config[numField] !== undefined && typeof config[numField] !== 'number') {
+      return res.status(400).json({ error: { code: 'VALIDATION', message: `${numField} must be a number` } });
+    }
+  }
+  for (const strField of ['roofColor', 'wallColor', 'trimColor']) {
+    if (config[strField] !== undefined && typeof config[strField] !== 'string') {
+      return res.status(400).json({ error: { code: 'VALIDATION', message: `${strField} must be a string` } });
+    }
+  }
+
   // Validate customerId if provided
   let resolvedCustomerId = null;
   if (customerId !== undefined && customerId !== null) {
@@ -170,9 +197,11 @@ router.post('/', (req, res) => {
     INSERT INTO quotes (
       id, user_id, project_name, customer_name, job_location, config_json,
       grand_total, status, created_at, updated_at, customer_id,
-      quote_number, revision, parent_quote_id, valid_until, additional_structures_json
+      quote_number, revision, parent_quote_id, valid_until, additional_structures_json,
+      wind_speed_mph, exposure_category, roof_live_load_psf, snow_load_psf,
+      roof_color, wall_color, trim_color
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id,
     req.user.id,
@@ -187,7 +216,14 @@ router.post('/', (req, res) => {
     resolvedCustomerId,
     quoteNumber,
     resolvedValidUntil,
-    additionalStructuresJson
+    additionalStructuresJson,
+    config.windSpeedMph ?? 115,
+    config.exposureCategory ?? 'C',
+    config.roofLiveLoadPsf ?? 20,
+    config.snowLoadPsf ?? 20,
+    config.roofColor ?? '',
+    config.wallColor ?? '',
+    config.trimColor ?? ''
   );
 
   res.status(201).json({
@@ -199,6 +235,13 @@ router.post('/', (req, res) => {
     revision: 0,
     parentQuoteId: null,
     validUntil: resolvedValidUntil,
+    windSpeedMph: config.windSpeedMph ?? 115,
+    exposureCategory: config.exposureCategory ?? 'C',
+    roofLiveLoadPsf: config.roofLiveLoadPsf ?? 20,
+    snowLoadPsf: config.snowLoadPsf ?? 20,
+    roofColor: config.roofColor ?? '',
+    wallColor: config.wallColor ?? '',
+    trimColor: config.trimColor ?? '',
   });
 });
 
@@ -221,9 +264,11 @@ router.post('/:id/revisions', (req, res) => {
       INSERT INTO quotes (
         id, user_id, project_name, customer_name, job_location, config_json,
         grand_total, status, created_at, updated_at, price_list_version_id,
-        customer_id, quote_number, revision, parent_quote_id, valid_until
+        customer_id, quote_number, revision, parent_quote_id, valid_until,
+        wind_speed_mph, exposure_category, roof_live_load_psf, snow_load_psf,
+        roof_color, wall_color, trim_color
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       newId,
       parent.user_id,
@@ -239,7 +284,14 @@ router.post('/:id/revisions', (req, res) => {
       parent.quote_number,
       newRevision,
       parent.id,
-      validUntil
+      validUntil,
+      parent.wind_speed_mph ?? 115,
+      parent.exposure_category ?? 'C',
+      parent.roof_live_load_psf ?? 20,
+      parent.snow_load_psf ?? 20,
+      parent.roof_color ?? '',
+      parent.wall_color ?? '',
+      parent.trim_color ?? ''
     );
     db.prepare('UPDATE quotes SET status = ?, updated_at = ? WHERE id = ?')
       .run('superseded', now, parent.id);
@@ -268,10 +320,34 @@ router.put('/:id', (req, res) => {
     if (asErr) {
       return res.status(400).json({ error: { code: 'VALIDATION', message: `additionalStructures: ${asErr}` } });
     }
+    // PR #24 follow-up: validate design loads + colors
+    if (config.exposureCategory !== undefined && !ALLOWED_EXPOSURE_CATEGORIES.includes(config.exposureCategory)) {
+      return res.status(400).json({ error: { code: 'VALIDATION', message: `exposureCategory must be one of: ${ALLOWED_EXPOSURE_CATEGORIES.join(', ')}` } });
+    }
+    for (const numField of ['windSpeedMph', 'roofLiveLoadPsf', 'snowLoadPsf']) {
+      if (config[numField] !== undefined && typeof config[numField] !== 'number') {
+        return res.status(400).json({ error: { code: 'VALIDATION', message: `${numField} must be a number` } });
+      }
+    }
+    for (const strField of ['roofColor', 'wallColor', 'trimColor']) {
+      if (config[strField] !== undefined && typeof config[strField] !== 'string') {
+        return res.status(400).json({ error: { code: 'VALIDATION', message: `${strField} must be a string` } });
+      }
+    }
     updates.push('config_json = ?', 'project_name = ?', 'customer_name = ?', 'job_location = ?');
     params.push(JSON.stringify(config), config.projectName || '', config.customerName || '', config.jobLocation || '');
     updates.push('additional_structures_json = ?');
     params.push(config.additionalStructures ? JSON.stringify(config.additionalStructures) : null);
+    updates.push('wind_speed_mph = ?', 'exposure_category = ?', 'roof_live_load_psf = ?', 'snow_load_psf = ?', 'roof_color = ?', 'wall_color = ?', 'trim_color = ?');
+    params.push(
+      config.windSpeedMph ?? 115,
+      config.exposureCategory ?? 'C',
+      config.roofLiveLoadPsf ?? 20,
+      config.snowLoadPsf ?? 20,
+      config.roofColor ?? '',
+      config.wallColor ?? '',
+      config.trimColor ?? ''
+    );
   }
   if (grandTotal !== undefined) {
     updates.push('grand_total = ?');

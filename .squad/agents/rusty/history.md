@@ -117,7 +117,35 @@ Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Ke
 
 ---
 
-## 2026-05-15 — Issue #20: Additional Structures (Section 5)
+## 2026-05-15 — PR #24 Follow-up: Design Loads + Colors Persistence
+
+**Branch:** `squad/persist-design-loads`
+
+### What Was Built
+
+Server-side persistence for the 7 fields added by PR #24 (Linus): `windSpeedMph`, `exposureCategory`, `roofLiveLoadPsf`, `snowLoadPsf`, `roofColor`, `wallColor`, `trimColor`.
+
+- **`server/db.js`**: Added 7 scalar columns to the `quotes` table via the idempotent migration block. Defaults: `wind_speed_mph=115`, `exposure_category='C'`, `roof_live_load_psf=20`, `snow_load_psf=20`, colors=`''`.
+- **`server/routes-quotes.js`**: Validation on POST/PUT (`exposureCategory` enum, numeric fields, string colors). All 7 columns written on INSERT and UPDATE (when config provided). Revisions copy them from parent. `rowToQuote()` maps snake_case → camelCase. GET list SELECT updated to include new columns.
+- **`server/test/quotes-design-loads.test.js`**: 11 new tests (POST defaults, POST full, validation errors × 3, GET list, GET detail, PUT, PUT invalid, revision copy, schema migration check).
+
+### Test Results
+
+- Before: 90 pass, 0 fail
+- After: **101 pass, 0 fail**
+- Client `npm run build`: ✅ green (54 modules, no TS errors)
+- Server boot against existing DB: ✅ `DB boot OK`
+
+### Key Decision
+
+Data already round-tripped via `config_json`, but dedicated scalar columns enable SQL-level filtering/indexing for BI/reporting use cases. See `.squad/decisions/inbox/rusty-design-persistence.md` for full rationale.
+
+📌 **Design load scalars warrant dedicated columns (not just JSON blob)**
+- Fields like `windSpeedMph`, `exposureCategory`, `snowLoadPsf` are first-class BI filter criteria.
+- Pattern: scalar copies in proper typed columns + full config in `config_json` as source of truth.
+- Follow this pattern for any future `BuildingConfig` field that will be filtered or reported on independently.
+
+
 
 **Branch:** `squad/20-additional-structures`
 
