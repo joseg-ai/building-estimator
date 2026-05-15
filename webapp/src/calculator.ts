@@ -1,5 +1,6 @@
-import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory, ComponentItem, ProjectOverheads } from './types';
+import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory, ComponentItem, ProjectOverheads, OpeningType, DoorWindowEntry } from './types';
 import { getPanelUnitPrice, getTrimUnitPrice, getRValuePrice } from './priceList';
+import { OPENING_DEFAULT_WALL_SIDE } from './types';
 
 /**
  * Resolve the freight charge for a project (Issue #14).
@@ -192,7 +193,160 @@ function colorAdjustedTrimSum(config: BuildingConfig): number {
 
 // ---------------------------------------------------------------------------
 // Issue #10 — Auto-calculated insulation cost
+// Issue #35 — Split into side-wall vs end-wall sub-totals with per-opening
+//             wall-side attribution.
 // ---------------------------------------------------------------------------
+
+/**
+ * Issue #35: precedence helper for opening → wall-side resolution.
+ * If the opening explicitly carries a `wallSide`, that wins; otherwise the
+ * caller-supplied default applies. Exported so future UI components share
+ * exactly the same precedence rule as the calculator.
+ */
+export function getOpeningWallSide(
+  opening: { wallSide?: 'side' | 'end' },
+  defaultSide: 'side' | 'end',
+): 'side' | 'end' {
+  return opening.wallSide ?? defaultSide;
+}
+
+/**
+ * Issue #35: resolve the effective wall side for a typed opening slot,
+ * applying the PEMB default from `OPENING_DEFAULT_WALL_SIDE` when the
+ * opening itself has no `wallSide` set (true for older localStorage configs
+ * created before this field existed).
+ */
+export function getEffectiveWallSide(
+  opening: { wallSide?: 'side' | 'end' },
+  type: OpeningType,
+): 'side' | 'end' {
+  return getOpeningWallSide(opening, OPENING_DEFAULT_WALL_SIDE[type]);
+}
+
+/**
+ * Average end-wall height for a building, accounting for the gable triangle
+ * (gable roof) or full slope (single-slope / mono-slope roof).
+ *
+ * Derivation — gable:
+ *   End wall = rectangle (width × eaveHeight) + triangle (½ × width × slopeRise)
+ *   where slopeRise = (roofPitch/12) × (width/2).
+ *   avgH = (rect + triangle) / width
+ *        = eaveHeight + slopeRise/2
+ *        = eaveHeight + (roofPitch × width) / 48
+ *
+ * Derivation — single-slope:
+ *   End wall is a trapezoid with parallel sides eaveHeight and
+ *   (eaveHeight + slopeRise), base = width.
+ *   slopeRise = (roofPitch/12) × width.
+ *   avgH = eaveHeight + slopeRise/2
+ *        = eaveHeight + (roofPitch × width) / 24
+ */
+export function avgEndWallHeight(
+  width: number,
+  eaveHeight: number,
+  roofPitch: number,
+  roofType: 'gable' | 'single-slope' = 'gable',
+): number {
+  if (roofType === 'single-slope') {
+    return eaveHeight + (roofPitch * width) / 24;
+  }
+  return eaveHeight + (roofPitch * width) / 48;
+}
+
+/** Issue #35: per-component insulation cost breakdown (dollars). Linus may
+ *  surface these on the UI. Sub-total clamping is independent per wall side,
+ *  so a wall over-deducted by openings cannot bleed negative area into the
+ *  opposite wall. */
+export interface InsulationBreakdown {
+  roof: number;
+  sideWall: number;
+  endWall: number;
+  total: number;
+}
+
+/** Sum opening sqft attributed to the requested wall side. */
+function openingsSqftOnSide(
+  doorsWindows: BuildingConfig['doorsWindows'],
+  side: 'side' | 'end',
+): number {
+  const pick = (op: DoorWindowEntry, type: OpeningType, nominalW: number, nominalH: number): number =>
+    getEffectiveWallSide(op, type) === side ? op.qty * nominalW * nominalH : 0;
+
+  const arr = (entries: DoorWindowEntry[], type: OpeningType): number =>
+    entries.reduce((s, d) => {
+      if (getEffectiveWallSide(d, type) !== side) return s;
+      return s + d.qty * Math.max(0, d.width) * Math.max(0, d.height);
+    }, 0);
+
+  return (
+    pick(doorsWindows.doors3070, 'doors3070', 3, 7) +
+    pick(doorsWindows.doors4070, 'doors4070', 4, 7) +
+    pick(doorsWindows.door6070,  'door6070',  6, 7) +
+    arr(doorsWindows.rollUpDoors,   'rollUpDoors') +
+    arr(doorsWindows.frameOpenings, 'frameOpenings') +
+    pick(doorsWindows.window3030, 'window3030', 3, 3) +
+    pick(doorsWindows.window4030, 'window4030', 4, 3) +
+    pick(doorsWindows.window6030, 'window6030', 6, 3) +
+    pick(doorsWindows.window6040, 'window6040', 6, 4)
+  );
+}
+
+/**
+ * Compute insulation cost broken down into roof / side-wall / end-wall.
+ *
+ * Side walls (always 2 of them, eaveHeight tall):  gross = 2 × length × eaveHeight
+ * End walls  (always 2 of them, avg trapezoidal):  gross = 2 × width  × avgEndWallH
+ *
+ * Each net sqft is clamped to ≥ 0 independently before pricing, so an
+ * over-deducted wall does not subtract from its neighbour.
+ *
+ * Manual-override path (any insulation component qty > 0) returns the simple
+ * sum as `total` with no geometry breakdown (sideWall/endWall/roof all 0).
+ */
+export function computeInsulationBreakdown(config: BuildingConfig): InsulationBreakdown {
+  const hasManual = config.components
+    .filter((c) => c.category === 'insulation')
+    .some((c) => c.qty > 0);
+
+  if (hasManual) {
+    return { roof: 0, sideWall: 0, endWall: 0, total: simpleSum(config, ['insulation']) };
+  }
+
+  const { dimensions, doorsWindows, insulation, roofType } = config;
+  const rValuePrice = getRValuePrice(insulation.rValue);
+  const breakdown: InsulationBreakdown = { roof: 0, sideWall: 0, endWall: 0, total: 0 };
+
+  const haveDims = dimensions.width > 0 && dimensions.length > 0;
+
+  if (insulation.roof && haveDims) {
+    const slopeFactor = Math.sqrt(1 + (dimensions.roofPitch / 12) ** 2);
+    const roofSqft = (dimensions.width / 2) * slopeFactor * 2 * dimensions.length;
+    breakdown.roof = roofSqft * rValuePrice;
+  }
+
+  if (insulation.wall && haveDims && dimensions.eaveHeight > 0) {
+    // Side walls: 2 × length × eaveHeight, minus side-wall openings.
+    const sideGross = 2 * dimensions.length * dimensions.eaveHeight;
+    const sideOpenings = openingsSqftOnSide(doorsWindows, 'side');
+    const sideNet = Math.max(0, sideGross - sideOpenings);
+    breakdown.sideWall = sideNet * rValuePrice;
+
+    // End walls: 2 × width × avgEndWallH, minus end-wall openings.
+    const avgEndH = avgEndWallHeight(
+      dimensions.width,
+      dimensions.eaveHeight,
+      dimensions.roofPitch,
+      roofType,
+    );
+    const endGross = 2 * dimensions.width * avgEndH;
+    const endOpenings = openingsSqftOnSide(doorsWindows, 'end');
+    const endNet = Math.max(0, endGross - endOpenings);
+    breakdown.endWall = endNet * rValuePrice;
+  }
+
+  breakdown.total = breakdown.roof + breakdown.sideWall + breakdown.endWall;
+  return breakdown;
+}
 
 /**
  * Compute total insulation cost.
@@ -200,58 +354,14 @@ function colorAdjustedTrimSum(config: BuildingConfig): number {
  * Override path: if any insulation component has qty > 0, the user has manually
  * entered quantities → use simpleSum (qty × costPerUnit) as stored.
  *
- * Auto-calc path: derive roof and wall insulation sqft from building geometry and
- * apply the R-value $/sqft rate from rValuePriceTable.
- *   Roof sqft  = (width/2) × slopeFactor × 2 × length   (both slopes)
- *   Wall sqft  = 2×(width+length) × eaveHeight − openings sqft
- *
- * Opening deductions (for wall insulation):
- *   Walk doors (3070/4070/6070): nominal w×h (3×7, 4×7, 6×7 ft)
- *   Roll-up doors: qty × user-entered w × h
- *   Frame openings: qty × user-entered w × h
- *   Windows (3030/4030/6030/6040): nominal w×h (3×3, 4×3, 6×3, 6×4 ft)
+ * Auto-calc path: see `computeInsulationBreakdown` for the per-wall split
+ * (Issue #35). Roof formula and wall on/off toggle behavior preserved from
+ * Issue #10. End walls now include the gable triangle area on average, so the
+ * new total is slightly higher than the old combined-perimeter calc — this is
+ * the bug fix from PR #32's audit.
  */
 export function computeInsulationCost(config: BuildingConfig): number {
-  // Manual override: any insulation component with qty > 0
-  const hasManual = config.components
-    .filter((c) => c.category === 'insulation')
-    .some((c) => c.qty > 0);
-
-  if (hasManual) {
-    return simpleSum(config, ['insulation']);
-  }
-
-  const { dimensions, doorsWindows, insulation } = config;
-  const rValuePrice = getRValuePrice(insulation.rValue);
-  let totalCost = 0;
-
-  if (insulation.roof && dimensions.width > 0 && dimensions.length > 0) {
-    const slopeFactor = Math.sqrt(1 + (dimensions.roofPitch / 12) ** 2);
-    const roofSqft = (dimensions.width / 2) * slopeFactor * 2 * dimensions.length;
-    totalCost += roofSqft * rValuePrice;
-  }
-
-  if (insulation.wall && dimensions.width > 0 && dimensions.length > 0 && dimensions.eaveHeight > 0) {
-    const perimeter = 2 * (dimensions.width + dimensions.length);
-    const grossWallSqft = perimeter * dimensions.eaveHeight;
-
-    const { doors3070, doors4070, door6070, rollUpDoors, frameOpenings,
-            window3030, window4030, window6030, window6040 } = doorsWindows;
-    const openingsSqft =
-      doors3070.qty  * 3 * 7 +
-      doors4070.qty  * 4 * 7 +
-      door6070.qty   * 6 * 7 +
-      rollUpDoors.reduce((s, d) => s + d.qty * Math.max(0, d.width)  * Math.max(0, d.height), 0) +
-      frameOpenings.reduce((s, d) => s + d.qty * Math.max(0, d.width) * Math.max(0, d.height), 0) +
-      window3030.qty * 3 * 3 +
-      window4030.qty * 4 * 3 +
-      window6030.qty * 6 * 3 +
-      window6040.qty * 6 * 4;
-
-    totalCost += Math.max(0, grossWallSqft - openingsSqft) * rValuePrice;
-  }
-
-  return totalCost;
+  return computeInsulationBreakdown(config).total;
 }
 
 /** Compute full cost breakdown matching the Summary sheet layout */

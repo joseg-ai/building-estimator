@@ -130,3 +130,19 @@ Shipped parametric freight calculator in calculator.ts + types.ts:
 - **New fields are optional in the type** so legacy localStorage configs (pre-#14) keep type-checking and naturally fall through to flat-freight behavior (`freightAutoCalc !== true` → flat branch).
 - **One-line UI bleed-through:** the boolean addition widened `overheads[key]` in SummaryPage's numeric-input `.map()` loop. Applied minimum `as number` narrowing to keep TS at 0 errors; left a note for Linus to wire distance/rate as separate controls outside that loop.
 - **Unit stays km** — engine is unit-agnostic on storage; miles support (if approved) is a UI-side conversion. Flagged for Reuben/Jose.
+
+
+## Sprint 2 — Issue #35 Split insulation calc (2026-05-16)
+
+Shipped per-orientation insulation in calculator.ts + types.ts (engine-side follow-up from PR #32 audit):
+- Added optional wallSide?: 'side' | 'end' to DoorWindowEntry (backwards-compatible — older localStorage falls through to PEMB defaults via getEffectiveWallSide).
+- New exports: getOpeningWallSide, getEffectiveWallSide, vgEndWallHeight, computeInsulationBreakdown (returns {roof, sideWall, endWall, total}). Preserved computeInsulationCost(config): number signature.
+- Side walls: `2 × length × eaveHeight` minus side-attributed openings. End walls: `2 × width × avgEndWallH` minus end-attributed openings. Independent zero-clamp per side.
+- Avg end-wall height — gable: `eaveHeight + (roofPitch × width) / 48`. Single-slope: `eaveHeight + (roofPitch × width) / 24` (full-width rise vs half-width gable).
+- 18 new tests (350 → 368, all green). 50×100×20 R-13 gable cross-check: roof=$2898.75, side=$2200, end=$1329.17, total=$6427.92. Delta vs PR #32 combined-perimeter calc: +6.94% wall sqft from gable triangle inclusion — that IS the fix.
+
+### Key learnings
+- **PEMB default mapping**: walk doors + windows → side wall, roll-ups + frame openings → end wall. Documented in OPENING_DEFAULT_WALL_SIDE constant and flagged for Reuben review.
+- **Schema choice**: optional wallSide? on each DoorWindowEntry (not a structured `walls[]` config) — backwards compat by construction, matches estimator mental model, per-opening granularity.
+- **Per-wall R-value override deferred** per issue body; flagged as future follow-up.
+- **Tolerance discipline**: didn't relax PR #32's 5% assertion — recomputed expected values from first principles. The old test's WALL_SQFT constant changed from PERIMETER × eaveHeight (3200) to SIDE_WALL_SQFT + END_WALL_SQFT (3466.67) on the 40×60×16 ref.

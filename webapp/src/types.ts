@@ -103,7 +103,47 @@ export interface DoorWindowEntry {
   includeFrame: boolean;
   width: number;
   height: number;
+  /**
+   * Issue #35: which wall side this opening lives on, for insulation deduction.
+   * Optional so configs from older localStorage continue to type-check; when
+   * absent, `getEffectiveWallSide()` applies the PEMB default for the slot
+   * (walk doors + windows → 'side', roll-up doors + frame openings → 'end').
+   */
+  wallSide?: 'side' | 'end';
 }
+
+/** Issue #35: identifier for each opening slot in DoorsWindowsConfig.
+ *  Drives the default wall-side assignment when an opening has no `wallSide`. */
+export type OpeningType =
+  | 'doors3070'
+  | 'doors4070'
+  | 'door6070'
+  | 'rollUpDoors'
+  | 'frameOpenings'
+  | 'window3030'
+  | 'window4030'
+  | 'window6030'
+  | 'window6040';
+
+/**
+ * Issue #35: PEMB defaults for opening → wall-side mapping.
+ *   - Side walls: walk doors (3070, 4070, 6070), all windows.
+ *   - End walls:  roll-up doors, frame openings.
+ * Rationale: typical PEMB layout puts truck/roll-up access at gable ends and
+ * people doors + windows along side walls. Documented in
+ * `.squad/decisions/inbox/livingston-issue35-insulation-split.md`.
+ */
+export const OPENING_DEFAULT_WALL_SIDE: Record<OpeningType, 'side' | 'end'> = {
+  doors3070: 'side',
+  doors4070: 'side',
+  door6070: 'side',
+  rollUpDoors: 'end',
+  frameOpenings: 'end',
+  window3030: 'side',
+  window4030: 'side',
+  window6030: 'side',
+  window6040: 'side',
+};
 
 /** Doors and windows configuration */
 export interface DoorsWindowsConfig {
@@ -384,12 +424,19 @@ export function createDefaultConfig(): BuildingConfig {
       swSkirt: false, swSkirtHeight: 0, ewSkirt: false, ewSkirtHeight: 0,
     },
     doorsWindows: {
-      doors3070: emptyDoorWindow(), doors4070: emptyDoorWindow(), door6070: emptyDoorWindow(),
+      // Issue #35: freshly-created openings carry the documented PEMB default
+      // wallSide. Field stays optional on the type so older localStorage
+      // configs without it still load via getEffectiveWallSide() fallback.
+      doors3070: { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.doors3070 },
+      doors4070: { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.doors4070 },
+      door6070:  { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.door6070 },
       panicHardware: 0, deadBolt: 0,
-      rollUpDoors: [emptyDoorWindow(), emptyDoorWindow(), emptyDoorWindow(), emptyDoorWindow()],
-      frameOpenings: [emptyDoorWindow(), emptyDoorWindow(), emptyDoorWindow(), emptyDoorWindow()],
-      window3030: emptyDoorWindow(), window4030: emptyDoorWindow(),
-      window6030: emptyDoorWindow(), window6040: emptyDoorWindow(),
+      rollUpDoors:    Array.from({ length: 4 }, () => ({ ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.rollUpDoors })),
+      frameOpenings:  Array.from({ length: 4 }, () => ({ ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.frameOpenings })),
+      window3030: { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.window3030 },
+      window4030: { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.window4030 },
+      window6030: { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.window6030 },
+      window6040: { ...emptyDoorWindow(), wallSide: OPENING_DEFAULT_WALL_SIDE.window6040 },
     },
     accessories: {
       canopies: [emptyCanopy(), emptyCanopy(), emptyCanopy(), emptyCanopy()],
