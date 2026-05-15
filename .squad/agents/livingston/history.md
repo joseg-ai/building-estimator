@@ -102,3 +102,17 @@ Added `RValue` type, `rValuePriceTable` (R-13=$0.55/sqft, R-19=$0.72, R-25=$0.89
 **Tests:** 226 → 268 (all green). Build clean.
 
 
+
+## Sprint 2 — Issue #5 Stair Engine (2026-05-15)
+
+Shipped parametric stair engine in webapp/src/stairEngine.ts:
+- `computeStairBom(cfg)` returns 25 BOM rows (stringer, treads, form stringers, step steel, guard/hand rails, supports, brackets, mid-landing × 6, floor-landing × 6, mid + floor columns).
+- `computeStairCost(cfg, overrides?)` returns full Structural-sheet cost stack with **10% profit** (stair-specific per issue #5 AC #6) and 4% commission.
+- 65 new tests, all workbook canonical numbers (Structural.txt rows 9–62) match to <$0.001.
+
+### Key learnings
+
+- **Stringer geometry is workbook-idealized:** with mid-landing the workbook computes `sqrt((FtF/2)² + (treads×R/12)²)` — half rise but FULL run. Mathematically inconsistent but we mirror it. Flagged for Reuben in decision inbox.
+- **Form Stringer flat-bar quantities (6×4ft, 10×8ft, 8×5ft per flight)** appear to be hard-coded per-flight constants in the workbook; no visible formula. Encoded as fixed multipliers, flagged for Reuben.
+- **Distinct cost stack:** stairs use 10% profit (row 60) vs 15% elsewhere. Same 4% commission. Defaults exposed via `StairCostOverrides`.
+- **Workbook lb/ft constants back-derived from weight / lnF:** all 9 material weights (C12×20.7, L1¼×1¼×¼=1.92, flat 1/4×3=2.55, step steel=4.5, pipe 1½=2.718, C9×13.4, W8×31, L3×3×1/4=4.9, deck=4.5, HSS4×4=9.42) match the workbook exactly.
