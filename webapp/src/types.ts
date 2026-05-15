@@ -172,6 +172,9 @@ export interface ComponentItem {
   lnF: number;
 }
 
+/** ASCE 7 wind exposure categories */
+export type ExposureCategory = 'B' | 'C' | 'D';
+
 /** Full building configuration */
 export interface BuildingConfig {
   projectName: string;
@@ -190,6 +193,20 @@ export interface BuildingConfig {
   insulation: InsulationConfig;
   components: ComponentItem[];
   overheads: ProjectOverheads;
+  /** Design wind speed in mph (ASCE 7). Valid range: 80–200. */
+  windSpeedMph: number;
+  /** ASCE 7 exposure category (terrain roughness). */
+  exposureCategory: ExposureCategory;
+  /** Roof live load in psf (ASCE 7 Lr). Non-negative. */
+  roofLiveLoadPsf: number;
+  /** Ground snow load in psf (ASCE 7 pg). Non-negative. */
+  snowLoadPsf: number;
+  /** Roof panel color / finish (e.g. "Galvalume", "Polar White"). */
+  roofColor: string;
+  /** Wall panel color / finish. */
+  wallColor: string;
+  /** Trim color / finish. */
+  trimColor: string;
   /** Sales tax rate as a decimal (e.g. 0.0825 = 8.25%). Texas default. */
   salesTaxRate: number;
   /** When true, computed sales tax is added to the grand total. When false,
@@ -337,6 +354,13 @@ export function createDefaultConfig(): BuildingConfig {
       profitRate: 0.15,
       commissionRate: 0.04,
     },
+    windSpeedMph: 140,
+    exposureCategory: 'C',
+    roofLiveLoadPsf: 20,
+    snowLoadPsf: 0,
+    roofColor: 'Galvalume',
+    wallColor: 'Polar White',
+    trimColor: 'Polar White',
     salesTaxRate: 0.0825,
     salesTaxIncluded: false,
   };
