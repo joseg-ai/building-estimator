@@ -104,3 +104,24 @@ Wired sales tax UI on QuotationPage. Livingston owned the type + calc; I owned t
 - `costs.salesTaxIncluded` mirrors `config.salesTaxIncluded` per Livingston's calc — render off the breakdown, not the config, so display is always in sync with what was computed.
 
 Build green: `npm run build` clean (54 modules, no TS errors).
+
+## 2026-05-15 — Issues #11 + #9: Cost Metrics + Legal Language (squad/11-9-linus)
+
+Both issues batched into one branch/PR to avoid same-file merge contention on QuotationPage.tsx.
+
+### Files Changed
+- `webapp/src/pages/QuotationPage.tsx` — two commits:
+  1. **#11**: Cost Metrics block ($/sqft, total $/lb, steel $/lb) below grand total
+  2. **#9**: Terms & Conditions `<details>` section (collapsible on screen, always expanded in print/PDF)
+
+### Decisions
+- **Steel weight source = `costs.structuralWeight`** (full-quote sum across all structural categories). BOM engine's `structuralWeightLbs` covers main framing only — wrong scope for the sanity-check metric.
+- **Steel subtotal = `costs.structuralTotal`** (structural materials only; excludes components, insulation, fasteners, labor, overhead). Matches PEMB industry convention.
+- **Zero guard**: metrics only render when denominator > 0 to prevent division-by-zero on empty quotes.
+- **`<details>` print behavior**: print CSS hides `<summary>` and forces all children visible with `display: block !important`, so legal text always appears in PDF regardless of collapsed state.
+- **Deposit = 30%** per task spec (overrides SKILL.md's 50/40/10 split — closer to VMBC practice).
+
+### Build & Tests
+- `npm run build` — exit 0, 54 modules, no TS errors
+- `npm test` — 110 tests passed (78 bomEngine + 32 calculator)
+
