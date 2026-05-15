@@ -188,6 +188,29 @@ db.exec(`
   if (!existingQuoteCols.has('additional_structures_json')) {
     db.exec('ALTER TABLE quotes ADD COLUMN additional_structures_json TEXT');
   }
+  // PR #24 follow-up: design loads + colors as queryable scalar columns.
+  // Defaults mirror ASCE 7 wind speed exposure C (115 mph) and typical live/snow loads.
+  if (!existingQuoteCols.has('wind_speed_mph')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN wind_speed_mph REAL DEFAULT 115');
+  }
+  if (!existingQuoteCols.has('exposure_category')) {
+    db.exec("ALTER TABLE quotes ADD COLUMN exposure_category TEXT DEFAULT 'C'");
+  }
+  if (!existingQuoteCols.has('roof_live_load_psf')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN roof_live_load_psf REAL DEFAULT 20');
+  }
+  if (!existingQuoteCols.has('snow_load_psf')) {
+    db.exec('ALTER TABLE quotes ADD COLUMN snow_load_psf REAL DEFAULT 20');
+  }
+  if (!existingQuoteCols.has('roof_color')) {
+    db.exec("ALTER TABLE quotes ADD COLUMN roof_color TEXT DEFAULT ''");
+  }
+  if (!existingQuoteCols.has('wall_color')) {
+    db.exec("ALTER TABLE quotes ADD COLUMN wall_color TEXT DEFAULT ''");
+  }
+  if (!existingQuoteCols.has('trim_color')) {
+    db.exec("ALTER TABLE quotes ADD COLUMN trim_color TEXT DEFAULT ''");
+  }
 })();
 
 module.exports = db;
