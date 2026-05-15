@@ -1,6 +1,6 @@
 import { useBuildingConfig } from '../context';
-import type { LeanToDirection } from '../types';
-import { calculateCosts, formatUSD } from '../calculator';
+import type { LeanToDirection, ProjectOverheads } from '../types';
+import { calculateCosts, formatUSD, resolveFreight } from '../calculator';
 
 const dirLabels: Record<LeanToDirection, string> = {
   right: 'Right', left: 'Left', front: 'Front', back: 'Back',
@@ -22,9 +22,14 @@ export default function SummaryPage() {
   const costs = calculateCosts(config);
   const activeLeanTos = (Object.keys(leanTos) as LeanToDirection[]).filter((d) => leanTos[d].enabled);
 
-  function setOverhead(key: string, value: number) {
-    dispatch({ type: 'SET_OVERHEADS', payload: { [key]: value } });
+  function setOverhead<K extends keyof ProjectOverheads>(key: K, value: ProjectOverheads[K]) {
+    dispatch({ type: 'SET_OVERHEADS', payload: { [key]: value } as Partial<ProjectOverheads> });
   }
+
+  const freightAutoCalc = overheads.freightAutoCalc ?? true;
+  const freightDistance = overheads.freightDistance ?? 0;
+  const freightRate = overheads.freightRate ?? 4.6;
+  const computedFreight = resolveFreight({ ...overheads, freightAutoCalc: true, freightDistance, freightRate });
 
   return (
     <div className="max-w-3xl">
@@ -108,19 +113,18 @@ export default function SummaryPage() {
             { key: 'detailing', label: 'Detailing ($)', step: 100 },
             { key: 'engineering', label: 'Engineering ($)', step: 100 },
             { key: 'loadingHauling', label: 'Loading & Hauling ($)', step: 100 },
-            { key: 'freight', label: 'Freight ($)', step: 100 },
             { key: 'erection', label: 'Building Erection ($)', step: 100 },
             { key: 'foundation', label: 'Foundation ($)', step: 100 },
             { key: 'permits', label: 'Permits ($)', step: 100 },
             { key: 'overheadRate', label: 'Overhead Rate (%)', step: 0.01, isPercent: true },
             { key: 'profitRate', label: 'Profit Rate (%)', step: 0.01, isPercent: true },
             { key: 'commissionRate', label: 'Sales Commission (%)', step: 0.01, isPercent: true },
-          ] as { key: keyof typeof overheads; label: string; step: number; isPercent?: boolean }[]).map(({ key, label, step, isPercent }) => (
+          ] as { key: 'laborRate' | 'detailing' | 'engineering' | 'loadingHauling' | 'erection' | 'foundation' | 'permits' | 'overheadRate' | 'profitRate' | 'commissionRate'; label: string; step: number; isPercent?: boolean }[]).map(({ key, label, step, isPercent }) => (
             <div key={key}>
               <label className="block text-xs text-gray-500 mb-1">{label}</label>
               <input
                 type="number" min={0} step={step}
-                value={isPercent ? ((overheads[key] as number) * 100) : (overheads[key] as number)}
+                value={isPercent ? (overheads[key] * 100) : overheads[key]}
                 onChange={(e) => {
                   const v = Number(e.target.value);
                   setOverhead(key, isPercent ? v / 100 : v);
@@ -130,6 +134,61 @@ export default function SummaryPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Freight (Issue #14) — auto-calc (distance × rate) or manual flat override */}
+      <section className="bg-white border border-gray-200 rounded-lg p-5 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-gray-800">Freight</h2>
+          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={freightAutoCalc}
+              onChange={(e) => setOverhead('freightAutoCalc', e.target.checked)}
+              className="h-4 w-4"
+              aria-label="Auto-calculate freight"
+            />
+            Auto-calculate (distance × rate)
+          </label>
+        </div>
+        {freightAutoCalc ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 items-end" data-testid="freight-auto">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Distance (km)</label>
+              <input
+                type="number" min={0} step={1}
+                value={freightDistance}
+                onChange={(e) => setOverhead('freightDistance', Number(e.target.value))}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Rate ($/km)</label>
+              <input
+                type="number" min={0} step={0.1}
+                value={freightRate}
+                onChange={(e) => setOverhead('freightRate', Number(e.target.value))}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 mb-1">Computed Freight</div>
+              <div className="font-semibold text-gray-900 py-1" data-testid="freight-computed">{formatUSD(computedFreight)}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3" data-testid="freight-manual">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Freight (flat $)</label>
+              <input
+                type="number" min={0} step={100}
+                value={overheads.freight}
+                onChange={(e) => setOverhead('freight', Number(e.target.value))}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Grand Total section */}

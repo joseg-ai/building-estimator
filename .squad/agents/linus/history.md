@@ -173,3 +173,16 @@ Wired Livingston's stair engine into a parametric form on StructuralPage. AC ite
 - `npm run build` — ✅ exit 0, 56 modules, no new warnings.
 - `npm test` — ✅ **336 tests passed** (was 333 → +3 from `stairDefaults.test.ts`).
 
+
+## Sprint 2 — Issue #14 freight UI (squad/14-freight-calc)
+
+Wired auto/manual freight UI on SummaryPage on top of Livingston's resolveFreight engine. Pulled freight out of the generic numeric-overheads .map() and gave it its own section with a checkbox toggle (Auto-calculate distance × rate). Auto mode shows Distance (km) + Rate ($/km) + read-only Computed Freight; manual shows the flat $ input. All four fields persist across toggle (display switch, not value reset). Removed Livingston's transitional 'as number' cast — the narrowed loop union makes it unnecessary.
+
+### Files Changed
+- `webapp/src/pages/SummaryPage.tsx` — refactored overheads section, added dedicated Freight group.
+- `webapp/src/__tests__/freightUI.test.ts` — 5 new tests (default state, toggle, legacy fallback, computed math, value preservation).
+- `.squad/decisions/inbox/linus-issue14-freight-ui.md` — layout + toggle-style + value-preservation notes.
+
+### Build & Tests
+- `npm run build` — ✅ 0 TS errors.
+- `npm test` — ✅ **350 tests passed** (was 345 after Livingston → +5).
