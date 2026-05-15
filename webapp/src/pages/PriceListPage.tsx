@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { defaultPriceList, type PriceListItem } from '../priceList';
 import { allCatalogs } from '../catalog';
 import { useBuildingConfig } from '../context';
-import { formatUSD } from '../calculator';
 
 /** Group labels for visual sections */
 const groups: { label: string; filter: (item: PriceListItem) => boolean }[] = [

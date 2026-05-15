@@ -34,7 +34,7 @@ function isVendorOverride(component: ComponentItem, vendorPrices: VendorPrice[])
 export default function ComparisonPage() {
   const { quoteId } = useParams<{ quoteId?: string }>();
   const navigate = useNavigate();
-  const { config, priceList, comparisonVendorIds, setComparisonVendorIds } = useBuildingConfig();
+  const { config, priceList } = useBuildingConfig();
 
   // Quote
   const [quote, setQuote] = useState<QuoteDetail | null>(null);
@@ -44,7 +44,7 @@ export default function ComparisonPage() {
 
   // Vendors
   const [allVendors, setAllVendors] = useState<Vendor[]>([]);
-  const [selectedVendorIds, setSelectedVendorIds] = useState<number[]>(comparisonVendorIds);
+  const [selectedVendorIds, setSelectedVendorIds] = useState<number[]>([]);
   const [vendorPricesMap, setVendorPricesMap] = useState<Record<number, VendorPrice[]>>({});
   const [vendorsLoading, setVendorsLoading] = useState(false);
   const [addingVendor, setAddingVendor] = useState(false);
@@ -122,14 +122,12 @@ export default function ComparisonPage() {
     if (selectedVendorIds.includes(id)) return;
     const next = [...selectedVendorIds, id];
     setSelectedVendorIds(next);
-    setComparisonVendorIds(next);
     setAddingVendor(false);
   }
 
   function removeVendor(id: number) {
     const next = selectedVendorIds.filter((v) => v !== id);
     setSelectedVendorIds(next);
-    setComparisonVendorIds(next);
   }
 
   const activeConfig = quote?.config ?? config;
