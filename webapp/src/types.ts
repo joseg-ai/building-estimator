@@ -212,6 +212,33 @@ export interface ProjectOverheads {
   commissionRate: number;  // percentage (0.04 = 4%)
 }
 
+/**
+ * Auto-generated main framing Bill of Materials, returned by generateMainFramingBOM().
+ *
+ * OVERRIDE PATTERN — how engine defaults and user edits coexist:
+ *   1. Call generateMainFramingBOM(config) → get engine-calculated ComponentItem defaults.
+ *   2. Pass those items + config.components to mergeWithExisting() to produce the
+ *      final component list, respecting any user-entered values from FramingPage.
+ *   3. Linus wires a "Recalculate BOM" button that re-runs steps 1–2 and writes
+ *      the result back to config.components.
+ *   4. User edits in FramingTable after that point are stored in config.components
+ *      as usual — they win on the next merge (any non-zero qty/weight is treated
+ *      as an intentional user override).
+ */
+export interface FramingBOMSummary {
+  /** Engine-generated ComponentItem defaults. IDs match the catalog ('MF-01', 'PL-01', etc.). */
+  items: ComponentItem[];
+  /** Total weight (lbs) of in-house-fabricated structural members with deterministic weight.
+   *  Note: main frame columns and rafters are custom plate girders — they report weight=0
+   *  until an engineer fills them in. Those IDs are listed in engineerInputRequired. */
+  structuralWeightLbs: number;
+  /** Total commercial linear feet of cold-formed (COLD FORM group) members in this BOM. */
+  coldFormedLengthFt: number;
+  /** Catalog IDs of items whose weight cannot be auto-computed (custom plate girders).
+   *  Flag these in the UI or during QA so the estimator knows to fill them in. */
+  engineerInputRequired: string[];
+}
+
 /** Calculated cost breakdown matching Summary sheet structure */
 export interface CostBreakdown {
   mainBuildingArea: number;
@@ -275,6 +302,9 @@ export interface CostBreakdown {
   /** Computed sales tax = salesTaxBase × salesTaxRate. Always populated; only added
    *  to grandTotal when salesTaxIncluded === true. */
   salesTax: number;
+  /** Total commercial linear feet of cold-formed (COLD FORM group, Ln Ft priced) members
+   *  across all structural categories in config.components. Useful for QuotationPage. */
+  coldFormedLengthFt: number;
   grandTotal: number;
 }
 
