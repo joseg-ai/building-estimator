@@ -8,6 +8,8 @@
 
 ## Team Updates
 
+📌 **2026-05-14 (20:06 UTC):** Danny backlog triage complete — 17 GH issues filed. **Recommend pairing on test coverage with Livingston for all S1/S2/S3 deliverables (#1–#5, #8, #10, #14, #15).** Livingston carries 9 of 17 issues. Sprint 1 kicks off with bugs #1, #2, then schema #6, UI #7, then calc wire #8. See `.squad/orchestration-log/2026-05-14-danny-triage.md` for full sprint plan.
+
 📌 **2026-05-10 (Phase 2 CLOSED):** Customers tests verified, 46/46 pass. Phase 2 CLOSED: customers live, 57 tests green (46 server + 11 webapp), quote↔customer linking working. Phase 3 (vendors/comparison) starting.
 
 📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).

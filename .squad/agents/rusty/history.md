@@ -14,6 +14,8 @@
 | 3 | Vendors CRUD, prices, is_default atomicity, bulk upsert, CASCADE delete | ✓ COMPLETE (74 tests) |
 | Azure | Static serving (SERVE_WEBAPP=true), prod-mode setup, DB_PATH env-driven | ✓ READY |
 
+📌 **2026-05-14 (20:06 UTC):** Danny backlog triage → **GH issue #6** assigned (Add quote number, revision, valid-until, status enum). Sprint 1 (S1): Small effort. Unblocks downstream features (#8 wire color, #9 legal language, #12 print). See `.squad/orchestration-log/2026-05-14-danny-triage.md` for context.
+
 ## Recent Work (2026-05-11 to 2026-05-12)
 
 - **2026-05-11:** Azure deploy architecture greenlit (Tier 1: B1 + SQLite + KeyVault ~\–15/mo; Tier 2: PostgreSQL + scaled App Service). Prod-mode static serving wired (SERVE_WEBAPP guard, SPA fallback via \pp.use()\ not \pp.get('*')\). Auth \/me\ fix (missing authMiddleware inline). Routes audit: all 4 routers (auth, quotes, catalog, pricelist, customers, vendors) now mounted.

@@ -13,6 +13,8 @@
 
 📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
 
+📌 **2026-05-14 (20:06 UTC):** Danny backlog triage → **GH issues #7, #9, #11, #12, #13, #16** assigned. Sprint 1 (S1): #7 (wind speed + color on DesignPage). Sprint 2 (S2): #9 (proposal legal language). Sprint 3 (S3): #11 ($/sqft metrics), #12 (quote number on print), #13 (sales tax field). Backlog (S4+): #16 (comparison page). See `.squad/orchestration-log/2026-05-14-danny-triage.md` for sprint plan & effort estimates.
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 ## Key Learnings & Implementation Record

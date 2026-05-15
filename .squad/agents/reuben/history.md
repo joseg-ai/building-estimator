@@ -41,6 +41,9 @@ The app is a **manual data-entry form** that mirrors the workbook, but it does N
 **Second calculation bug:**
 `framesCost` uses `weightCostSum()` for `frame-openings` category, but those are Ln Ft items (weight=0). They will always cost $0. Should use `simpleSum()`.
 
+**Backlog Triage → GH Issues (2026-05-14):**
+Danny has converted Reuben's 17-item assessment into GitHub issues #1–#17 with recommended sprint plan. Your role: review domain correctness on all calculator/BOM PRs. You do not code, but your signoff is required before Livingston's parametric engines (#3–#5) and calculator fixes (#1–#2) merge. Orchestration log: `.squad/orchestration-log/2026-05-14-danny-triage.md`.
+
 **Key workbook tabs that matter:**
 - `Design.txt` — parametric inputs feeding all downstream calculations
 - `Main Framing.txt` — structural BOM (BEAMS, COLD FORM, FLAT BARS) with qty/length formulas

@@ -5,6 +5,10 @@
 - **Stack:** React 19 + TypeScript + Vite + Tailwind v4 (webapp/), Node.js + SQLite server with auth and quotes routes (server/), legacy VBA source preserved in src/.
 - **Created:** 2026-05-10
 
+📌 **2026-05-14T20:06 UTC: Backlog Triage Complete → GH Issues #1–#17 Filed**
+
+Danny triaged Reuben's assessment into 17 GitHub issues with recommended sprint plan (S1: bugs + schema, S2: parametric engines, S3: polish). **GH Issue #17 (Server-side PDF generation)** assigned to you (primary) with Linus assist. Orchestration log: `.squad/orchestration-log/2026-05-14-danny-triage.md`. Scribe processed: merged decision to `.squad/decisions.md`, archived old phases, updated cross-agent notes in all history.md files. Ready for sprint planning.
+
 📌 **2026-05-14T19:45:20Z: Reuben Full App Assessment Complete**
 
 Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. 17-item prioritized backlog identified (6 critical, 6 important, 5 nice-to-have). 2 pricing bugs flagged for your investigation/fix: (1) Labor applied to both structural + cold-formed components (should be structural-only). (2) Frame opening cold-form items priced per LnFt but use weight-based cost method (silent $0 cost). Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning.
@@ -56,3 +60,5 @@ Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. 17
 Danny's initial survey identified 3-phase roadmap (Phase 1: persist pricing/catalog, Phase 2: customers, Phase 3: vendors/comparison). All 3 phases shipped by team. 85 tests green (74 server + 11 webapp). Server-backed reference data live.
 
 📌 **EPIC COMPLETE** — Danny's Phase 1 kickoff survey led to 3-phase epic. All phases shipped. 85 tests green (74 server + 11 webapp). Server-backed reference data live (catalog, price-list, customers, vendors). Multi-vendor comparison working. Ready for next epic.
+
+📌 **2026-05-14: Backlog Triage Complete** — Filed 17 GitHub issues (#1–#17) from Reuben's domain assessment. 8 P0 (incl. 2 bugs), 4 P1, 5 P2. 3-sprint plan drafted. See `.squad/decisions/inbox/danny-backlog-triage-2026-05-14.md`.
