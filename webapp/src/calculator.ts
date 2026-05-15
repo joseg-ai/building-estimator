@@ -1,12 +1,60 @@
-import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory } from './types';
+import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory, ComponentItem } from './types';
 
 const LEAN_TO_DIRECTIONS: LeanToDirection[] = ['right', 'left', 'front', 'back'];
 
-/** Sum the direct cost (qty * lnFeetToFab * costPerUnit or qty * costPerUnit) for components in given categories */
-function sumCategories(config: BuildingConfig, categories: ComponentCategory[]): number {
-  return config.components
-    .filter((c) => categories.includes(c.category))
-    .reduce((sum, c) => sum + c.qty * c.costPerUnit * (c.lnFeetToFab > 0 ? c.lnFeetToFab / c.qty || 1 : 1), 0);
+/**
+ * Material groups that are fabricated in-house (cut, drilled, welded, painted in the
+ * shop) and therefore incur fabrication labor. Cold-formed sections, sheeting, trim,
+ * fasteners, insulation, doors and hardware ship cut-to-length from the supplier —
+ * no in-house labor applies regardless of structural category.
+ * Source: Reuben's PEMB assessment (2026-05-14), `.squad/decisions.md`.
+ */
+const IN_HOUSE_FAB_GROUPS = new Set<string>([
+  'BEAMS',
+  'CHANNELS',
+  'FLAT BARS',
+  'ANGLES',
+  'PIPES',
+  'HSS',
+]);
+
+function isInHouseFabricated(group: string): boolean {
+  return IN_HOUSE_FAB_GROUPS.has((group ?? '').trim().toUpperCase());
+}
+
+/** Linear-foot pricing variants seen in the catalog (`Ln Ft`, `Ln ft`, etc.). */
+function isLnFtMeasure(measure: string): boolean {
+  const m = (measure ?? '').trim().toLowerCase();
+  return m === 'ln ft' || m === 'ln. ft' || m === 'lnft' || m === 'linear ft' || m === 'linft';
+}
+
+/** Weight-priced ($/lb) measure variants. */
+function isWeightMeasure(measure: string): boolean {
+  const m = (measure ?? '').trim().toLowerCase();
+  return m === 'pound/ft' || m === 'lb/ft' || m === 'pound' || m === 'lb' || m === '$/lb';
+}
+
+/**
+ * Direct cost of a single structural component, dispatching on `measure`:
+ *   - `Ln Ft`    → linearFeet × costPerUnit  (cold-form Cee / linear-foot pricing)
+ *   - `Pound/ft` → weight × costPerUnit       (steel priced per pound)
+ *   - default    → fall back to weight×cost when weight present, else qty×cost
+ * linearFeet uses `lnF` if populated, otherwise `qty × length` so that linear-foot
+ * priced rows (e.g. frame openings) never silently return $0 just because the
+ * pre-calculated lnF roll-up hasn't been written back.
+ */
+function structuralComponentCost(c: ComponentItem): number {
+  if (isLnFtMeasure(c.measure)) {
+    const lnFt = c.lnF > 0 ? c.lnF : c.qty * c.length;
+    return lnFt * c.costPerUnit;
+  }
+  if (isWeightMeasure(c.measure)) {
+    return c.weight * c.costPerUnit;
+  }
+  // Legacy / unspecified measure — preserve the previous behavior to avoid
+  // regressing rows authored before `measure` was populated.
+  if (c.weight > 0) return c.weight * c.costPerUnit;
+  return c.qty * c.costPerUnit;
 }
 
 /** Simple sum: qty * costPerUnit for components matching categories */
@@ -23,10 +71,33 @@ function weightCostSum(config: BuildingConfig, categories: ComponentCategory[]):
     .reduce((sum, c) => sum + c.weight * c.costPerUnit, 0);
 }
 
+/**
+ * Cost sum for structural categories whose rows mix weight-priced ($/lb) and
+ * linear-foot-priced ($/LnFt) items — e.g. frame-openings, where cold-form Cee
+ * sections are priced per linear foot but a future steel-jamb row might be $/lb.
+ * Dispatches per-row on `measure` via structuralComponentCost.
+ */
+function structuralMixedSum(config: BuildingConfig, categories: ComponentCategory[]): number {
+  return config.components
+    .filter((c) => categories.includes(c.category))
+    .reduce((sum, c) => sum + structuralComponentCost(c), 0);
+}
+
 /** Sum weight for components matching categories */
 function sumWeight(config: BuildingConfig, categories: ComponentCategory[]): number {
   return config.components
     .filter((c) => categories.includes(c.category))
+    .reduce((sum, c) => sum + c.weight, 0);
+}
+
+/**
+ * Weight of in-house-fabricated structural steel only — the correct base for the
+ * fabrication labor charge. Cold-formed members ship cut-to-length and do not
+ * incur shop labor regardless of which structural category they live in.
+ */
+function sumLaborBaseWeight(config: BuildingConfig, categories: ComponentCategory[]): number {
+  return config.components
+    .filter((c) => categories.includes(c.category) && isInHouseFabricated(c.group))
     .reduce((sum, c) => sum + c.weight, 0);
 }
 
@@ -46,15 +117,26 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
   }
   const totalArea = mainBuildingArea + Object.values(leanToAreas).reduce((a, b) => a + b, 0);
 
-  // Structural Steel (cost = weight * $/lb)
+  // Structural Steel (cost = weight * $/lb for steel; linear-foot for cold-form jambs)
   const beamsCost = weightCostSum(config, ['main-framing']);
   const canopyCost = weightCostSum(config, ['canopy']);
   const overhangCost = weightCostSum(config, ['overhangs']);
   const leanToCost = weightCostSum(config, ['leanto-right', 'leanto-left', 'leanto-front', 'leanto-back']);
   const platesCost = weightCostSum(config, ['plates']);
-  const framesCost = weightCostSum(config, ['frame-openings']);
+  // Bug #2: frame openings are cold-form Cee sections priced per Ln Ft (weight=0).
+  // Dispatch on `measure` so $/LnFt rows are not silently zeroed out by weight×cost.
+  const framesCost = structuralMixedSum(config, ['frame-openings']);
   const structuralTotal = beamsCost + canopyCost + overhangCost + leanToCost + platesCost + framesCost;
-  const structuralWeight = sumWeight(config, ['main-framing', 'canopy', 'overhangs', 'leanto-right', 'leanto-left', 'leanto-front', 'leanto-back', 'plates', 'frame-openings']);
+  const STRUCTURAL_CATEGORIES: ComponentCategory[] = [
+    'main-framing', 'canopy', 'overhangs',
+    'leanto-right', 'leanto-left', 'leanto-front', 'leanto-back',
+    'plates', 'frame-openings',
+  ];
+  const structuralWeight = sumWeight(config, STRUCTURAL_CATEGORIES);
+  // Bug #1: labor is fabrication labor — only in-house-fabbed steel (BEAMS, CHANNELS,
+  // FLAT BARS, ANGLES, PIPES, HSS) counts. Cold-formed members in any structural
+  // category ship cut-to-length from the supplier and contribute zero shop labor.
+  const laborBaseWeight = sumLaborBaseWeight(config, STRUCTURAL_CATEGORIES);
 
   // Components
   const purlinsGirtsCost = simpleSum(config, ['purlins-girts']);
@@ -82,7 +164,9 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
   // Grand totals (matching Summary sheet formulas)
   const directMaterials = structuralTotal + componentsTotal + insulationTotal + fastenersTotal + stairsCost;
   const { laborRate, detailing, engineering, loadingHauling, freight, overheadRate, erection, foundation, permits, profitRate, commissionRate } = config.overheads;
-  const labor = (structuralWeight + componentsWeight) * laborRate;
+  // Bug #1 fix: labor base = in-house fabricated structural weight only.
+  // (Cold-formed purlins/girts/sheeting/trim ship cut-to-length — no shop labor.)
+  const labor = laborBaseWeight * laborRate;
   const totalMaterialsLabor = directMaterials + labor;
   const overheadCost = totalMaterialsLabor * overheadRate;
 
@@ -97,7 +181,7 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
     totalArea,
     roofArea,
     beamsCost, canopyCost, overhangCost, leanToCost, platesCost, framesCost,
-    structuralTotal, structuralWeight,
+    structuralTotal, structuralWeight, laborBaseWeight,
     purlinsGirtsCost, anglesCost, sheetingCost, roofWallTrimCost, doorsWindowsCost, hardwareCost,
     componentsTotal, componentsWeight,
     insulationTotal,

@@ -164,3 +164,37 @@
 Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: (1) No parametric BOM generation engine → every quantity entered manually (slower than Excel); (2) Beams/Take-off sheet missing → no purchasing document for steel service center; (3) Labor applied to both structural + cold-formed components (should be structural-only → ~$9–19k underestimate per quote); (4) Frame opening cold-form items use weight-based cost method but are priced per LnFt (silent $0 cost). Backlog: 6 critical items (parametric BOM, Beams, insulation calc, stair calc, legal language, sales tax), 6 important (wind load, ridge vents, color persistence, revision history, freight, vendors), 5 nice-to-have ($/sqft metrics, PDF gen, comparison, customer portal, escalation). Assessment merged to `.squad/decisions.md`. Ready for sprint planning.
 
 
+
+
+### Calc Bug Fixes #1, #2 (2026-05-14)
+
+**PR:** #21 (squad/1-2-fix-calc-bugs)
+
+Both calc bugs Reuben flagged are now closed. Test count 11 → 19 (8 new regression tests).
+
+**Bug #1 — labor base.** Before: labor = (structuralWeight + componentsWeight) * laborRate. After: labor = laborBaseWeight * laborRate where laborBaseWeight sums weight only of rows whose group ∈ { BEAMS, CHANNELS, FLAT BARS, ANGLES, PIPES, HSS } AND whose category is structural. Cold-formed members ship cut-to-length from the supplier and contribute zero in-house labor regardless of which structural category they sit in (e.g. cold-form jambs in rame-openings). Added laborBaseWeight to CostBreakdown so the UI can show "labor base = X lb" if Linus wants it later.
+
+**Bug #2 — frame-opening dispatch.** Frame-openings rows are cold-form Cee priced $0.85/LnFt with weight=0 in catalog. Old weightCostSum silently returned $0. Solution: structuralComponentCost(c) dispatches per-row on c.measure:
+  - Ln Ft → (lnF || qty*length) * costPerUnit
+  - Pound/ft → weight * costPerUnit
+  - legacy fallback: weight when present, else qty × cost
+Only frame-openings was switched to the mixed dispatcher (issue acceptance criteria explicitly said other structural categories must keep their existing methods).
+
+## Learnings
+
+### IN_HOUSE_FAB_GROUPS (2026-05-14)
+The authoritative set of material groups that incur fabrication labor: BEAMS, CHANNELS, FLAT BARS, ANGLES, PIPES, HSS. Everything else — COLD FORM, SHEETING, ROOF TRIM, WALL TRIM, EAVE STRUT, DOOR AND WINDOWS, HARDWARE, INSULATION, BOLTS AND FASTENERS — ships cut-to-length from supplier and is excluded from labor base. Source: Reuben's PEMB assessment + workbook Take-off sheet. Encoded in calculator.ts as a const Set<string>.
+
+### Measure field is the right cost-method discriminator (2026-05-14)
+Category name is the WRONG axis to pick a cost method on. Frame-openings demonstrated this — same category, two pricing models (Ln Ft for cold-form jambs, Pound/ft for any steel-jamb variant). The catalog already stores measure on every row; lean on it. Ln Ft → length × $/LnFt, Pound/ft → weight × $/lb. Sniff measure variants case-insensitively and tolerate Ln ft/Ln Ft/ln. ft spellings — the catalog is inconsistent.
+
+### lnF fallback pattern (2026-05-14)
+For linear-foot pricing, prefer c.lnF (pre-rolled total LnFt) but fall back to c.qty * c.length when lnF hasn't been populated. Avoids silent $0 when a UI edit hasn't yet recomputed the LnF roll-up. Applied in structuralComponentCost.
+
+### Pre-existing build errors on main (2026-05-14)
+
+pm run build fails on main with TS errors in FramingTable.tsx, Layout.tsx, ComparisonPage.tsx, DesignPage.tsx, PriceListPage.tsx — not introduced by this PR. Per "don't fix unrelated issues" rule, left alone; flagged in PR description. Someone (Linus?) should clean those up.
+
+### Vitest wiring (2026-05-14)
+webapp/package.json previously had no 	est script and vitest was not a devDep. Added both ("test": "vitest run", devDep: vitest). The test file at webapp/src/__tests__/calculator.test.ts was sitting untracked in a stash from Saul — recovered + extended with bug regression tests.
+

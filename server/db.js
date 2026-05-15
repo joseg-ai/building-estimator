@@ -151,10 +151,6 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_quotes_user ON quotes(user_id);
   CREATE INDEX IF NOT EXISTS idx_quotes_status ON quotes(status);
-  CREATE INDEX IF NOT EXISTS idx_quotes_parent ON quotes(parent_quote_id);
-  CREATE UNIQUE INDEX IF NOT EXISTS idx_quotes_user_quote_number
-    ON quotes(user_id, quote_number, revision)
-    WHERE quote_number IS NOT NULL;
 `);
 
 // ── Idempotent migrations for existing DBs ────────────────────────────────────
