@@ -14,6 +14,7 @@ import {
   type DoorsWindowsConfig,
   type AccessoriesConfig,
   type ExposureCategory,
+  type AdditionalStructures,
   createDefaultConfig,
 } from './types';
 import {
@@ -71,6 +72,7 @@ type Action =
   | { type: 'SET_SALES_TAX'; payload: { rate?: number; included?: boolean } }
   | { type: 'SET_DESIGN_LOADS'; payload: { windSpeedMph?: number; exposureCategory?: ExposureCategory; roofLiveLoadPsf?: number; snowLoadPsf?: number } }
   | { type: 'SET_COLORS'; payload: { roofColor?: string; wallColor?: string; trimColor?: string } }
+  | { type: 'SET_ADDITIONAL_STRUCTURES'; payload: Partial<AdditionalStructures> }
   | { type: 'RESET' }
   | { type: 'LOAD'; payload: BuildingConfig };
 
@@ -135,6 +137,11 @@ function reducer(state: BuildingConfig, action: Action): BuildingConfig {
       return { ...state, ...action.payload };
     case 'SET_COLORS':
       return { ...state, ...action.payload };
+    case 'SET_ADDITIONAL_STRUCTURES':
+      return {
+        ...state,
+        additionalStructures: { ...state.additionalStructures, ...action.payload } as AdditionalStructures,
+      };
     case 'RESET':
       return createDefaultConfig();
     case 'LOAD':

@@ -212,6 +212,8 @@ export interface BuildingConfig {
   /** When true, computed sales tax is added to the grand total. When false,
    *  tax is shown as $0 / "not included" and is omitted from the grand total. */
   salesTaxIncluded: boolean;
+  /** Issue #20: Additional Structures Checklist (Section 5 per PEMB anatomy). */
+  additionalStructures?: AdditionalStructures;
 }
 
 /** Editable overhead and cost parameters */
@@ -325,6 +327,16 @@ export interface CostBreakdown {
   grandTotal: number;
 }
 
+/** Issue #20: Additional Structures Checklist — Section 5 of PEMB quotation anatomy.
+ *  All dimensions in imperial feet. */
+export interface AdditionalStructures {
+  overhangs: { enabled: boolean; qty: number; dims: string };
+  leanTos: { enabled: boolean; qty: number; width: number; length: number };
+  parapets: { enabled: boolean; height: number };
+  canopies: { enabled: boolean; qty: number; width: number; depth: number; height: number };
+  hssCanopies: { enabled: boolean; qty: number };
+}
+
 /** Create default empty config */
 export function createDefaultConfig(): BuildingConfig {
   const emptyLeanTo = (): LeanTo => ({
@@ -393,5 +405,12 @@ export function createDefaultConfig(): BuildingConfig {
     trimColor: 'Polar White',
     salesTaxRate: 0.0825,
     salesTaxIncluded: false,
+    additionalStructures: {
+      overhangs: { enabled: false, qty: 0, dims: '' },
+      leanTos: { enabled: false, qty: 0, width: 0, length: 0 },
+      parapets: { enabled: false, height: 0 },
+      canopies: { enabled: false, qty: 0, width: 0, depth: 0, height: 0 },
+      hssCanopies: { enabled: false, qty: 0 },
+    },
   };
 }
