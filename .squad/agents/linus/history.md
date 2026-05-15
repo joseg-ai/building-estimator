@@ -62,3 +62,39 @@ rusty fixed login "Failed to fetch" issue by adding dev-only Vite proxy.
 
 When working on API integration, remember: **`const API_BASE = import.meta.env.VITE_API_URL ?? '/api'`** in `webapp/src/api.ts` is the pattern for same-origin production deployment. The `??` operator uses `/api` fallback only if `VITE_API_URL` is `null` or `undefined`—empty string is NOT treated as falsy. In CI/deploy workflows, always set `VITE_API_URL: '/api'` (not `''`). For local dev, use Vite proxy with `VITE_API_URL` unset or commented out.
 
+## 2026-05-14: Three UI Fixes
+
+### Files Changed
+- `webapp/src/pages/LoginPage.tsx` — removed register tab/form/logic. Login-only screen.
+- `webapp/src/pages/CustomersPage.tsx` — Company Name replaces Customer Name + Company fields; required + inline validation + disabled submit on empty.
+- `webapp/src/api.ts` — `apiListQuotes()` now normalizes snake_case DB rows → camelCase `QuoteListItem`. Root cause: `GET /api/quotes` returns raw SQLite rows (snake_case) but TypeScript type expected camelCase; `formatUSD(undefined)` threw, blanking the page.
+- `webapp/src/pages/QuotesPage.tsx` — defensive `?? 0` on grandTotal, `?.` guard on updatedAt date.
+
+### Gotchas & Patterns
+
+- **routes-quotes.js `GET /` returns raw snake_case rows** — `res.json(rows)` with no transformation. Every other route (`/customers`, `/quotes/:id/quotes`) does toCamel. Watch for this mismatch whenever adding new list endpoints; normalize in `api.ts` layer.
+- **textInput() helper didn't forward `required` to `<input>`** — only showed the asterisk. Always check helper components pass HTML attrs through; fixed by adding `required={opts?.required}`.
+- **CustomerWritable.company is optional** — sending `company: null` in formToWritable is safe and clears the field for new records. Existing records with a company value will retain it until edited.
+- **Server test failures (14 SQLite ON CONFLICT errors)** are pre-existing, unrelated to UI changes — Rusty's domain (vendor_prices schema migration issue).
+- **Build validated**: `npm run build` exits 0, 54 modules, no TS errors after all three fixes.
+
+## 2026-05-14T19:22:29Z: UI/API Fixes Sprint (w/ Rusty)
+
+**Parallel session:** Linus (374s) + Rusty (692s) resolved 5 critical issues.
+
+**Linus Deliverables (3 files):**
+- LoginPage: Removed Sign In / Register tab, Display Name field, register branch
+- CustomersPage: Renamed "Customer Name" → "Company Name" (underlying `name` field), added HTML `required`, disabled submit on empty, removed Company column
+- QuotesPage + api.ts: Fixed snake_case → camelCase mapping; added defensive guards (`?? 0`, `?.` for dates)
+
+**Rusty Deliverables (parallel backend fixes):**
+- db.js: Added all missing phase 2/3 table DDLs + UNIQUE constraint on vendor_prices
+- index.js: Global error middleware (JSON errors, not HTML 500s)
+- routes-quotes.js: Wired customerId in POST/PUT/GET
+
+**Outcomes:**
+- Webapp build clean (54 modules, no TS errors)
+- Server tests: 74/74 pass (was 60/14)
+- POST /api/customers → 201 with row in DB
+- Quotes page no longer blank after opening
+

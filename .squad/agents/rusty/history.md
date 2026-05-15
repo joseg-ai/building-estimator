@@ -85,3 +85,24 @@ pm rebuild better-sqlite3\ from server/.
 📌 **Always add global error middleware last in `index.js`**
 - 4-arg `(err, req, res, next)` must be after all routes. Returns `{ error: { code, message } }` JSON; logs 5xx to console.
 
+## 2026-05-14T19:22:29Z: Customers 500 Fix (w/ Linus parallel)
+
+**Session:** UI/API fixes sprint. Rusty (692s) + Linus (374s) simultaneously addressed 5 issues.
+
+**Root Causes (4):**
+1. db.js missing all phase 2/3 table DDLs (only users + quotes existed)
+2. No global error middleware (Express HTML 500 instead of JSON)
+3. routes-quotes.js never wired customerId for Phase 2
+4. vendor_prices missing UNIQUE(vendor_id, item_key) constraint
+
+**Fixes Applied:**
+- db.js: Full schema bootstrap (7 tables, all DDLs)
+- index.js: Global 4-arg error middleware (JSON, logs 5xx)
+- routes-quotes.js: customerId in POST/PUT/GET (validates ownership, returns in list/detail)
+- vendor_prices: Added UNIQUE constraint
+
+**Verified:**
+- `node --test test/*.test.js` → 74 pass, 0 fail (was 60/14)
+- Live POST /api/customers `{ name: "Test" }` → 201 with id
+
+**Key takeaway:** All schema DDL must live in db.js. Fresh test DBs depend on it. No one-time direct DB commands.
