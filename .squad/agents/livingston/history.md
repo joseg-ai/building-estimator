@@ -116,3 +116,17 @@ Shipped parametric stair engine in webapp/src/stairEngine.ts:
 - **Form Stringer flat-bar quantities (6×4ft, 10×8ft, 8×5ft per flight)** appear to be hard-coded per-flight constants in the workbook; no visible formula. Encoded as fixed multipliers, flagged for Reuben.
 - **Distinct cost stack:** stairs use 10% profit (row 60) vs 15% elsewhere. Same 4% commission. Defaults exposed via `StairCostOverrides`.
 - **Workbook lb/ft constants back-derived from weight / lnF:** all 9 material weights (C12×20.7, L1¼×1¼×¼=1.92, flat 1/4×3=2.55, step steel=4.5, pipe 1½=2.718, C9×13.4, W8×31, L3×3×1/4=4.9, deck=4.5, HSS4×4=9.42) match the workbook exactly.
+
+## Sprint 2 — Issue #14 Freight Engine (2026-05-16)
+
+Shipped parametric freight calculator in calculator.ts + types.ts:
+- Extended `ProjectOverheads` with optional `freightDistance`, `freightRate` ($/km), `freightAutoCalc` (boolean). Defaults: 0 km, 4.6 `$/km`, auto=true.
+- New exported `resolveFreight(overheads)` is the single source of truth — used by `calculateCosts` in place of `overheads.freight`. Auto branch: `max(0, distance × rate)`. Manual branch: flat `freight` field.
+- 9 new tests (336 → 345, all green). Workbook cross-check: Summary.txt row 78 → 200 km × 4.6 $/km = 920.
+
+### Key learnings
+
+- **Auto wins decisively when enabled** — flat field is ignored, not max-of'd. Mental model: `freight` is a pure override slot only consulted when `freightAutoCalc === false`. Documented in JSDoc + decision inbox.
+- **New fields are optional in the type** so legacy localStorage configs (pre-#14) keep type-checking and naturally fall through to flat-freight behavior (`freightAutoCalc !== true` → flat branch).
+- **One-line UI bleed-through:** the boolean addition widened `overheads[key]` in SummaryPage's numeric-input `.map()` loop. Applied minimum `as number` narrowing to keep TS at 0 errors; left a note for Linus to wire distance/rate as separate controls outside that loop.
+- **Unit stays km** — engine is unit-agnostic on storage; miles support (if approved) is a UI-side conversion. Flagged for Reuben/Jose.
