@@ -13,6 +13,7 @@ import {
   type SheetingConfig,
   type DoorsWindowsConfig,
   type AccessoriesConfig,
+  type ExposureCategory,
   createDefaultConfig,
 } from './types';
 import {
@@ -68,6 +69,8 @@ type Action =
   | { type: 'REMOVE_COMPONENT'; payload: string }
   | { type: 'SET_OVERHEADS'; payload: Partial<ProjectOverheads> }
   | { type: 'SET_SALES_TAX'; payload: { rate?: number; included?: boolean } }
+  | { type: 'SET_DESIGN_LOADS'; payload: { windSpeedMph?: number; exposureCategory?: ExposureCategory; roofLiveLoadPsf?: number; snowLoadPsf?: number } }
+  | { type: 'SET_COLORS'; payload: { roofColor?: string; wallColor?: string; trimColor?: string } }
   | { type: 'RESET' }
   | { type: 'LOAD'; payload: BuildingConfig };
 
@@ -128,6 +131,10 @@ function reducer(state: BuildingConfig, action: Action): BuildingConfig {
         ...(action.payload.rate !== undefined ? { salesTaxRate: action.payload.rate } : {}),
         ...(action.payload.included !== undefined ? { salesTaxIncluded: action.payload.included } : {}),
       };
+    case 'SET_DESIGN_LOADS':
+      return { ...state, ...action.payload };
+    case 'SET_COLORS':
+      return { ...state, ...action.payload };
     case 'RESET':
       return createDefaultConfig();
     case 'LOAD':
