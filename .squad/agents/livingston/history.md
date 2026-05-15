@@ -91,4 +91,14 @@ For single-slope: rafter spans full width (not half-width). LnFtToFab = nFrames 
 Parametric engines (#3 main framing BOM, #4 component calc, #5 stair calc) queued. Awaiting Jose scope confirmation.
 
 📌 **2026-05-15:** Issue #4 (parametric secondary BOM). Added `computeSecondaryFraming`, `computeSheeting`, `computeTrim`, `computeFasteners`, `computeFullBom` to bomEngine.ts. 116 new tests (226 total, all green). Formulas from Components.txt + Fasteners and Bolts.txt; factors cross-checked against 50×100×20 reference building. Assumptions logged in .squad/decisions/inbox/livingston-issue4-component-qty.md. UI wiring note dropped at linus-auto-bom-display.md.
- Added salesTaxRate (default 0.0825 TX) and salesTaxIncluded (default false) to BuildingConfig top-level (not inside overheads — it's a jurisdictional switch, not a cost-engineering knob). Extended CostBreakdown with salesTaxRate, salesTaxIncluded, salesTaxBase, salesTax. Formula per issue verbatim: base = Materials + Labor + Freight + Overhead + Erection + Foundation + Permits + Contingency + Profit + Commission (excludes detailing/engineering/loadingHauling — flagged for Reuben review). Contingency placeholder = 0 until #15 lands. Tax always computed; only added to grandTotal when salesTaxIncluded === true. Build green. Linus owns UI on salesTaxRate / salesTaxIncluded fields; Saul writes tests against new CostBreakdown shape. See .squad/decisions/inbox/livingston-tax-calc.md.
+📌 **2026-05-16 SPRINT 2 — Issues #8 + #10 shipped (PR squad/8-10-pricing):**
+
+**Issue #8 — Color → Panel SKU mapping:**
+Added `colorPriceTable` (12 PEMB colors), `PEMB_PANEL_COLORS`, `getPanelUnitPrice`, `getTrimUnitPrice` to `priceList.ts`. Calculator now applies color-based $/LF for SHEETING (roof/wall panels) and ROOF/WALL TRIM line items via `colorAdjustedSheetingSum` and `colorAdjustedTrimSum`. DesignPage color select now sourced from `PEMB_PANEL_COLORS` (single source of truth). Galvalume roof panel: $3.2783/LF; SMP colors: $4.0843/LF (~24.6% markup per workbook). Trim baseline $4.60/LF estimated (no Galvalume trim SKU in supplier sheet). 23 new tests.
+
+**Issue #10 — Auto-calc insulation:**
+Added `RValue` type, `rValuePriceTable` (R-13=$0.55/sqft, R-19=$0.72, R-25=$0.89, R-30=$1.05), `getRValuePrice` to `priceList.ts`. Added `computeInsulationCost(config)` (exported) to `calculator.ts` — auto-calculates from `roof_sqft = (W/2)×slopeFactor×2×L` and `wall_sqft = perimeter×H − openings`. Override path: any insulation component with qty > 0 uses stored qty×costPerUnit. Added R-value selector to `InsulationPage.tsx`. 19 new tests. Pricing assumptions filed in inbox.
+
+**Tests:** 226 → 268 (all green). Build clean.
+
+
