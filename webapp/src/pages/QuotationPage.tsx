@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useBuildingConfig } from '../context';
 import { calculateCosts, formatUSD } from '../calculator';
 import BuildingElevation from '../components/BuildingElevation';
@@ -16,10 +16,36 @@ function YesNo({ value }: { value: boolean }) {
 }
 
 export default function QuotationPage() {
-  const { config } = useBuildingConfig();
+  const { config, dispatch } = useBuildingConfig();
   const { dimensions, leanTos, insulation } = config;
   const costs = calculateCosts(config);
   const printRef = useRef<HTMLDivElement>(null);
+
+  // Local input string for the percentage field so users can type "8.25" naturally
+  // (including a trailing dot). We persist the parsed decimal on every valid edit.
+  const [taxRateInput, setTaxRateInput] = useState<string>(
+    () => (config.salesTaxRate * 100).toFixed(2).replace(/\.?0+$/, '') || '0'
+  );
+  const [taxRateError, setTaxRateError] = useState<string | null>(null);
+
+  function handleTaxRateChange(raw: string) {
+    setTaxRateInput(raw);
+    if (raw.trim() === '') {
+      setTaxRateError('Enter a tax rate (0–100)');
+      return;
+    }
+    const pct = Number(raw);
+    if (!Number.isFinite(pct) || pct < 0 || pct > 100) {
+      setTaxRateError('Tax rate must be between 0 and 100');
+      return;
+    }
+    setTaxRateError(null);
+    dispatch({ type: 'SET_SALES_TAX', payload: { rate: pct / 100 } });
+  }
+
+  function handleTaxIncludedChange(included: boolean) {
+    dispatch({ type: 'SET_SALES_TAX', payload: { included } });
+  }
 
   const activeLeanTos = (Object.keys(leanTos) as LeanToDirection[]).filter((d) => leanTos[d].enabled);
 
@@ -69,6 +95,46 @@ export default function QuotationPage() {
           className="bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded hover:bg-gray-900 transition-colors">
           Print / PDF
         </button>
+      </div>
+
+      {/* Sales tax controls (not printed) */}
+      <div className="mb-4 bg-white border border-gray-200 rounded-lg px-4 py-3 flex flex-wrap items-end gap-4">
+        <div>
+          <label htmlFor="sales-tax-rate" className="block text-[10px] uppercase text-gray-500 font-medium mb-1">
+            Sales Tax Rate (%)
+          </label>
+          <input
+            id="sales-tax-rate"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            max={100}
+            step={0.01}
+            value={taxRateInput}
+            onChange={(e) => handleTaxRateChange(e.target.value)}
+            aria-invalid={taxRateError ? true : undefined}
+            aria-describedby={taxRateError ? 'sales-tax-rate-error' : undefined}
+            className={`w-28 border rounded px-2 py-1 text-sm ${
+              taxRateError ? 'border-red-400' : 'border-gray-300'
+            }`}
+          />
+          {taxRateError && (
+            <p id="sales-tax-rate-error" className="text-xs text-red-600 mt-1">{taxRateError}</p>
+          )}
+        </div>
+        <label className="flex items-center gap-2 text-sm text-gray-700 pb-1">
+          <input
+            type="checkbox"
+            checked={config.salesTaxIncluded}
+            onChange={(e) => handleTaxIncludedChange(e.target.checked)}
+            className="h-4 w-4"
+          />
+          Include sales tax in total
+        </label>
+        <div className="ml-auto text-right pb-1">
+          <span className="block text-[10px] uppercase text-gray-500 font-medium">Computed Sales Tax</span>
+          <span className="text-sm font-semibold text-gray-800">{formatUSD(costs.salesTax)}</span>
+        </div>
       </div>
 
       <div ref={printRef} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
@@ -274,6 +340,14 @@ export default function QuotationPage() {
                 <td className="py-1.5 pl-4 text-gray-500">Permits</td>
                 <td className="py-1.5 text-right">{formatUSD(config.overheads.permits)}</td>
               </tr>
+              {costs.salesTaxIncluded && (
+                <tr className="border-b border-gray-100">
+                  <td className="py-1.5 font-medium">
+                    Sales Tax ({(costs.salesTaxRate * 100).toFixed(2)}%)
+                  </td>
+                  <td className="py-1.5 text-right font-semibold">{formatUSD(costs.salesTax)}</td>
+                </tr>
+              )}
             </tbody>
           </table>
 
@@ -286,7 +360,9 @@ export default function QuotationPage() {
           {/* Observations & Colors */}
           <div className="mt-4 text-sm space-y-1 text-gray-600">
             <p><span className="font-medium text-gray-800">Observations:</span> Building Design as Per Customer Specifications</p>
-            <p className="text-gray-500">Sales Tax Not Included</p>
+            {!costs.salesTaxIncluded && (
+              <p className="text-gray-500">Sales Tax Not Included</p>
+            )}
           </div>
 
           <div className="mt-3 text-sm space-y-0.5">

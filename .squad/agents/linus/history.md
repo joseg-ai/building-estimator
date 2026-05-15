@@ -84,3 +84,23 @@ When working on API integration, remember: **`const API_BASE = import.meta.env.V
 
 Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: 2 critical gaps (no parametric BOM generation engine; Beams/Take-off sheet missing), 2 pricing bugs (labor applied to cold-formed components, frame-opening cost method broken), 14 terminology improvements, 17-item prioritized backlog (6 critical, 6 important, 5 nice-to-have), and 1 reusable PEMB proposal anatomy skill. Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning. See `.squad/decisions.md` for full 17-item breakdown.
 
+
+## 2026-05-15 — Issue #13 Sales Tax UI (sprint 3)
+
+Wired sales tax UI on QuotationPage. Livingston owned the type + calc; I owned the page + reducer action.
+
+### Files Changed
+- webapp/src/context.tsx — added SET_SALES_TAX action with optional ate and included fields. Single-action update keeps the reducer surface compact.
+- webapp/src/pages/QuotationPage.tsx — added Tax Rate (%) input + Include-in-total checkbox above the print area, plus conditional `Sales Tax (X.XX%): Y line in itemized table when included, replacing the static "Sales Tax Not Included" note when excluded.
+
+### Decisions
+- **Input as percent, stored as decimal.** User types `8.25`; we persist `0.0825` (Livingston's chosen type). Avoids confusing zero-prefix decimals in the UI.
+- **Local input string state.** Keeps the field forgiving (trailing dot, empty) while still validating `0 ≤ pct ≤ 100` inline and dispatching only on valid values.
+- **Sales tax controls live OUTSIDE printRef.** They're editor chrome, not part of the printable proposal. Only the rendered tax line/note prints.
+- **No new lib.** Plain `<input type="number">` and `<input type="checkbox">` matches existing style.
+
+### Gotchas
+- `storage.ts` `loadConfig` already merges defaults over old saves via spread, so existing localStorage configs auto-pick up `salesTaxRate: 0.0825` / `salesTaxIncluded: false` without a migration.
+- `costs.salesTaxIncluded` mirrors `config.salesTaxIncluded` per Livingston's calc — render off the breakdown, not the config, so display is always in sync with what was computed.
+
+Build green: `npm run build` clean (54 modules, no TS errors).
