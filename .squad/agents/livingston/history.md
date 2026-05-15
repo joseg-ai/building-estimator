@@ -197,3 +197,4 @@ pm run build fails on main with TS errors in FramingTable.tsx, Layout.tsx, Compa
 
 ### Vitest wiring (2026-05-14)
 webapp/package.json previously had no 	est script and vitest was not a devDep. Added both ("test": "vitest run", devDep: vitest). The test file at webapp/src/__tests__/calculator.test.ts was sitting untracked in a stash from Saul — recovered + extended with bug regression tests.
+
