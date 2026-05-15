@@ -13,6 +13,13 @@ const DEFAULT_OVERHEADS = createDefaultConfig().overheads;
 export default function DesignPage() {
   const { config, dispatch } = useBuildingConfig();
   const { dimensions, options, insulation, sheeting, doorsWindows, accessories } = config;
+  const additionalStructures = config.additionalStructures ?? {
+    overhangs: { enabled: false, qty: 0, dims: '' },
+    leanTos: { enabled: false, qty: 0, width: 0, length: 0 },
+    parapets: { enabled: false, height: 0 },
+    canopies: { enabled: false, qty: 0, width: 0, depth: 0, height: 0 },
+    hssCanopies: { enabled: false, qty: 0 },
+  };
 
   function handleCustomerSelect(customer: Customer) {
     dispatch({ type: 'SET_CUSTOMER_NAME', payload: customer.name });
@@ -393,6 +400,140 @@ export default function DesignPage() {
           </section>
         </div>
       </div>
+
+      {/* ---- ADDITIONAL STRUCTURES CHECKLIST (Issue #20 / Section 5) ---- */}
+      <section className="mt-4 bg-white border border-gray-200 rounded p-3">
+        <h2 className="font-semibold text-gray-800 text-sm mb-2">Additional Structures (Section 5 Checklist)</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+
+          {/* Overhangs */}
+          <div className="border border-gray-100 rounded p-2 space-y-1">
+            <label className="flex items-center gap-2 font-medium text-gray-700">
+              <input type="checkbox" className="h-4 w-4"
+                checked={additionalStructures.overhangs.enabled}
+                onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { overhangs: { ...additionalStructures.overhangs, enabled: e.target.checked } } })} />
+              Overhangs
+            </label>
+            {additionalStructures.overhangs.enabled && (
+              <div className="pl-6 space-y-1">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-8">Qty</span>
+                  <input type="number" min={0} value={additionalStructures.overhangs.qty || ''}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { overhangs: { ...additionalStructures.overhangs, qty: Number(e.target.value) } } })}
+                    className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-8">Dims</span>
+                  <input type="text" placeholder="e.g. 2ft all sides"
+                    value={additionalStructures.overhangs.dims}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { overhangs: { ...additionalStructures.overhangs, dims: e.target.value } } })}
+                    className="flex-1 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Lean-Tos */}
+          <div className="border border-gray-100 rounded p-2 space-y-1">
+            <label className="flex items-center gap-2 font-medium text-gray-700">
+              <input type="checkbox" className="h-4 w-4"
+                checked={additionalStructures.leanTos.enabled}
+                onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { leanTos: { ...additionalStructures.leanTos, enabled: e.target.checked } } })} />
+              Lean-Tos
+            </label>
+            {additionalStructures.leanTos.enabled && (
+              <div className="pl-6 space-y-1">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-8">Qty</span>
+                  <input type="number" min={0} value={additionalStructures.leanTos.qty || ''}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { leanTos: { ...additionalStructures.leanTos, qty: Number(e.target.value) } } })}
+                    className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-8">W (ft)</span>
+                  <input type="number" min={0} value={additionalStructures.leanTos.width || ''}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { leanTos: { ...additionalStructures.leanTos, width: Number(e.target.value) } } })}
+                    className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-8">L (ft)</span>
+                  <input type="number" min={0} value={additionalStructures.leanTos.length || ''}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { leanTos: { ...additionalStructures.leanTos, length: Number(e.target.value) } } })}
+                    className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Parapet */}
+          <div className="border border-gray-100 rounded p-2 space-y-1">
+            <label className="flex items-center gap-2 font-medium text-gray-700">
+              <input type="checkbox" className="h-4 w-4"
+                checked={additionalStructures.parapets.enabled}
+                onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { parapets: { ...additionalStructures.parapets, enabled: e.target.checked } } })} />
+              Parapet
+            </label>
+            {additionalStructures.parapets.enabled && (
+              <div className="pl-6">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-12">H (ft)</span>
+                  <input type="number" min={0} step={0.5} value={additionalStructures.parapets.height || ''}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { parapets: { ...additionalStructures.parapets, height: Number(e.target.value) } } })}
+                    className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Canopies */}
+          <div className="border border-gray-100 rounded p-2 space-y-1">
+            <label className="flex items-center gap-2 font-medium text-gray-700">
+              <input type="checkbox" className="h-4 w-4"
+                checked={additionalStructures.canopies.enabled}
+                onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { canopies: { ...additionalStructures.canopies, enabled: e.target.checked } } })} />
+              Canopies
+            </label>
+            {additionalStructures.canopies.enabled && (
+              <div className="pl-6 space-y-1">
+                {[
+                  { label: 'Qty', field: 'qty' as const },
+                  { label: 'W (ft)', field: 'width' as const },
+                  { label: 'D (ft)', field: 'depth' as const },
+                  { label: 'H (ft)', field: 'height' as const },
+                ].map(({ label, field }) => (
+                  <div key={field} className="flex items-center gap-1">
+                    <span className="text-xs text-gray-500 w-12">{label}</span>
+                    <input type="number" min={0} value={additionalStructures.canopies[field] || ''}
+                      onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { canopies: { ...additionalStructures.canopies, [field]: Number(e.target.value) } } })}
+                      className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* HSS Canopies */}
+          <div className="border border-gray-100 rounded p-2 space-y-1">
+            <label className="flex items-center gap-2 font-medium text-gray-700">
+              <input type="checkbox" className="h-4 w-4"
+                checked={additionalStructures.hssCanopies.enabled}
+                onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { hssCanopies: { ...additionalStructures.hssCanopies, enabled: e.target.checked } } })} />
+              HSS Canopies
+            </label>
+            {additionalStructures.hssCanopies.enabled && (
+              <div className="pl-6">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500 w-8">Qty</span>
+                  <input type="number" min={0} value={additionalStructures.hssCanopies.qty || ''}
+                    onChange={(e) => dispatch({ type: 'SET_ADDITIONAL_STRUCTURES', payload: { hssCanopies: { ...additionalStructures.hssCanopies, qty: Number(e.target.value) } } })}
+                    className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs" />
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </section>
     </div>
   );
 }
