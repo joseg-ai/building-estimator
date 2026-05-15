@@ -5,13 +5,15 @@
 - **Stack:** React 19 + TypeScript + Vite + Tailwind v4 (webapp/), Node.js + SQLite server with auth and quotes routes (server/), legacy VBA source preserved in src/.
 - **Created:** 2026-05-10
 
-## Team Updates
+📌 **2026-05-14T20:06 UTC: Backlog Triage Complete → GH Issues #1–#17 Filed**
 
-📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
+Danny triaged Reuben's assessment into 17 GitHub issues with recommended sprint plan (S1: bugs + schema, S2: parametric engines, S3: polish). **GH Issue #17 (Server-side PDF generation)** assigned to you (primary) with Linus assist. Orchestration log: `.squad/orchestration-log/2026-05-14-danny-triage.md`. Scribe processed: merged decision to `.squad/decisions.md`, archived old phases, updated cross-agent notes in all history.md files. Ready for sprint planning.
 
-📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
+📌 **2026-05-14T19:45:20Z: Reuben Full App Assessment Complete**
 
-📌 **2026-05-10 (Round 1 — Phase 1 shipped):** Rusty finalized API contract (price_list_versions + catalog endpoints), data contract (all 16+ categories mapped), wiring map (4 API client functions + context changes), and test plan (12 calc tests + 10 server endpoint tests spec'd). Saul scaffolded vitest. ⚠️ FLAGGED: Catalog `weight` field all zeros but calculator uses it for structural-steel labor cost — investigation pending. All 4 contracts merged to decisions.md.
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. 17-item prioritized backlog identified (6 critical, 6 important, 5 nice-to-have). 2 pricing bugs flagged for your investigation/fix: (1) Labor applied to both structural + cold-formed components (should be structural-only). (2) Frame opening cold-form items priced per LnFt but use weight-based cost method (silent $0 cost). Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning.
+
+
 
 ## Learnings
 
@@ -58,3 +60,5 @@
 Danny's initial survey identified 3-phase roadmap (Phase 1: persist pricing/catalog, Phase 2: customers, Phase 3: vendors/comparison). All 3 phases shipped by team. 85 tests green (74 server + 11 webapp). Server-backed reference data live.
 
 📌 **EPIC COMPLETE** — Danny's Phase 1 kickoff survey led to 3-phase epic. All phases shipped. 85 tests green (74 server + 11 webapp). Server-backed reference data live (catalog, price-list, customers, vendors). Multi-vendor comparison working. Ready for next epic.
+
+📌 **2026-05-14: Backlog Triage Complete** — Filed 17 GitHub issues (#1–#17) from Reuben's domain assessment. 8 P0 (incl. 2 bugs), 4 P1, 5 P2. 3-sprint plan drafted. See `.squad/decisions/inbox/danny-backlog-triage-2026-05-14.md`.

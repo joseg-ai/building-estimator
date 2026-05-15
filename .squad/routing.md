@@ -12,6 +12,7 @@ How to decide who handles what.
 | Customers / Vendors / Materials data | Livingston (model) + Rusty (persist) | New entity? Livingston designs the type, Rusty stores it |
 | Tests / QA / edge cases / regression | Saul | Vitest setup, calc tests, form validation tests |
 | Code review / scope / architecture | Danny | Review big changes, decide trade-offs, triage issues |
+| Industry practice / PEMB & steel estimating domain / terminology / quote structure / competitor benchmarking / AISC & MBMA references | Reuben | "How do real estimators do X?", "Is this field labeled correctly?", spec a new feature, review the quote layout, pricing-model sanity check |
 | Session logging | Scribe | Automatic — never needs routing |
 
 ## Issue Routing

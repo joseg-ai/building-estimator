@@ -13,6 +13,8 @@
 
 📌 **2026-05-10 (14:31 UTC):** Phase 1 CLOSED. Server-backed catalog & pricing live, quotes pin to version. 36 tests green. Catalog bug fixed: 3 beam material strings corrected (recovered ~$19k under-estimate per quote). Ready for Phase 2 (Customers).
 
+📌 **2026-05-14 (20:06 UTC):** Danny backlog triage → **GH issues #7, #9, #11, #12, #13, #16** assigned. Sprint 1 (S1): #7 (wind speed + color on DesignPage). Sprint 2 (S2): #9 (proposal legal language). Sprint 3 (S3): #11 ($/sqft metrics), #12 (quote number on print), #13 (sales tax field). Backlog (S4+): #16 (comparison page). See `.squad/orchestration-log/2026-05-14-danny-triage.md` for sprint plan & effort estimates.
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 ## Key Learnings & Implementation Record
@@ -57,4 +59,28 @@ rusty fixed login "Failed to fetch" issue by adding dev-only Vite proxy.
 - Root package.json runs both server + webapp with 'npm run dev'
 - No impact to your infrastructure (dev-only, not used in production)
 - But good to know for future webapp dev setup discussions
+
+### Key API URL Pattern
+
+When working on API integration, remember: **`const API_BASE = import.meta.env.VITE_API_URL ?? '/api'`** in `webapp/src/api.ts` is the pattern for same-origin production deployment. The `??` operator uses `/api` fallback only if `VITE_API_URL` is `null` or `undefined`—empty string is NOT treated as falsy. In CI/deploy workflows, always set `VITE_API_URL: '/api'` (not `''`). For local dev, use Vite proxy with `VITE_API_URL` unset or commented out.
+
+## 2026-05-14: Three UI Fixes
+
+### Files Changed
+- `webapp/src/pages/LoginPage.tsx` — removed register tab/form/logic. Login-only screen.
+- `webapp/src/pages/CustomersPage.tsx` — Company Name replaces Customer Name + Company fields; required + inline validation + disabled submit on empty.
+- `webapp/src/api.ts` — `apiListQuotes()` now normalizes snake_case DB rows → camelCase `QuoteListItem`. Root cause: `GET /api/quotes` returns raw SQLite rows (snake_case) but TypeScript type expected camelCase; `formatUSD(undefined)` threw, blanking the page.
+- `webapp/src/pages/QuotesPage.tsx` — defensive `?? 0` on grandTotal, `?.` guard on updatedAt date.
+
+### Gotchas & Patterns
+
+- **routes-quotes.js `GET /` returns raw snake_case rows** — `res.json(rows)` with no transformation. Every other route (`/customers`, `/quotes/:id/quotes`) does toCamel. Watch for this mismatch whenever adding new list endpoints; normalize in `api.ts` layer.
+- **textInput() helper didn't forward `required` to `<input>`** — only showed the asterisk. Always check helper components pass HTML attrs through; fixed by adding `required={opts?.required}`.
+- **CustomerWritable.company is optional** — sending `company: null` in formToWritable is safe and clears the field for new records. Existing records with a company value will retain it until edited.
+- **Server test failures (14 SQLite ON CONFLICT errors)** are pre-existing, unrelated to UI changes — Rusty's domain (vendor_prices schema migration issue).
+- **Build validated**: `npm run build` exits 0, 54 modules, no TS errors after all three fixes.
+
+📌 **2026-05-14T19:45:20Z: Reuben Full App Assessment Complete**
+
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: 2 critical gaps (no parametric BOM generation engine; Beams/Take-off sheet missing), 2 pricing bugs (labor applied to cold-formed components, frame-opening cost method broken), 14 terminology improvements, 17-item prioritized backlog (6 critical, 6 important, 5 nice-to-have), and 1 reusable PEMB proposal anatomy skill. Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning. See `.squad/decisions.md` for full 17-item breakdown.
 

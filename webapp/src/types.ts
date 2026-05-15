@@ -222,6 +222,10 @@ export interface CostBreakdown {
   framesCost: number;
   structuralTotal: number;
   structuralWeight: number;
+  /** Weight of in-house-fabricated steel only (BEAMS/CHANNELS/FLAT BARS/ANGLES/PIPES/HSS).
+   *  This is the base for the fabrication labor charge — cold-formed members are
+   *  excluded because they ship cut-to-length from the supplier. */
+  laborBaseWeight: number;
   // Components
   purlinsGirtsCost: number;
   anglesCost: number;

@@ -17,6 +17,7 @@
 | 🔧 Rusty | Backend Dev | [.squad/agents/rusty/charter.md](agents/rusty/charter.md) | active |
 | 📊 Livingston | Estimator Engine | [.squad/agents/livingston/charter.md](agents/livingston/charter.md) | active |
 | 🧪 Saul | Tester | [.squad/agents/saul/charter.md](agents/saul/charter.md) | active |
+| 🏛️ Reuben | Domain Expert (Metal Building Estimation) | [.squad/agents/reuben/charter.md](agents/reuben/charter.md) | active |
 | 📋 Scribe | Session Logger | [.squad/agents/scribe/charter.md](agents/scribe/charter.md) | active (silent) |
 | 🔄 Ralph | Work Monitor | — | monitor |
 
