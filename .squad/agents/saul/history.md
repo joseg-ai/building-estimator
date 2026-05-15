@@ -63,3 +63,9 @@
 Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: 2 critical gaps (no parametric BOM generation engine; Beams/Take-off sheet missing), 2 pricing bugs (labor applied to cold-formed components, frame-opening cost method broken), 14 terminology improvements, 17-item prioritized backlog (6 critical, 6 important, 5 nice-to-have), and 1 reusable PEMB proposal anatomy skill. Assessment merged to `.squad/decisions.md`. Backlog ready for sprint planning. See `.squad/decisions.md` for full 17-item breakdown.
 
 
+
+---
+
+- **2026-05-15 — Sales tax (#13) tests landed.** 15 new tests in calculator.test.ts (32 total, all green). Reuben's tax base verified: directMaterials + labor + freight + overheadCost + erection + foundation + permits + profit + commission. Excludes detailing/engineering/loadingHauling. Contingency placeholder (=0) until #15 lands.
+- **2026-05-15 — Calc engine current behavior on tax edge cases (flag for review):** (a) Negative `salesTaxRate` is NOT rejected/clamped — produces credit. Form layer should validate `>=0`. (b) `salesTax` field is ALWAYS computed regardless of `salesTaxIncluded`; the flag only gates whether it adds to `grandTotal`. UI can use this to display "would-be tax" on the excluded path. (c) No mid-calc rounding — `salesTax` is raw float; `formatUSD` rounds at display only.
+- **2026-05-15 — Worktree gotcha:** the shared squad branch worktree had Linus's uncommitted UI WIP (context.tsx, QuotationPage.tsx, .squad/agents/linus/history.md). `git add <my file>` followed by `git commit` swept up files that were ALREADY in the index from prior Linus work. Lesson: always run `git status` immediately before commit and explicitly unstage anything not yours, or use `git commit -- <path>` to scope precisely.

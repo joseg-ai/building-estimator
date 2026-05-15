@@ -67,6 +67,7 @@ type Action =
   | { type: 'ADD_COMPONENT'; payload: ComponentItem }
   | { type: 'REMOVE_COMPONENT'; payload: string }
   | { type: 'SET_OVERHEADS'; payload: Partial<ProjectOverheads> }
+  | { type: 'SET_SALES_TAX'; payload: { rate?: number; included?: boolean } }
   | { type: 'RESET' }
   | { type: 'LOAD'; payload: BuildingConfig };
 
@@ -121,6 +122,12 @@ function reducer(state: BuildingConfig, action: Action): BuildingConfig {
       return { ...state, components: state.components.filter((c) => c.id !== action.payload) };
     case 'SET_OVERHEADS':
       return { ...state, overheads: { ...state.overheads, ...action.payload } };
+    case 'SET_SALES_TAX':
+      return {
+        ...state,
+        ...(action.payload.rate !== undefined ? { salesTaxRate: action.payload.rate } : {}),
+        ...(action.payload.included !== undefined ? { salesTaxIncluded: action.payload.included } : {}),
+      };
     case 'RESET':
       return createDefaultConfig();
     case 'LOAD':
