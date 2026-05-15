@@ -173,7 +173,21 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
   const subTotal = totalMaterialsLabor + detailing + engineering + loadingHauling + freight + overheadCost + erection + foundation + permits;
   const profit = subTotal * profitRate;
   const commission = subTotal * commissionRate;
-  const grandTotal = subTotal + profit + commission;
+
+  // Sales tax (issue #13). Base is taken verbatim from the issue spec:
+  //   Materials + Labor + Freight + Overhead + Erection + Foundation + Permits
+  //   + Contingency + Profit + Commission
+  // Note this base intentionally excludes detailing, engineering, loadingHauling.
+  // Contingency line (#15) is not yet implemented — treated as 0 for now so the
+  // formula can light up the moment contingency lands without changing this code.
+  const contingency = 0;
+  const salesTaxBase =
+    directMaterials + labor + freight + overheadCost + erection + foundation + permits +
+    contingency + profit + commission;
+  const salesTaxRate = config.salesTaxRate ?? 0;
+  const salesTaxIncluded = config.salesTaxIncluded === true;
+  const salesTax = salesTaxBase * salesTaxRate;
+  const grandTotal = subTotal + profit + commission + (salesTaxIncluded ? salesTax : 0);
 
   return {
     mainBuildingArea,
@@ -188,7 +202,9 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
     anchorBoltsCost, boltsCost, bracingCost, fastenersCost, fastenersTotal,
     directMaterials, labor, totalMaterialsLabor,
     detailing, engineering, loadingHauling, freight, overheadCost, erection, foundation, permits,
-    subTotal, profitRate, profit, commissionRate, commission, grandTotal,
+    subTotal, profitRate, profit, commissionRate, commission,
+    salesTaxRate, salesTaxIncluded, salesTaxBase, salesTax,
+    grandTotal,
   };
 }
 

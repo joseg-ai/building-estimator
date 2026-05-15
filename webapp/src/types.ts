@@ -190,6 +190,11 @@ export interface BuildingConfig {
   insulation: InsulationConfig;
   components: ComponentItem[];
   overheads: ProjectOverheads;
+  /** Sales tax rate as a decimal (e.g. 0.0825 = 8.25%). Texas default. */
+  salesTaxRate: number;
+  /** When true, computed sales tax is added to the grand total. When false,
+   *  tax is shown as $0 / "not included" and is omitted from the grand total. */
+  salesTaxIncluded: boolean;
 }
 
 /** Editable overhead and cost parameters */
@@ -260,6 +265,16 @@ export interface CostBreakdown {
   profit: number;
   commissionRate: number;
   commission: number;
+  /** Sales tax rate as a decimal carried through for display. */
+  salesTaxRate: number;
+  /** Whether sales tax was added to grand total (mirrors BuildingConfig.salesTaxIncluded). */
+  salesTaxIncluded: boolean;
+  /** Sales tax base = Materials + Labor + Freight + Overhead + Erection + Foundation
+   *  + Permits + Contingency + Profit + Commission. (Per issue #13.) */
+  salesTaxBase: number;
+  /** Computed sales tax = salesTaxBase × salesTaxRate. Always populated; only added
+   *  to grandTotal when salesTaxIncluded === true. */
+  salesTax: number;
   grandTotal: number;
 }
 
@@ -322,5 +337,7 @@ export function createDefaultConfig(): BuildingConfig {
       profitRate: 0.15,
       commissionRate: 0.04,
     },
+    salesTaxRate: 0.0825,
+    salesTaxIncluded: false,
   };
 }

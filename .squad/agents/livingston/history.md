@@ -59,3 +59,5 @@ webapp/package.json had no test script or vitest devDep. Test file at webapp/src
 ## Sprint 2 Ready
 
 Parametric engines (#3 main framing BOM, #4 component calc, #5 stair calc) queued. Awaiting Jose scope confirmation.
+
+📌 **2026-05-15:** Issue #13 (sales tax calc). Added salesTaxRate (default 0.0825 TX) and salesTaxIncluded (default false) to BuildingConfig top-level (not inside overheads — it's a jurisdictional switch, not a cost-engineering knob). Extended CostBreakdown with salesTaxRate, salesTaxIncluded, salesTaxBase, salesTax. Formula per issue verbatim: base = Materials + Labor + Freight + Overhead + Erection + Foundation + Permits + Contingency + Profit + Commission (excludes detailing/engineering/loadingHauling — flagged for Reuben review). Contingency placeholder = 0 until #15 lands. Tax always computed; only added to grandTotal when salesTaxIncluded === true. Build green. Linus owns UI on salesTaxRate / salesTaxIncluded fields; Saul writes tests against new CostBreakdown shape. See .squad/decisions/inbox/livingston-tax-calc.md.
