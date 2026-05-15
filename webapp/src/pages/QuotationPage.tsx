@@ -117,7 +117,13 @@ export default function QuotationPage() {
         .metrics-num { font-family: 'Courier New', monospace; font-weight: 600; font-size: 11px; }
         .metrics-row { display: flex; justify-content: space-between; padding: 2px 0; }
         .metrics-title { font-size: 10px; text-transform: uppercase; color: #9ca3af; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 4px; }
-        @media print { body { margin: 15px 20px; } }
+        details.terms-section { border: 1px solid #e5e7eb; border-radius: 4px; margin-top: 16px; overflow: hidden; page-break-inside: avoid; }
+        details.terms-section summary { display: none; }
+        details.terms-section > :not(summary) { display: block; }
+        .legal-body { padding: 10px 14px; font-size: 9px; color: #6b7280; line-height: 1.6; text-align: justify; }
+        .legal-body p { margin: 3px 0; }
+        .legal-title { font-size: 10px; text-transform: uppercase; color: #9ca3af; font-weight: 600; letter-spacing: 0.05em; padding: 6px 14px 4px; border-bottom: 1px solid #f3f4f6; }
+        @media print { body { margin: 15px 20px; } details.terms-section summary { display: none; } details.terms-section > :not(summary) { display: block !important; } }
       </style></head><body>`);
     w.document.write(el.innerHTML);
     w.document.write('</body></html>');
@@ -426,6 +432,25 @@ export default function QuotationPage() {
             <p className="pl-4 text-gray-600">Walls: {config.wallColor}</p>
             <p className="pl-4 text-gray-600">Trim: {config.trimColor}</p>
           </div>
+
+          {/* Terms & Conditions — Issue #9 */}
+          <details className="terms-section mt-6 border border-gray-200 rounded overflow-hidden" style={{ pageBreakInside: 'avoid' }}>
+            <summary className="px-4 py-2 bg-gray-50 text-[10px] font-semibold uppercase text-gray-500 cursor-pointer select-none tracking-wide hover:bg-gray-100 list-none flex items-center justify-between">
+              <span>Terms &amp; Conditions</span>
+              <span className="text-gray-400 text-xs print:hidden">▼</span>
+            </summary>
+            <div className="legal-body px-4 py-3 text-[10px] text-gray-500 space-y-1.5 leading-relaxed text-justify">
+              <p><strong>Pricing Validity:</strong> This quotation is valid for 30 days from the date issued.</p>
+              <p><strong>Acceptance:</strong> Acceptance of this quotation constitutes agreement to the terms herein and authorization to proceed with order processing upon receipt of deposit.</p>
+              <p><strong>Deposit:</strong> A 30% non-refundable deposit is required to release the order to engineering and production. Balance due net 30 from delivery.</p>
+              <p><strong>Scope:</strong> Quotation covers materials and engineering as specified. Site preparation, foundation, erection labor, permits, taxes, freight (unless itemized), and any work not explicitly described are excluded.</p>
+              <p><strong>Changes:</strong> Change orders after engineering release will incur an engineering fee plus material cost differential.</p>
+              <p><strong>Delivery:</strong> Delivery estimates are approximate and subject to mill availability. Force majeure clauses apply.</p>
+              <p><strong>Warranty:</strong> Materials are warranted per manufacturer specifications. Standard structural warranty: 1 year on workmanship; paint per manufacturer (typically 25–40 years on Galvalume/SMP).</p>
+              <p><strong>Title &amp; Risk:</strong> Title and risk of loss transfer to Buyer upon delivery to job site or carrier.</p>
+              <p><strong>Governing Law:</strong> This agreement is governed by the laws of the state in which the project is located.</p>
+            </div>
+          </details>
 
           {/* Footer / signatures */}
           <div className="mt-8 text-xs text-gray-400 border-t border-gray-200 pt-4">
