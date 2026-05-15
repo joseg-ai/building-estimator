@@ -1,5 +1,29 @@
-import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory, ComponentItem } from './types';
+import type { BuildingConfig, CostBreakdown, LeanToDirection, ComponentCategory, ComponentItem, ProjectOverheads } from './types';
 import { getPanelUnitPrice, getTrimUnitPrice, getRValuePrice } from './priceList';
+
+/**
+ * Resolve the freight charge for a project (Issue #14).
+ *
+ * Precedence rules — auto-calc wins when enabled; flat is a pure override:
+ *   - freightAutoCalc === true  → freight = max(0, freightDistance × freightRate).
+ *     The flat `freight` field is COMPLETELY IGNORED in this branch, even if
+ *     the auto-calc product is 0. (Workbook ref: Summary.txt row 78,
+ *     col 10 = distance, col 11 = rate, col 14 = distance × rate.)
+ *   - freightAutoCalc === false → freight = flat `freight` field as entered.
+ *   - freightAutoCalc === undefined (legacy configs loaded from older
+ *     localStorage that predate Issue #14) → treated as `false`, preserving
+ *     the historical flat-freight behavior.
+ *
+ * Default workbook rate: 4.6 $/km (per Issue #14 body).
+ */
+export function resolveFreight(overheads: ProjectOverheads): number {
+  if (overheads.freightAutoCalc === true) {
+    const distance = overheads.freightDistance ?? 0;
+    const rate = overheads.freightRate ?? 0;
+    return Math.max(0, distance * rate);
+  }
+  return overheads.freight ?? 0;
+}
 
 const LEAN_TO_DIRECTIONS: LeanToDirection[] = ['right', 'left', 'front', 'back'];
 
@@ -293,7 +317,9 @@ export function calculateCosts(config: BuildingConfig): CostBreakdown {
 
   // Grand totals (matching Summary sheet formulas)
   const directMaterials = structuralTotal + componentsTotal + insulationTotal + fastenersTotal + stairsCost;
-  const { laborRate, detailing, engineering, loadingHauling, freight, overheadRate, erection, foundation, permits, profitRate, commissionRate } = config.overheads;
+  const { laborRate, detailing, engineering, loadingHauling, overheadRate, erection, foundation, permits, profitRate, commissionRate } = config.overheads;
+  // Issue #14: freight may be auto-calculated (distance × rate) or a flat override.
+  const freight = resolveFreight(config.overheads);
   // Bug #1 fix: labor base = in-house fabricated structural weight only.
   // (Cold-formed purlins/girts/sheeting/trim ship cut-to-length — no shop labor.)
   const labor = laborBaseWeight * laborRate;

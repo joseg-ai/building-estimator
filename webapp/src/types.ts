@@ -228,7 +228,16 @@ export interface ProjectOverheads {
   detailing: number;       // flat fee
   engineering: number;     // flat fee
   loadingHauling: number;  // flat fee
-  freight: number;         // flat fee
+  freight: number;         // flat fee — used as manual override when freightAutoCalc === false
+  /** Travel distance to job site (km). Drives auto-calc freight = distance × rate.
+   *  Workbook ref: Summary.txt row 78 col 10 (e.g. 200 km). */
+  freightDistance?: number;
+  /** Per-kilometer freight rate ($/km). Workbook default: 4.6 $/km (issue #14). */
+  freightRate?: number;
+  /** When true, freight is auto-calculated as freightDistance × freightRate and
+   *  the flat `freight` field is ignored. When false (or undefined for legacy
+   *  configs), the flat `freight` field is used as-is. New configs default to true. */
+  freightAutoCalc?: boolean;
   overheadRate: number;    // percentage (0.02 = 2%)
   erection: number;        // flat fee
   foundation: number;      // flat fee
@@ -395,6 +404,9 @@ export function createDefaultConfig(): BuildingConfig {
       engineering: 1500,
       loadingHauling: 0,
       freight: 0,
+      freightDistance: 0,
+      freightRate: 4.6,
+      freightAutoCalc: true,
       overheadRate: 0.02,
       erection: 0,
       foundation: 0,

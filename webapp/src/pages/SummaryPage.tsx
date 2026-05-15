@@ -120,7 +120,7 @@ export default function SummaryPage() {
               <label className="block text-xs text-gray-500 mb-1">{label}</label>
               <input
                 type="number" min={0} step={step}
-                value={isPercent ? (overheads[key] * 100) : overheads[key]}
+                value={isPercent ? ((overheads[key] as number) * 100) : (overheads[key] as number)}
                 onChange={(e) => {
                   const v = Number(e.target.value);
                   setOverhead(key, isPercent ? v / 100 : v);
