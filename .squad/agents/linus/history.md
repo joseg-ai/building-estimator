@@ -148,3 +148,28 @@ Two features in one PR, two commits.
 ### Build & Tests
 - `npm run build` — ✅ exit 0, 55 modules, no TS errors
 - `npm test` — ✅ 226 tests passed (78 bomEngine + 116 bomEngine.secondary + 32 calculator)
+
+## 2026-05-15 — Issue #5 Stair UI (Sprint 2, squad/5-stair-calc)
+
+Wired Livingston's stair engine into a parametric form on StructuralPage. AC item 4 of issue #5 shipped; engine items (1, 2, 3, 5, 6) untouched.
+
+### Files Changed
+- `webapp/src/pages/StructuralPage.tsx` — full rewrite: stub catalog table → parametric form (left) + live BOM table & cost summary (right).
+- `webapp/src/context.tsx` — added `stairConfig` slice + `setStairConfig`.
+- `webapp/src/storage.ts` — added `createDefaultStairConfig` / `saveStairConfig` / `loadStairConfig` (localStorage key `building-estimator-stair-config`).
+- `webapp/src/__tests__/stairDefaults.test.ts` — new smoke test (3 cases) locking the default stair config to workbook canonical grand total \,897.88 / 22,571.336 lb.
+
+### UI shape
+- Inputs: levels (1–5 select), FtF height, width, tread run, per-flight tread counts (resize with levels), rails (4 toggles + pickets), mid-landing (toggle + W/L + ABC guards), floor-landing (W/L + ABC guards). Inline validation (no negatives, levels 1–5).
+- Preview: cost summary (Direct / Labor / Detailing / Hauling / Freight / Overhead → Sub Total → Profit 10% [stair-specific badge] / Commission → Grand Total) + collapsible `<details open>` BOM table mirroring QuotationPage's pattern. Columns: Description (ID + material subtitle) / Qty / Unit / Length-or-Weight / Unit Cost / Extended.
+- Auto-save on every edit via existing context useEffect pattern.
+
+### Deferred (filed in inbox)
+- SVG stair plan diagram — punted to follow-up issue.
+- Push parametric stair rows into `config.components` (so QuotationPage's main cost roll-up picks them up) — needs Reuben sign-off on whether the stair grand total stays standalone or merges. Suggested follow-up.
+- Guard-rail height field — engine doesn't accept one; omitted to avoid misleading input.
+
+### Build & Tests
+- `npm run build` — ✅ exit 0, 56 modules, no new warnings.
+- `npm test` — ✅ **336 tests passed** (was 333 → +3 from `stairDefaults.test.ts`).
+
