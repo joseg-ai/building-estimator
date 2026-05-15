@@ -12,6 +12,8 @@
 
 📌 **2026-05-10 (Phase 2 CLOSED):** Customers live. Phase 2 CLOSED: customers live, 57 tests green (46 server + 11 webapp), quote↔customer linking working. Phase 3 (vendors/comparison) starting.
 
+📌 **2026-05-14 (20:06 UTC):** Danny backlog triage → **GH issues #1, #2, #3, #4, #5, #8, #10, #14, #15** assigned. Sprint 1 (S1): #1 (fix labor calc base), #2 (fix frame opening cost), #8 (wire color SKU). Sprint 2 (S2): #3 (parametric main framing BOM), #4 (parametric component calc), #5 (stair parametric). Sprint 3+ (S3): #10 (insulation auto-calc), #14 (freight calculator), #15 (contingency line). **You carry 9 of 17 issues — Saul should pair on test coverage for all deliverables.** See `.squad/orchestration-log/2026-05-14-danny-triage.md` for sprint plan.
+
 📌 **2026-05-10:** Project surveyed by Danny. Gaps identified in customers, vendors, and price persistence. Phase 1 (persist materials/prices to server) recommended as highest priority. Awaiting user selection.
 
 📌 **2026-05-10 (Round 1 — Phase 1 shipped):** Data contract finalized and merged to decisions.md. All 16+ catalog categories mapped (PERSIST vs. TRANSIENT fields). Versioning strategy: snapshot at quote save (price list, catalog, labor rates, overheads). ⚠️ CRITICAL BUG FLAGGED: Catalog `weight` field all zeros but calculator uses it for structural-steel labor cost. Mitigation: add `weight_per_unit` to schema; derive weight at calc time. 6 risks identified (material string lookup, zero-price items, immutability, sparse categories). Investigation pending on weight field.
@@ -157,8 +159,8 @@
 
 - **Spec document:** `.squad/decisions/inbox/livingston-phase3-comparison-spec.md` (12 sections covering scope, model, effective price rule, profit handling, vendor selection flow, edge cases, UX hints, data model, API, testing, terminology). Ready for team review, Rusty (schema), Linus (UI/UX), Saul (tests).
 
-### Phase 3 Multi-Vendor Comparison — SHIPPED (2026-05-10)
+### 2026-05-14T19:45:20Z: Reuben App Assessment Complete
 
-**Analysis locked in:** Effective-price fallback rule implemented exactly per spec. "Pick vendor" snapshot flow working. All edge cases handled (sparse data, orphans, deleted vendors). No rework during implementation. Comparison feature production-ready.
+Reuben delivered comprehensive domain assessment of webapp vs. VMBC workbook. Key findings: (1) No parametric BOM generation engine → every quantity entered manually (slower than Excel); (2) Beams/Take-off sheet missing → no purchasing document for steel service center; (3) Labor applied to both structural + cold-formed components (should be structural-only → ~$9–19k underestimate per quote); (4) Frame opening cold-form items use weight-based cost method but are priced per LnFt (silent $0 cost). Backlog: 6 critical items (parametric BOM, Beams, insulation calc, stair calc, legal language, sales tax), 6 important (wind load, ridge vents, color persistence, revision history, freight, vendors), 5 nice-to-have ($/sqft metrics, PDF gen, comparison, customer portal, escalation). Assessment merged to `.squad/decisions.md`. Ready for sprint planning.
 
-📌 **EPIC COMPLETE** — Phase 3 shipped. Effective-price rule locked in (vendor override → active list → warn). "Pick vendor" snapshot flow implemented per spec. All edge cases handled (sparse data, orphans, deleted vendors). No rework during implementation. Ready for next epic.
+
