@@ -53,6 +53,39 @@ export default function QuotationPage() {
   const hasComp = (desc: string) => config.components.some((c) => c.description.toLowerCase().includes(desc.toLowerCase()) && c.qty > 0);
   const compQty = (desc: string) => config.components.find((c) => c.description.toLowerCase().includes(desc.toLowerCase()))?.qty ?? 0;
 
+  const addlStructures = config.additionalStructures;
+
+  // Compute which additional-structure items are enabled (from the dedicated form OR legacy fallbacks)
+  const addlItems: { label: string; spec: string }[] = [];
+  if (addlStructures) {
+    if (addlStructures.overhangs.enabled) {
+      const dimStr = addlStructures.overhangs.dims ? ` — ${addlStructures.overhangs.dims}` : '';
+      addlItems.push({ label: `Overhangs (qty ${addlStructures.overhangs.qty})`, spec: dimStr });
+    }
+    if (addlStructures.leanTos.enabled) {
+      addlItems.push({ label: `Lean-to(s) (qty ${addlStructures.leanTos.qty})`, spec: ` — ${addlStructures.leanTos.width}' W × ${addlStructures.leanTos.length}' L` });
+    }
+    if (addlStructures.parapets.enabled) {
+      addlItems.push({ label: 'Parapet', spec: ` — ${addlStructures.parapets.height} ft high` });
+    }
+    if (addlStructures.canopies.enabled) {
+      addlItems.push({ label: `Canopies (qty ${addlStructures.canopies.qty})`, spec: ` — ${addlStructures.canopies.width}' W × ${addlStructures.canopies.depth}' D × ${addlStructures.canopies.height}' H` });
+    }
+    if (addlStructures.hssCanopies.enabled) {
+      addlItems.push({ label: `HSS Canopies (qty ${addlStructures.hssCanopies.qty})`, spec: '' });
+    }
+  } else {
+    // Legacy fallback: derive from leanTos + components
+    activeLeanTos.forEach((d) => {
+      addlItems.push({ label: `Lean-to ${dirLabels[d]} (${leanTos[d].width}' × ${leanTos[d].length}')`, spec: '' });
+    });
+    if (hasComp('canopy')) {
+      addlItems.push({ label: 'Canopies as shown on plans', spec: '' });
+    }
+  }
+
+  // compQty used below for accessories rendering
+
   function handlePrint() {
     const el = printRef.current;
     if (!el) return;
@@ -186,32 +219,24 @@ export default function QuotationPage() {
             {dimensions.roofPitch}:12, Roof Pitch, {config.roofType === 'gable' ? 'Gable' : 'Single'} slope
           </p>
 
-          {/* Additional Structures */}
+          {/* Additional Structures — Section 5 */}
           <h2 className="font-semibold text-[#1e3a5f] text-sm border-b border-gray-300 pb-1 mt-3 mb-2">
             Additional Structures
           </h2>
           <div className="text-sm space-y-0.5">
-            {activeLeanTos.length > 0 ? (
-              activeLeanTos.map((d) => (
-                <div key={d} className="check-row flex justify-between border-b border-gray-100 py-0.5">
-                  <span>Lean-to {dirLabels[d]} ({leanTos[d].width}' x {leanTos[d].length}')</span>
+            {addlItems.length > 0 ? (
+              addlItems.map((item, i) => (
+                <div key={i} className="check-row flex justify-between border-b border-gray-100 py-0.5">
+                  <span>{item.label}{item.spec}</span>
                   <YesNo value={true} />
                 </div>
               ))
             ) : (
               <div className="check-row flex justify-between border-b border-gray-100 py-0.5">
-                <span>0 Lean-to as shown on plans</span>
+                <span className="text-gray-400 italic">None specified.</span>
                 <YesNo value={false} />
               </div>
             )}
-            <div className="check-row flex justify-between border-b border-gray-100 py-0.5">
-              <span>Overhangs as shown on plans</span>
-              <YesNo value={false} />
-            </div>
-            <div className="check-row flex justify-between border-b border-gray-100 py-0.5">
-              <span>Canopies as shown on plans</span>
-              <YesNo value={hasComp('canopy')} />
-            </div>
           </div>
 
           {/* Components checklist */}
