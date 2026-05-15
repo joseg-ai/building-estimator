@@ -112,6 +112,11 @@ export default function QuotationPage() {
         .total-box { background: #1e3a5f; color: white; padding: 12px 16px; margin-top: 12px; display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; }
         .sig-line { border-top: 1px solid #9ca3af; width: 200px; margin-top: 40px; }
         svg { max-width: 400px; display: block; margin: 8px auto; }
+        .metrics-box { border: 1px solid #e5e7eb; border-radius: 4px; padding: 10px 14px; margin-top: 10px; background: #f9fafb; }
+        .metrics-label { color: #6b7280; font-size: 11px; }
+        .metrics-num { font-family: 'Courier New', monospace; font-weight: 600; font-size: 11px; }
+        .metrics-row { display: flex; justify-content: space-between; padding: 2px 0; }
+        .metrics-title { font-size: 10px; text-transform: uppercase; color: #9ca3af; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 4px; }
         @media print { body { margin: 15px 20px; } }
       </style></head><body>`);
     w.document.write(el.innerHTML);
@@ -381,6 +386,31 @@ export default function QuotationPage() {
             <span>Total</span>
             <span>{formatUSD(costs.grandTotal)}</span>
           </div>
+
+          {/* Summary Metrics — Issue #11 */}
+          {(costs.mainBuildingArea > 0 || costs.structuralWeight > 0) && (
+            <div className="metrics-box mt-4 bg-gray-50 border border-gray-200 rounded p-4">
+              <p className="metrics-title text-[10px] uppercase text-gray-400 font-semibold tracking-wide mb-2">Cost Metrics</p>
+              {costs.mainBuildingArea > 0 && (
+                <div className="metrics-row flex justify-between py-0.5">
+                  <span className="metrics-label text-sm text-gray-500">Total Cost / sqft</span>
+                  <span className="metrics-num font-mono font-semibold text-sm">{formatUSD(costs.grandTotal / costs.mainBuildingArea)}/sqft</span>
+                </div>
+              )}
+              {costs.structuralWeight > 0 && (
+                <div className="metrics-row flex justify-between py-0.5">
+                  <span className="metrics-label text-sm text-gray-500">Total Cost / lb steel</span>
+                  <span className="metrics-num font-mono font-semibold text-sm">${(costs.grandTotal / costs.structuralWeight).toFixed(2)}/lb</span>
+                </div>
+              )}
+              {costs.structuralWeight > 0 && (
+                <div className="metrics-row flex justify-between py-0.5">
+                  <span className="metrics-label text-sm text-gray-500">Steel Cost / lb</span>
+                  <span className="metrics-num font-mono font-semibold text-sm">${(costs.structuralTotal / costs.structuralWeight).toFixed(2)}/lb</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Observations & Colors */}
           <div className="mt-4 text-sm space-y-1 text-gray-600">
