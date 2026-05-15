@@ -141,6 +141,12 @@ export interface InsulationConfig {
   roof: boolean;
   wall: boolean;
   additional: boolean;
+  /**
+   * R-value for auto-calculated insulation (Issue #10).
+   * Drives the $/sqft rate from rValuePriceTable.
+   * Ignored when manual component overrides are present (any insulation component qty > 0).
+   */
+  rValue?: 'R-13' | 'R-19' | 'R-25' | 'R-30';
 }
 
 /** Main building dimensions */
@@ -381,7 +387,7 @@ export function createDefaultConfig(): BuildingConfig {
       hssCanopies: [emptyCanopy(), emptyCanopy(), emptyCanopy(), emptyCanopy()],
       masonry: 0, ridgeVents: 0, skylights: 0,
     },
-    insulation: { roof: false, wall: false, additional: false },
+    insulation: { roof: false, wall: false, additional: false, rValue: 'R-13' },
     components: [],
     overheads: {
       laborRate: 0.75,
